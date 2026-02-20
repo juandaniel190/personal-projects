@@ -3,29 +3,30 @@
 Trading diagnostic deck analyzing UK & US market performance (H2 2024 vs H2 2025). Interactive HTML deck + written analysis.
 
 **Live Demo**
-- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/Bark/Bark_Trading_Diagnostic.html)
-- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/Bark/Bark_Trading_Diagnostic_Print.html)
+- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/Bark/deck/Bark_Trading_Diagnostic.html)
+- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/Bark/deck/Bark_Trading_Diagnostic_Print.html)
 
 **Quick start**
 
-- Open `Bark_Trading_Diagnostic.html` in a browser (charts load from CDN, no build required).
-- For a 7-slide print-friendly version: open `Bark_Trading_Diagnostic_Print.html`, then use **Print to PDF** for a 16:9 landscape deck.
+- Open `deck/Bark_Trading_Diagnostic.html` in a browser (charts load from CDN, no build required).
+- For a 7-slide print-friendly version: open `deck/Bark_Trading_Diagnostic_Print.html`, then use **Print to PDF** for a 16:9 landscape deck.
 - Read the full written analysis in `docs/Bark_Trading_Diagnostic.md`.
 
 **Layout**
 
 ```
 Bark/
-├── README.md
-├── Bark_Trading_Diagnostic.html          ← interactive deck (open in browser)
-├── Bark_Trading_Diagnostic_Print.html    ← 7 slides, print to PDF
-├── Bark.com — Trading Diagnostic.pdf     ← PDF export
+├── README.md                             ← start here (live demo links above)
+├── Bark.com — Trading Diagnostic — Print (7 slides).pdf   ← PDF export
+├── deck/                                 ← live demos (GitHub Pages)
+│   ├── Bark_Trading_Diagnostic.html      ← interactive deck
+│   └── Bark_Trading_Diagnostic_Print.html ← 7 slides, print to PDF
 ├── images/                               ← chart images (chart1–9.png)
 └── docs/
     ├── Bark_Trading_Diagnostic.md        ← full written analysis
     ├── Bark_Trading_Diagnostic.xlsx      ← source data
     ├── build_channel_monthly.py          ← data rebuild script
-    ├── channel_monthly_chart_data.js     ← chart data for HTML
+    ├── channel_monthly_chart_data.js      ← chart data for HTML
     ├── IMAGES.md                         ← optional slide decoration guide
     ├── package.json                      ← NPM config
     └── package-lock.json
