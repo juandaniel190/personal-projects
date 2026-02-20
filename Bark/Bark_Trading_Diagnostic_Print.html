@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bark.com — Trading Diagnostic — Print (7 slides)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* 16:9 print: exact aspect ratio, one slide per page */
+    @media print {
+      @page { size: 297mm 167mm; margin: 10mm; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #F7F6F3 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { overflow: hidden; }
+      .slide-page { page-break-after: always; page-break-inside: avoid; width: 100%; height: 100vh; min-height: 100vh; max-height: 100vh; display: flex !important; align-items: stretch; justify-content: center; padding: 0; }
+      .slide-page:last-child { page-break-after: auto; }
+      .slide-inner { flex: 1; min-width: 0; min-height: 0; max-width: 100%; display: flex !important; flex-direction: column; background: #fff !important; border-radius: 10px; padding: 20px; box-shadow: none; border: 1px solid #e8e6e3; overflow: hidden; }
+      .slide-content { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+      .slide-content > * { flex: 1 1 auto; min-height: 0; min-width: 0; }
+      .no-print { display: none !important; }
+    }
+    @media screen {
+      .no-print { position: fixed; top: 12px; right: 12px; z-index: 9999; padding: 10px 20px; background: #1A2744; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: Lato, sans-serif; }
+      .slide-page { min-height: 100vh; padding: 24px; box-sizing: border-box; display: flex; align-items: stretch; justify-content: center; }
+      .slide-inner { background: #fff; border-radius: 12px; padding: 24px; width: 100%; max-width: 920px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e8e6e3; aspect-ratio: 16 / 9; max-height: calc(100vh - 48px); display: flex; flex-direction: column; }
+      .slide-content { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+      .slide-content > * { flex: 1 1 auto; min-height: 0; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/recharts@2.0.0/umd/Recharts.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
+</head>
+<body>
+  <button type="button" class="no-print" onclick="window.print()">Print to PDF</button>
+  <div id="root"></div>
+  <div id="error-msg" style="display:none; padding: 1rem; background: #fee; color: #c00; font-family: sans-serif; white-space: pre-wrap;"></div>
+  <script type="text/babel" data-presets="react">
+    const { useState } = React;
+    if (typeof Recharts === 'undefined') {
+      document.getElementById('root').innerHTML = '<p style="padding:1rem;color:#c00;">Recharts failed to load. Check the browser console.</p>';
+      throw new Error('Recharts is not defined');
+    }
+    const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Line, CartesianGrid, Legend, ComposedChart, LineChart, LabelList } = Recharts;
+
+    // Bark official colors (from Bark brand)
+    const COLORS = {
+      teal: "#26B3A8",
+      navy: "#1A2744",
+      coral: "#E8604C",
+      softTeal: "#B8E3DE",
+      light: "#F7F6F3",
+      midGray: "#8E9AAF",
+      text: "#2D3142",
+      white: "#FFFFFF",
+    };
+
+    // UK H2 key metrics (from diagnostic) — percentages without decimals
+    const ukMetrics = [
+      { metric: "Sessions (Start)", h2_24: "985,316", h2_25: "1,077,620", delta: "+9%", type: "pos" },
+      { metric: "Q1 Pass Rate", h2_24: "57%", h2_25: "46%", delta: "-11pp", type: "neg" },
+      { metric: "Submissions", h2_24: "288,594", h2_25: "262,986", delta: "-9%", type: "neg" },
+      { metric: "Submission Rate", h2_24: "29%", h2_25: "24%", delta: "-5pp", type: "neg" },
+      { metric: "PPR Revenue", h2_24: "£2.50M", h2_25: "£2.08M", delta: "-17%", type: "neg" },
+      { metric: "Marketing Spend", h2_24: "£1.31M", h2_25: "£1.13M", delta: "-14%", type: "neg" },
+      { metric: "APR (Profit)", h2_24: "£1.19M", h2_25: "£952K", delta: "-20%", type: "neg" },
+      { metric: "Paid Responses", h2_24: "177,828", h2_25: "139,701", delta: "-21%", type: "neg" },
+    ];
+
+    // UK revenue/spend/profit for bar chart (H2 2024 vs H2 2025)
+    const ukTrendData = [
+      { period: "H2 2024", revenue: 2.50, spend: 1.31, profit: 1.19 },
+      { period: "H2 2025", revenue: 2.08, spend: 1.13, profit: 0.95 },
+    ];
+
+    // UK Funnel Rate Shifts: Release Rate (grey), Q1 Pass, Response Rate, Submission Rate (red/coral) — image spec
+    const funnelSlopeData = [
+      { period: "H2'24", ReleaseRate: 94.4, Q1Pass: 57.3, ResponseRate: 55.2, SubRate: 29.3 },
+      { period: "H2'25", ReleaseRate: 92.6, Q1Pass: 46.2, ResponseRate: 53.6, SubRate: 24.4 },
+    ];
+    const funnelSlopePp = { ReleaseRate: -1.8, Q1Pass: -11.2, ResponseRate: -1.6, SubRate: -4.9 };
+    const FUNNEL_LABELS = { ReleaseRate: "Release Rate", Q1Pass: "Q1 Pass Rate", ResponseRate: "Response Rate", SubRate: "Submission Rate" };
+    // Slopegraph rows: one per metric, exact values and pp deltas for custom SVG
+    const funnelSlopeRows = [
+      { name: "Release Rate", h2_24: 94.4, h2_25: 92.6, pp: -1.8, color: COLORS.midGray },
+      { name: "Q1 Pass Rate", h2_24: 57.3, h2_25: 46.2, pp: -11.2, color: COLORS.coral },
+      { name: "Response Rate", h2_24: 55.2, h2_25: 53.6, pp: -1.6, color: COLORS.coral },
+      { name: "Submission Rate", h2_24: 29.3, h2_25: 24.4, pp: -4.9, color: COLORS.coral },
+    ];
+
+    // Channel 2 (UK): Volume vs conversion — from build_channel_monthly.py (Bark_Trading_Diagnostic.xlsx)
+    const ch2VolumeConversionData = [
+      { month: "Jul'24", sessions: 30.5, subRate: 22.8 }, { month: "Aug'24", sessions: 28.7, subRate: 22.0 }, { month: "Sep'24", sessions: 30.7, subRate: 21.1 }, { month: "Oct'24", sessions: 30.9, subRate: 20.5 },
+      { month: "Nov'24", sessions: 26.8, subRate: 18.7 }, { month: "Dec'24", sessions: 18.4, subRate: 20.6 }, { month: "Jan'25", sessions: 31.2, subRate: 20.5 }, { month: "Feb'25", sessions: 28.7, subRate: 21.0 },
+      { month: "Mar'25", sessions: 30.1, subRate: 20.9 }, { month: "Apr'25", sessions: 28.3, subRate: 21.6 }, { month: "May'25", sessions: 41.9, subRate: 21.6 }, { month: "Jun'25", sessions: 68.5, subRate: 21.1 },
+      { month: "Jul'25", sessions: 71.4, subRate: 20.4 }, { month: "Aug'25", sessions: 82.1, subRate: 14.6 }, { month: "Sep'25", sessions: 99.1, subRate: 10.8 }, { month: "Oct'25", sessions: 79.4, subRate: 10.1 },
+      { month: "Nov'25", sessions: 28.7, subRate: 19.0 }, { month: "Dec'25", sessions: 17.4, subRate: 18.1 },
+    ];
+
+    // H2 YoY Channel Comparison (Performance) — percentages without decimals; ch1/ch2/ch3: 'pos' | 'neg' | 'neutral'
+    const channelH2YoY = [
+      { metric: "Sessions", ch1: "653K → 494K (-24%)", ch2: "166K → 378K (+128%)", ch3: "166K → 205K (+24%)", ch1C: "neg", ch2C: "pos", ch3C: "pos" },
+      { metric: "Sub Rate", ch1: "29% → 28%", ch2: "21% → 14%", ch3: "40% → 35%", ch1C: "neutral", ch2C: "neg", ch3C: "neg" },
+      { metric: "Revenue", ch1: "£1.78M → £1.30M (-27%)", ch2: "£300K → £374K (+25%)", ch3: "£413K → £402K (-3%)", ch1C: "neg", ch2C: "pos", ch3C: "neg" },
+      { metric: "ROAS", ch1: "1.64 → 1.59", ch2: "1.50 → 1.28", ch3: "17.6 → 28.1", ch1C: "neg", ch2C: "neg", ch3C: "pos" },
+      { metric: "Profit", ch1: "£696K → £484K (-30%)", ch2: "£100K → £81K (-20%)", ch3: "£390K → £387K (-1%)", ch1C: "neg", ch2C: "neg", ch3C: "neutral" },
+    ];
+    const CH2_HIGHLIGHT_BG = "#dcfce7"; // light green for Ch2 column only
+
+    // UK Channels side-by-side: Sessions + Sub Rate by channel — from build_channel_monthly.py (xlsx)
+    const ch1Monthly = [
+      { month: "Jul'24", sessions: 139.4, subRate: 30.1 }, { month: "Aug'24", sessions: 132.6, subRate: 29.0 }, { month: "Sep'24", sessions: 116.1, subRate: 28.9 }, { month: "Oct'24", sessions: 111.7, subRate: 27.3 },
+      { month: "Nov'24", sessions: 88.0, subRate: 28.1 }, { month: "Dec'24", sessions: 65.5, subRate: 28.4 }, { month: "Jan'25", sessions: 136.1, subRate: 26.3 }, { month: "Feb'25", sessions: 83.1, subRate: 26.9 },
+      { month: "Mar'25", sessions: 107.9, subRate: 28.5 }, { month: "Apr'25", sessions: 97.0, subRate: 29.1 }, { month: "May'25", sessions: 113.6, subRate: 28.5 }, { month: "Jun'25", sessions: 101.0, subRate: 29.1 },
+      { month: "Jul'25", sessions: 98.9, subRate: 29.3 }, { month: "Aug'25", sessions: 83.3, subRate: 27.7 }, { month: "Sep'25", sessions: 90.8, subRate: 28.1 }, { month: "Oct'25", sessions: 85.1, subRate: 28.4 },
+      { month: "Nov'25", sessions: 80.0, subRate: 27.4 }, { month: "Dec'25", sessions: 56.4, subRate: 26.3 },
+    ];
+    const ch2Monthly = [
+      { month: "Jul'24", sessions: 30.5, subRate: 22.8 }, { month: "Aug'24", sessions: 28.7, subRate: 22.0 }, { month: "Sep'24", sessions: 30.7, subRate: 21.1 }, { month: "Oct'24", sessions: 30.9, subRate: 20.5 },
+      { month: "Nov'24", sessions: 26.8, subRate: 18.7 }, { month: "Dec'24", sessions: 18.4, subRate: 20.6 }, { month: "Jan'25", sessions: 31.2, subRate: 20.5 }, { month: "Feb'25", sessions: 28.7, subRate: 21.0 },
+      { month: "Mar'25", sessions: 30.1, subRate: 20.9 }, { month: "Apr'25", sessions: 28.3, subRate: 21.6 }, { month: "May'25", sessions: 41.9, subRate: 21.6 }, { month: "Jun'25", sessions: 68.5, subRate: 21.1 },
+      { month: "Jul'25", sessions: 71.4, subRate: 20.4 }, { month: "Aug'25", sessions: 82.1, subRate: 14.6 }, { month: "Sep'25", sessions: 99.1, subRate: 10.8 }, { month: "Oct'25", sessions: 79.4, subRate: 10.1 },
+      { month: "Nov'25", sessions: 28.7, subRate: 19.0 }, { month: "Dec'25", sessions: 17.4, subRate: 18.1 },
+    ];
+    const ch3Monthly = [
+      { month: "Jul'24", sessions: 36.1, subRate: 46.3 }, { month: "Aug'24", sessions: 30.4, subRate: 41.8 }, { month: "Sep'24", sessions: 29.4, subRate: 38.7 }, { month: "Oct'24", sessions: 29.6, subRate: 37.1 },
+      { month: "Nov'24", sessions: 23.6, subRate: 35.1 }, { month: "Dec'24", sessions: 17.0, subRate: 35.0 }, { month: "Jan'25", sessions: 24.7, subRate: 34.7 }, { month: "Feb'25", sessions: 20.1, subRate: 38.5 },
+      { month: "Mar'25", sessions: 26.0, subRate: 40.7 }, { month: "Apr'25", sessions: 26.5, subRate: 39.3 }, { month: "May'25", sessions: 29.9, subRate: 39.4 }, { month: "Jun'25", sessions: 33.9, subRate: 37.9 },
+      { month: "Jul'25", sessions: 35.4, subRate: 42.8 }, { month: "Aug'25", sessions: 42.4, subRate: 33.2 }, { month: "Sep'25", sessions: 39.7, subRate: 32.8 }, { month: "Oct'25", sessions: 39.2, subRate: 29.5 },
+      { month: "Nov'25", sessions: 28.1, subRate: 33.9 }, { month: "Dec'25", sessions: 20.3, subRate: 36.3 },
+    ];
+
+    // Full Channel Breakdown — H2'24 → H2'25 (same format as H2 YoY: ch1/ch2/ch3 + pos/neg/neutral)
+    const channelBreakdown = [
+      { metric: "Marketing Spend", ch1: "£1087K → £821K (-24%)", ch2: "£199K → £293K (+47%)", ch3: "£23K → £14K (-39%)", ch1C: "neg", ch2C: "pos", ch3C: "neg" },
+      { metric: "Spend Share", ch1: "83% → 73% (-10 pp)", ch2: "15% → 26% (+11 pp)", ch3: "2% → 1% (-1 pp)", ch1C: "neg", ch2C: "pos", ch3C: "neg" },
+      { metric: "Revenue Share", ch1: "71% → 63% (-9 pp)", ch2: "12% → 18% (+6 pp)", ch3: "17% → 19% (+3 pp)", ch1C: "neg", ch2C: "pos", ch3C: "pos" },
+    ];
+
+    // US category: Web Design vs Motivational Speaking — percentages without decimals
+    const webDesignMetrics = [
+      { metric: "PPR Revenue", h2_24: "£1.25M", h2_25: "£639K", delta: "-49%" },
+      { metric: "Sessions", h2_24: "148,506", h2_25: "99,176", delta: "-33%" },
+      { metric: "Submissions", h2_24: "24,224", h2_25: "14,916", delta: "-38%" },
+      { metric: "Rev per Project", h2_24: "~£55", h2_25: "~£47", delta: "-15%" },
+      { metric: "Profit", h2_24: "£400K", h2_25: "£322K", delta: "-19%" },
+    ];
+    const motivationalMetrics = [
+      { metric: "PPR Revenue", h2_24: "£136K", h2_25: "£289K", delta: "+113%" },
+      { metric: "Submissions", h2_24: "4,778", h2_25: "6,148", delta: "+29%" },
+      { metric: "Paid Responses", h2_24: "5,316", h2_25: "10,055", delta: "+89%" },
+      { metric: "Rev per Project", h2_24: "£30", h2_25: "£55", delta: "+83%" },
+      { metric: "Profit", h2_24: "£40K", h2_25: "£165K", delta: "+315%" },
+    ];
+
+    // US market context: key metrics H2 2024 → H2 2025 — percentages without decimals
+    const usKeyMetrics = [
+      { metric: "Revenue", h2_24: "£5.15M", h2_25: "£3.55M", delta: "-31%", type: "neg" },
+      { metric: "Marketing Spend", h2_24: "£3.41M", h2_25: "£2.05M", delta: "-40%", type: "neg" },
+      { metric: "Profit", h2_24: "£1.74M", h2_25: "£1.50M", delta: "-14%", type: "neg" },
+      { metric: "ROAS", h2_24: "1.51x", h2_25: "1.73x", delta: "+0.22x", type: "pos" },
+      { metric: "Profit Margin", h2_24: "34%", h2_25: "42%", delta: "+8pp", type: "pos" },
+    ];
+    // Main categories: Spend Δ%, Rev Δ%, ROAS, Pattern — percentages without decimals
+    const usCategoriesImpacted = [
+      { category: "Web Design", spendDelta: "-63%", revDelta: "-49%", roas: "1.47 → 2.02", pattern: "Efficiency gain" },
+      { category: "Personal Trainers", spendDelta: "-53%", revDelta: "-54%", roas: "1.58 → 1.53", pattern: "Demand decline" },
+      { category: "Security Guard", spendDelta: "-31%", revDelta: "-15%", roas: "1.48 → 1.81", pattern: "Efficiency gain" },
+      { category: "DJ", spendDelta: "-37%", revDelta: "-22%", roas: "1.50 → 1.87", pattern: "Efficiency gain" },
+      { category: "House Cleaning", spendDelta: "-12%", revDelta: "-36%", roas: "2.06 → 1.50", pattern: "Demand decline" },
+      { category: "Motivational Speaking", spendDelta: "+30%", revDelta: "+113%", roas: "1.41 → 2.32", pattern: "Growth" },
+    ];
+    // US category revenue delta (£K) for bar chart: Web Design -606, Personal Trainers -383, Other -761, Motivational Speaking +154
+    const usCategoryRevenueDelta = [
+      { name: "Web Design", deltaK: -606, fill: COLORS.coral },
+      { name: "Personal Trainers", deltaK: -383, fill: COLORS.coral },
+      { name: "Other categories", deltaK: -761, fill: COLORS.midGray },
+      { name: "Motivational Speaking", deltaK: 154, fill: COLORS.teal },
+    ];
+
+    // Key findings summary — percentages without decimals
+    const keyFindings = [
+      { num: 1, finding: "UK submission rate collapsing (29% → 24%); Q1 pass rate -11pp", impact: "Revenue -17%, Profit -20%", priority: "Critical" },
+      { num: 2, finding: "Channel 2 scaling with deteriorating economics (ROAS 1.28, sub rate 14%)", impact: "Diluting blended performance, net-negative marginal ROI", priority: "Critical" },
+      { num: 3, finding: "US Web Design in structural decline (-49% rev)", impact: "35% of total US revenue loss", priority: "High" },
+      { num: 4, finding: "US Personal Trainers collapsing (-54% revenue)", impact: "Second-largest driver of US decline", priority: "High" },
+      { num: 5, finding: "Motivational Speaking thriving (+113% revenue, monetisation improvement)", impact: "Playbook for category health", priority: "Opportunity" },
+    ];
+
+    const Card = ({ children, className = "" }) => (
+      <div className={`rounded-xl border shadow-sm ${className}`} style={{ backgroundColor: COLORS.white, borderColor: '#e8e6e3' }}>{children}</div>
+    );
+
+    const SlideNav = ({ current, total, onPrev, onNext }) => (
+      <div className="flex items-center justify-center gap-4 mt-6">
+        <button onClick={onPrev} disabled={current === 0} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-30 transition" style={{ color: COLORS.navy }}>‹</button>
+        <div className="flex gap-1.5">
+          {Array.from({ length: total }).map((_, i) => (
+            <div key={i} className={`h-1.5 rounded-full transition-all ${i === current ? "w-8" : "w-3"}`} style={{ backgroundColor: i === current ? COLORS.navy : COLORS.softTeal }} />
+          ))}
+        </div>
+        <button onClick={onNext} disabled={current === total - 1} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-30 transition" style={{ color: COLORS.navy }}>›</button>
+        <span className="text-xs ml-2" style={{ color: COLORS.midGray }}>{current + 1}/{total}</span>
+      </div>
+    );
+
+    // Optional images: use local path (e.g. images/bark-hero.png) or paste full URL from https://careers.bark.com/#our-journey (right‑click image → Copy image address)
+    const SLIDE_IMAGES = {
+      home: 'images/bark-hero.png',           // e.g. or 'https://...' from careers.bark.com hero / Our Journey
+      usContext: '',                         // optional: paste URL for Part 3 US Context slide (e.g. Our Hubs / Our People)
+    };
+    const Slide0 = () => (
+      <div className="h-full flex items-center gap-8">
+        <div className="flex-1 flex flex-col justify-center">
+          <span className="inline-block px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider mb-6 shadow-sm" style={{ backgroundColor: COLORS.navy, color: COLORS.white }}>
+            Trading Diagnostic
+          </span>
+          <h1 className="text-3xl font-black tracking-tight mb-4" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>
+            Bark.com — UK & US Performance
+          </h1>
+          <p className="text-base mb-1" style={{ color: COLORS.midGray }}>July 2024 – December 2025 · 12 Categories × 3 Channels</p>
+          <p className="text-sm mb-1" style={{ color: COLORS.midGray }}>UK core market · US growth market</p>
+          <p className="text-sm mt-2" style={{ color: COLORS.midGray }}>Prepared for LCM Assessment · Feb 2026</p>
+        </div>
+        {SLIDE_IMAGES.home && (
+          <div className="flex-shrink-0 flex items-center justify-center max-w-[280px]">
+            <img src={SLIDE_IMAGES.home} alt="Bark" className="w-full h-auto max-h-[320px] object-contain rounded-xl border border-gray-200" onError={(e) => { e.target.style.display = 'none'; }} />
+          </div>
+        )}
+      </div>
+    );
+
+    const Slide1 = () => (
+      <div>
+        <h2 className="text-lg font-bold leading-snug mb-2" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Part 1 — UK: Revenue and profit contraction · Key metrics</h2>
+        <p className="text-xs mb-2" style={{ color: COLORS.midGray }}>Executive summary · H2 2024 vs H2 2025 · Q1 Pass Rate is the root cause</p>
+        <div className="grid grid-cols-4 gap-2 mb-2">
+          <Card className="p-2 text-center">
+            <div className="text-xl font-bold" style={{ color: COLORS.coral }}>-16.7%</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: COLORS.midGray }}>PPR Revenue</div>
+            <div className="text-[10px] mt-0.5" style={{ color: COLORS.midGray }}>£2.50M → £2.08M</div>
+          </Card>
+          <Card className="p-2 text-center">
+            <div className="text-xl font-bold" style={{ color: COLORS.coral }}>-19.8%</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: COLORS.midGray }}>Profit (APR)</div>
+            <div className="text-[10px] mt-0.5" style={{ color: COLORS.midGray }}>£1.19M → £952K</div>
+          </Card>
+          <Card className="p-2 text-center">
+            <div className="text-xl font-bold" style={{ color: COLORS.teal }}>+9.4%</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: COLORS.midGray }}>Sessions</div>
+            <div className="text-[10px] mt-0.5" style={{ color: COLORS.midGray }}>985K → 1.08M</div>
+          </Card>
+          <Card className="p-2 text-center">
+            <div className="text-xl font-bold" style={{ color: COLORS.coral }}>-8.9%</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: COLORS.midGray }}>Submissions</div>
+            <div className="text-[10px] mt-0.5" style={{ color: COLORS.midGray }}>289K → 263K</div>
+          </Card>
+        </div>
+        <Card className="p-3 mb-3" style={{ borderLeft: `4px solid ${COLORS.coral}` }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: COLORS.navy }}>The funnel is breaking at the top</p>
+          <p className="text-[11px] leading-relaxed" style={{ color: COLORS.text }}>More traffic is failing to convert. Core issue: <strong>collapsing submission rate</strong> — driven by <strong>-11.2pp drop in Q1 Pass Rate</strong> (57.3% → 46.2%). Over half of H2 2025 visitors abandon before the first question.</p>
+        </Card>
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="p-3 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr style={{ color: COLORS.navy, borderBottom: '1px solid #e8e6e3' }}>
+                  <th className="text-left py-2 font-bold">Metric</th>
+                  <th className="text-right py-2 font-bold">H2 2024</th>
+                  <th className="text-right py-2 font-bold">H2 2025</th>
+                  <th className="text-right py-2 font-bold">Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ukMetrics.map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-1.5" style={{ color: COLORS.text }}>{row.metric}</td>
+                    <td className="text-right py-1.5" style={{ color: COLORS.midGray }}>{row.h2_24}</td>
+                    <td className="text-right py-1.5" style={{ color: COLORS.midGray }}>{row.h2_25}</td>
+                    <td className={`text-right py-1.5 font-semibold ${row.type === "neg" ? "text-red-600" : "text-green-600"}`}>{row.delta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+          <Card className="p-3 flex flex-col">
+            <h3 className="text-xs font-bold mb-2" style={{ color: COLORS.navy }}>UK Funnel Rate Shifts</h3>
+            <div style={{ width: '100%', height: 220 }}>
+              {(() => {
+                const w = 454, h = 220;
+                const marginTop = 8, marginBottom = 28, rowHeight = (h - marginTop - marginBottom) / 4;
+                const xLeft = 158, xRight = 296;
+                const valueMin = 20, valueMax = 100;
+                const scaleY = (rowTop, value) => rowTop + ((valueMax - value) / (valueMax - valueMin)) * rowHeight;
+                return (
+                  <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
+                    {funnelSlopeRows.map((row, i) => {
+                      const rowTop = marginTop + i * rowHeight;
+                      const rowCenter = rowTop + rowHeight / 2;
+                      const yLeft = scaleY(rowTop, row.h2_24);
+                      const yRight = scaleY(rowTop, row.h2_25);
+                      const ppStr = (row.pp >= 0 ? '+' : '') + row.pp + 'pp';
+                      return (
+                        <g key={row.name}>
+                          <line x1={xLeft} y1={yLeft} x2={xRight} y2={yRight} stroke={row.color} strokeWidth={2} />
+                          <circle cx={xLeft} cy={yLeft} r={4} fill={row.color} />
+                          <circle cx={xRight} cy={yRight} r={4} fill={row.color} />
+                          <text x={xLeft - 10} y={rowCenter} textAnchor="end" dominantBaseline="middle" style={{ fontSize: 10, fill: row.color, fontFamily: "'Lato', sans-serif" }}>{row.name} {row.h2_24}%</text>
+                          <text x={xRight + 10} y={rowCenter} textAnchor="start" dominantBaseline="middle" style={{ fontSize: 10, fill: row.color, fontFamily: "'Lato', sans-serif" }}>{row.h2_25}% ({ppStr})</text>
+                        </g>
+                      );
+                    })}
+                    <text x={xLeft} y={h - 8} textAnchor="middle" style={{ fontSize: 10, fill: COLORS.midGray, fontFamily: "'Lato', sans-serif" }}>H2 2024</text>
+                    <text x={xRight} y={h - 8} textAnchor="middle" style={{ fontSize: 10, fill: COLORS.midGray, fontFamily: "'Lato', sans-serif" }}>H2 2025</text>
+                  </svg>
+                );
+              })()}
+            </div>
+          </Card>
+        </div>
+        <div className="mt-3 pt-2 border-t border-gray-100">
+          <h3 className="text-xs font-bold mb-1" style={{ color: COLORS.navy }}>Potential Actions</h3>
+          <p className="text-[11px] leading-relaxed mb-1" style={{ color: COLORS.text }}>The immediate priority should be diagnosing why the Q1 pass rate collapsed. The two leading hypotheses are:</p>
+          <div className="text-[11px] leading-relaxed space-y-0.5" style={{ color: COLORS.text }}>
+            <p><strong>(a)</strong> the traffic mix has shifted towards a lower-intent channel (as the Channel 2 analysis in Part 2 will show),</p>
+            <p><strong>(b)</strong> there may have been webform or landing page changes that increased friction.</p>
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide3 = () => (
+      <div>
+        <h2 className="text-lg font-bold leading-snug mb-2" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Part 2 — Full Channel Breakdown (exact from diagnostic)</h2>
+        <p className="text-xs mb-3" style={{ color: COLORS.midGray }}>Channel 2 is the primary concern · Volume growth with deteriorating unit economics</p>
+        <div className="grid gap-4" style={{ gridTemplateColumns: '70% 1fr' }}>
+          <div className="flex flex-col gap-4 min-w-0">
+            <Card className="p-3 overflow-x-auto flex-shrink-0">
+              <h3 className="text-xs font-bold mb-2" style={{ color: COLORS.navy }}>Full Channel Breakdown</h3>
+            <table className="w-full text-xs">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #e8e6e3' }}>
+                  <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>Metric</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy }}>Ch1 H2'24→H2'25</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy, backgroundColor: CH2_HIGHLIGHT_BG }}>Ch2 H2'24→H2'25</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy }}>Ch3 H2'24→H2'25</th>
+                </tr>
+              </thead>
+              <tbody>
+                {channelBreakdown.map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-1.5 font-medium" style={{ color: COLORS.text }}>{row.metric}</td>
+                    <td className={`text-right py-1.5 ${row.ch1C === 'pos' ? 'text-green-600' : row.ch1C === 'neg' ? 'text-red-600' : ''}`} style={row.ch1C === 'neutral' ? { color: COLORS.midGray } : {}}>{row.ch1}</td>
+                    <td className={`text-right py-1.5 ${row.ch2C === 'pos' ? 'text-green-600' : row.ch2C === 'neg' ? 'text-red-600' : ''}`} style={{ backgroundColor: CH2_HIGHLIGHT_BG, color: row.ch2C === 'neutral' ? COLORS.midGray : undefined }}>{row.ch2}</td>
+                    <td className={`text-right py-1.5 ${row.ch3C === 'pos' ? 'text-green-600' : row.ch3C === 'neg' ? 'text-red-600' : ''}`} style={row.ch3C === 'neutral' ? { color: COLORS.midGray } : {}}>{row.ch3}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </Card>
+            <Card className="p-3 overflow-x-auto flex-shrink-0">
+              <h3 className="text-xs font-bold mb-2" style={{ color: COLORS.navy }}>H2 YoY Channel Comparison (Performance)</h3>
+            <table className="w-full text-xs">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #e8e6e3' }}>
+                  <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>Metric</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy }}>Ch1 H2'24→H2'25</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy, backgroundColor: CH2_HIGHLIGHT_BG }}>Ch2 H2'24→H2'25</th>
+                  <th className="text-right py-2 font-bold" style={{ color: COLORS.navy }}>Ch3 H2'24→H2'25</th>
+                </tr>
+              </thead>
+              <tbody>
+                {channelH2YoY.map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-1.5 font-medium" style={{ color: COLORS.text }}>{row.metric}</td>
+                    <td className={`text-right py-1.5 ${row.ch1C === 'pos' ? 'text-green-600' : row.ch1C === 'neg' ? 'text-red-600' : ''}`} style={row.ch1C === 'neutral' ? { color: COLORS.midGray } : {}}>{row.ch1}</td>
+                    <td className={`text-right py-1.5 ${row.ch2C === 'pos' ? 'text-green-600' : row.ch2C === 'neg' ? 'text-red-600' : ''}`} style={{ backgroundColor: CH2_HIGHLIGHT_BG, color: row.ch2C === 'neutral' ? COLORS.midGray : undefined }}>{row.ch2}</td>
+                    <td className={`text-right py-1.5 ${row.ch3C === 'pos' ? 'text-green-600' : row.ch3C === 'neg' ? 'text-red-600' : ''}`} style={row.ch3C === 'neutral' ? { color: COLORS.midGray } : {}}>{row.ch3}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </Card>
+          </div>
+          <div className="flex flex-col gap-4 min-w-0">
+            <Card className="p-3 flex-1" style={{ borderLeft: `4px solid ${COLORS.navy}` }}>
+              <p className="text-xs font-semibold mb-1" style={{ color: COLORS.navy }}>Full Channel Breakdown</p>
+              <ul className="text-xs leading-relaxed list-disc pl-4 space-y-0.5" style={{ color: COLORS.text }}>
+                <li>Marketing Spend decreased -14% YoY (-£181K) from 2024.</li>
+                <li>Budget shifted from Channel 1 (-£260K) to Channel 2 (+£93K).</li>
+              </ul>
+            </Card>
+            <Card className="p-3 flex-1" style={{ borderLeft: `4px solid ${COLORS.coral}` }}>
+              <p className="text-xs font-semibold mb-1" style={{ color: COLORS.navy }}>Why Channel 2</p>
+              <ul className="text-xs leading-relaxed list-disc pl-4 space-y-0.5" style={{ color: COLORS.text }}>
+                <li>Sessions +128% but submission rate collapsed 21% → 14%.</li>
+                <li>Spend +47% vs revenue +25%; ROAS 1.28 approaches breakeven.</li>
+                <li> Channel 2’s Q1 pass rate fell 46% → 30%, diluting blended UK rate by 4–5pp.</li>
+              </ul>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide4 = () => (
+      <div className="flex flex-col min-h-0 h-full">
+        <h2 className="text-lg font-bold leading-snug mb-1" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Part 2 — Channel 2 (UK): Volume scaling vs conversion collapse</h2>
+        <p className="text-xs mb-2" style={{ color: COLORS.midGray }}>Sessions surged 3.3× while submission rate halved. Classic low-quality traffic scaling.</p>
+        <div className="grid gap-3 mb-2 flex-shrink-0" style={{ gridTemplateColumns: '70% 1fr' }}>
+          <Card className="p-3 min-h-0 flex flex-col">
+            <h3 className="text-xs font-bold mb-1" style={{ color: COLORS.navy }}>Channel 2 (UK): Sessions vs Submission Rate — monthly</h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <ComposedChart data={ch2VolumeConversionData} margin={{ top: 4, right: 24, bottom: 20, left: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="month" tick={{ fontSize: 7 }} interval={0} angle={-35} textAnchor="end" height={36} />
+                <YAxis yAxisId="left" tick={{ fontSize: 8 }} domain={[0, 140]} width={32} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 8 }} domain={[5, 60]} width={28} />
+                <Tooltip />
+                <Legend wrapperStyle={{ fontSize: 9 }} />
+                <Bar yAxisId="left" dataKey="sessions" name="Sessions (K)" fill={COLORS.softTeal} radius={[2, 2, 0, 0]} barSize={14} />
+                <Line yAxisId="right" type="monotone" dataKey="subRate" name="Sub Rate (%)" stroke={COLORS.coral} strokeWidth={1.5} dot={{ r: 2 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </Card>
+          <Card className="p-3 flex flex-col min-h-0" style={{ borderLeft: `4px solid ${COLORS.teal}` }}>
+            <p className="text-xs font-semibold mb-1" style={{ color: COLORS.navy }}>Recommendation</p>
+            <ul className="text-[11px] leading-relaxed flex-1 list-disc pl-4 space-y-0.5" style={{ color: COLORS.text }}>
+              <li>Cap or reduce Channel 2 spend; reallocate to Channel 1.</li>
+              <li>Run granular analysis of Channel 2 sub-sources (some segments may perform well).</li>
+              <li>Invest in Channel 3 (SEO/content) for blended margin improvement.</li>
+            </ul>
+          </Card>
+        </div>
+        <h3 className="text-xs font-bold mb-1" style={{ color: COLORS.navy }}>UK Channels: Sessions vs Submission Rate — monthly</h3>
+        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
+          <Card className="p-2 min-h-0 flex flex-col h-fit">
+            <div className="text-[10px] font-bold mb-1" style={{ color: COLORS.teal }}>Channel 1</div>
+            <ResponsiveContainer width="100%" height={155}>
+              <ComposedChart data={ch1Monthly} margin={{ top: 4, right: 28, bottom: 22, left: 4 }}>
+                <XAxis dataKey="month" tick={{ fontSize: 7 }} interval={1} angle={-32} textAnchor="end" height={32} />
+                <YAxis yAxisId="left" tick={{ fontSize: 8 }} domain={[0, 140]} width={28} label={{ value: 'Sess', angle: -90, position: 'insideLeft', fontSize: 7 }} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 8 }} domain={[5, 60]} width={24} label={{ value: 'Sub %', angle: 90, position: 'insideRight', fontSize: 7 }} />
+                <Tooltip formatter={(value, name) => [name === 'subRate' ? value + '%' : value, name === 'subRate' ? 'Submission Rate' : 'Sessions (K)']} />
+                <Bar yAxisId="left" dataKey="sessions" fill={COLORS.softTeal} radius={[2, 2, 0, 0]} barSize={8} />
+                <Line yAxisId="right" type="monotone" dataKey="subRate" name="Sub %" stroke={COLORS.teal} strokeWidth={2} dot={{ r: 2 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            <div className="text-[9px]" style={{ color: COLORS.midGray }}>H2 avg 28%</div>
+          </Card>
+          <Card className="p-2 min-h-0 flex flex-col h-fit">
+            <div className="text-[10px] font-bold mb-1" style={{ color: COLORS.coral }}>Channel 2</div>
+            <ResponsiveContainer width="100%" height={155}>
+              <ComposedChart data={ch2Monthly} margin={{ top: 4, right: 28, bottom: 22, left: 4 }}>
+                <XAxis dataKey="month" tick={{ fontSize: 7 }} interval={1} angle={-32} textAnchor="end" height={32} />
+                <YAxis yAxisId="left" tick={{ fontSize: 8 }} domain={[0, 140]} width={28} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 8 }} domain={[5, 60]} width={24} label={{ value: 'Sub %', angle: 90, position: 'insideRight', fontSize: 7 }} />
+                <Tooltip formatter={(value, name) => [name === 'subRate' ? value + '%' : value, name === 'subRate' ? 'Submission Rate' : 'Sessions (K)']} />
+                <Bar yAxisId="left" dataKey="sessions" fill="#FED7D7" radius={[2, 2, 0, 0]} barSize={8} />
+                <Line yAxisId="right" type="monotone" dataKey="subRate" name="Sub %" stroke={COLORS.coral} strokeWidth={2} dot={{ r: 2 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            <div className="text-[9px]" style={{ color: COLORS.midGray }}>H2 avg 14%</div>
+          </Card>
+          <Card className="p-2 min-h-0 flex flex-col h-fit">
+            <div className="text-[10px] font-bold mb-1" style={{ color: COLORS.navy }}>Channel 3</div>
+            <ResponsiveContainer width="100%" height={155}>
+              <ComposedChart data={ch3Monthly} margin={{ top: 4, right: 28, bottom: 22, left: 4 }}>
+                <XAxis dataKey="month" tick={{ fontSize: 7 }} interval={1} angle={-32} textAnchor="end" height={32} />
+                <YAxis yAxisId="left" tick={{ fontSize: 8 }} domain={[0, 140]} width={28} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 8 }} domain={[5, 60]} width={24} label={{ value: 'Sub %', angle: 90, position: 'insideRight', fontSize: 7 }} />
+                <Tooltip formatter={(value, name) => [name === 'subRate' ? value + '%' : value, name === 'subRate' ? 'Submission Rate' : 'Sessions (K)']} />
+                <Bar yAxisId="left" dataKey="sessions" fill="#E0E7FF" radius={[2, 2, 0, 0]} barSize={8} />
+                <Line yAxisId="right" type="monotone" dataKey="subRate" name="Sub %" stroke={COLORS.navy} strokeWidth={2} dot={{ r: 2 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            <div className="text-[9px]" style={{ color: COLORS.midGray }}>H2 avg 35%</div>
+          </Card>
+        </div>
+      </div>
+    );
+
+    const Slide5USContext = () => (
+      <div className="flex gap-4 h-full">
+        <div className="flex-1 min-w-0 h-fit">
+          <h2 className="text-lg font-bold leading-snug mb-2" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Part 3 — US market context</h2>
+          <p className="text-xs mb-3" style={{ color: COLORS.midGray }}>Category deep-dive setup · H2 2024 → H2 2025</p>
+          <div className="rounded-lg border p-2 mb-3" style={{ borderColor: '#e8e6e3' }}>
+            <h3 className="text-xs font-bold mb-0.5" style={{ color: COLORS.navy }}>Impact on the Total US Portfolio</h3>
+            <p className="text-[11px] leading-relaxed" style={{ color: COLORS.text }}>The US market overall declined -31% in H2 revenue (£5.15M → £3.55M). Web Design and Personal Trainers together account for <strong>57%</strong> of total US revenue loss.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <Card className="p-3">
+              <h3 className="text-xs font-bold mb-2" style={{ color: COLORS.navy }}>US key metrics</h3>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr style={{ color: COLORS.navy, borderBottom: '1px solid #e8e6e3' }}>
+                    <th className="text-left py-1.5 font-bold">Metric</th>
+                    <th className="text-right py-1.5 font-bold">H2 2024</th>
+                    <th className="text-right py-1.5 font-bold">H2 2025</th>
+                    <th className="text-right py-1.5 font-bold">Δ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usKeyMetrics.map((row, i) => (
+                    <tr key={i} className="border-b border-gray-100">
+                      <td className="py-1" style={{ color: COLORS.text }}>{row.metric}</td>
+                      <td className="text-right py-1" style={{ color: COLORS.midGray }}>{row.h2_24}</td>
+                      <td className="text-right py-1" style={{ color: COLORS.midGray }}>{row.h2_25}</td>
+                      <td className={`text-right py-1 font-semibold ${row.type === "neg" ? "text-red-600" : "text-green-600"}`}>{row.delta}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+            <Card className="p-3">
+              <h3 className="text-xs font-bold mb-2" style={{ color: COLORS.navy }}>Main categories impacted</h3>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #e8e6e3' }}>
+                    <th className="text-left py-1.5 font-bold" style={{ color: COLORS.navy }}>Category</th>
+                    <th className="text-right py-1.5 font-bold" style={{ color: COLORS.navy }}>Spend Δ%</th>
+                    <th className="text-right py-1.5 font-bold" style={{ color: COLORS.navy }}>Rev Δ%</th>
+                    <th className="text-right py-1.5 font-bold" style={{ color: COLORS.navy }}>ROAS '24→'25</th>
+                    <th className="text-left py-1.5 font-bold" style={{ color: COLORS.navy }}>Pattern</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usCategoriesImpacted.map((row, i) => (
+                    <tr key={i} className="border-b border-gray-100">
+                      <td className="py-1" style={{ color: COLORS.text }}>{row.category}</td>
+                      <td className={`text-right py-1 font-semibold ${row.spendDelta.startsWith('+') ? "text-green-600" : "text-red-600"}`}>{row.spendDelta}</td>
+                      <td className={`text-right py-1 font-semibold ${row.revDelta.startsWith('+') ? "text-green-600" : "text-red-600"}`}>{row.revDelta}</td>
+                      <td className="text-right py-1" style={{ color: COLORS.midGray }}>{row.roas}</td>
+                      <td className="py-1 text-[11px]" style={{ color: COLORS.text }}>{row.pattern}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mt-2 mb-3">
+            <div className="rounded-lg border p-2" style={{ borderColor: COLORS.navy, backgroundColor: 'rgba(26, 39, 68, 0.06)' }}>
+              <p className="text-[11px] font-semibold mb-0.5" style={{ color: COLORS.navy }}>-£1.6M YoY in Revenue due to a clear pivot towards efficiency.</p>
+            </div>
+            <div className="rounded-lg border p-2" style={{ borderColor: COLORS.teal, backgroundColor: 'rgba(13, 148, 136, 0.08)' }}>
+              <p className="text-[11px] font-semibold mb-0.5" style={{ color: COLORS.teal }}>🧩 Efficiency winners</p>
+              <p className="text-[10px] leading-snug" style={{ color: COLORS.text }}><strong>Web Design</strong>, Security Guard, DJ: spend cuts dropped revenue but ROAS improved.</p>
+            </div>
+            <div className="rounded-lg border p-2" style={{ borderColor: COLORS.coral, backgroundColor: 'rgba(237, 100, 89, 0.08)' }}>
+              <p className="text-[11px] font-semibold mb-0.5" style={{ color: COLORS.coral }}>⛔ Demand decliners</p>
+              <p className="text-[10px] leading-snug" style={{ color: COLORS.text }}><strong>Personal Trainers</strong>, House Cleaning: revenue fell <em>faster</em> than spend.</p>
+            </div>
+          </div>
+          <p className="text-xs" style={{ color: COLORS.midGray }}>Next slide: category requiring most attention (Web Design) vs category that has grown (Motivational Speaking).</p>
+        </div>
+        {SLIDE_IMAGES.usContext && (
+          <div className="flex-shrink-0 w-[220px] flex items-center">
+            <img src={SLIDE_IMAGES.usContext} alt="Bark" className="w-full h-auto max-h-[280px] object-contain rounded-xl border border-gray-200" onError={(e) => { e.target.style.display = 'none'; }} />
+          </div>
+        )}
+      </div>
+    );
+
+    const Slide5 = () => (
+      <div className="h-full flex flex-col min-h-0">
+        <h2 className="text-base font-bold leading-tight mb-1" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Part 3 — US categories: Web Design decline vs Motivational Speaking growth</h2>
+        <p className="text-[11px] mb-2" style={{ color: COLORS.midGray }}>Web Design = 35% of US revenue decline · Motivational Speaking = growth playbook</p>
+        <Card className="p-2 mb-2 flex-shrink-0">
+          <h3 className="text-[11px] font-bold mb-1" style={{ color: COLORS.navy }}>US category revenue delta (H2'24 → H2'25, £K)</h3>
+          <ResponsiveContainer width="100%" height={210}>
+            <BarChart data={usCategoryRevenueDelta} layout="vertical" margin={{ top: 12, right: 48, bottom: 12, left: 24 }}>
+              <XAxis type="number" tick={{ fontSize: 9 }} tickFormatter={(v) => (v >= 0 ? '+' : '') + v} />
+              <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 11 }} />
+              <Tooltip formatter={(v) => [(v >= 0 ? '+' : '') + v + 'K', 'Delta (£K)']} />
+              <Bar dataKey="deltaK" name="Delta (£K)" radius={[0, 3, 3, 0]} barSize={20}>
+                {usCategoryRevenueDelta.map((entry, i) => (
+                  <Cell key={i} fill={entry.fill} />
+                ))}
+                <LabelList dataKey="deltaK" position="right" formatter={(v) => (v >= 0 ? '+' : '') + v + 'K'} style={{ fontSize: 9, fontWeight: 600, fill: COLORS.text }} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+        <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
+          <Card className="p-2 min-h-0">
+            <h3 className="text-[11px] font-bold mb-1" style={{ color: COLORS.coral }}>Web Design — structural decline</h3>
+            <table className="w-full text-[11px]">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #e8e6e3' }}>
+                  <th className="text-left py-0.5 font-bold" style={{ color: COLORS.navy }}>Metric</th>
+                  <th className="text-right py-0.5 font-bold" style={{ color: COLORS.navy }}>H2'24</th>
+                  <th className="text-right py-0.5 font-bold" style={{ color: COLORS.navy }}>H2'25</th>
+                  <th className="text-right py-0.5 font-bold text-red-600">Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {webDesignMetrics.map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-0.5" style={{ color: COLORS.text }}>{row.metric}</td>
+                    <td className="text-right py-0.5" style={{ color: COLORS.midGray }}>{row.h2_24}</td>
+                    <td className="text-right py-0.5" style={{ color: COLORS.midGray }}>{row.h2_25}</td>
+                    <td className="text-right py-0.5 font-semibold text-red-600">{row.delta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-[10px] mt-1 leading-snug" style={{ color: COLORS.midGray }}>Volume collapse. Rev/project £57→£36; response ~95%→~78%. Seller disengagement.</p>
+            <div className="mt-2 pt-2 border-t border-gray-100">
+              <p className="text-[10px] font-semibold mb-0.5" style={{ color: COLORS.navy }}>Seller disengagement is accelerating.</p>
+              <p className="text-[10px] leading-snug" style={{ color: COLORS.text }}>Revenue per released project fell from ~£57 (Jul 2024) to ~£36 (Dec 2025). Response rate dropped from ~95%+ to ~78% by Dec 2025. Professionals are pulling back, likely because</p>
+              <div className="mt-1 pl-2 border-l-2 rounded text-[10px] leading-snug" style={{ borderColor: COLORS.midGray, backgroundColor: 'rgba(142, 154, 175, 0.1)', color: COLORS.text }}>🤖 Web design and other categories have become increasingly <strong>commoditised through AI tools and no-code platforms.</strong></div>
+            </div>
+          </Card>
+          <Card className="p-2 min-h-0">
+            <h3 className="text-[11px] font-bold mb-1" style={{ color: COLORS.teal }}>Motivational Speaking — growth</h3>
+            <table className="w-full text-[11px]">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #e8e6e3' }}>
+                  <th className="text-left py-0.5 font-bold" style={{ color: COLORS.navy }}>Metric</th>
+                  <th className="text-right py-0.5 font-bold" style={{ color: COLORS.navy }}>H2'24</th>
+                  <th className="text-right py-0.5 font-bold" style={{ color: COLORS.navy }}>H2'25</th>
+                  <th className="text-right py-0.5 font-bold text-green-600">Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {motivationalMetrics.map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-0.5" style={{ color: COLORS.text }}>{row.metric}</td>
+                    <td className="text-right py-0.5" style={{ color: COLORS.midGray }}>{row.h2_24}</td>
+                    <td className="text-right py-0.5" style={{ color: COLORS.midGray }}>{row.h2_25}</td>
+                    <td className="text-right py-0.5 font-semibold text-green-600">{row.delta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-[10px] mt-1 leading-snug" style={{ color: COLORS.midGray }}>Rev/project £30→£55. Response ~68%→~83%. Supply engagement playbook.</p>
+            <div className="mt-2 pt-2 border-t border-gray-100">
+              <p className="text-[10px] font-semibold mb-1" style={{ color: COLORS.teal }}>Supply engagement creating a virtuous RPP cycle</p>
+              <ul className="text-[10px] leading-snug list-disc pl-4 space-y-0.5" style={{ color: COLORS.text }}>
+                <li><strong>Improved monetisation:</strong> RPP nearly doubled (£30 → £55); paid responses +89% vs project volume +17%.</li>
+                <li><strong>Response rate</strong> ~68% → ~83% — stronger supply engagement.</li>
+                <li><strong>Only channel that increased spend:</strong> Ch1 £103K → £211K (+104%); Ch2 £28K → £70K.</li>
+              </ul>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+
+    const Slide6 = () => (
+      <div>
+        <h2 className="text-lg font-bold leading-snug mb-2" style={{ fontFamily: "'Lato', sans-serif", color: COLORS.navy }}>Summary of key findings and priorities</h2>
+        <p className="text-xs mb-3" style={{ color: COLORS.midGray }}>McKinsey-style situation–complication–resolution</p>
+        <Card className="p-3 mb-3 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr style={{ borderBottom: '2px solid #e8e6e3' }}>
+                <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>#</th>
+                <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>Finding</th>
+                <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>Impact</th>
+                <th className="text-left py-2 font-bold" style={{ color: COLORS.navy }}>Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              {keyFindings.map((row, i) => (
+                <tr key={i} className="border-b border-gray-100">
+                  <td className="py-1.5 font-bold" style={{ color: COLORS.teal }}>{row.num}</td>
+                  <td className="py-1.5" style={{ color: COLORS.text }}>{row.finding}</td>
+                  <td className="py-1.5" style={{ color: COLORS.midGray }}>{row.impact}</td>
+                  <td className="py-1.5">
+                    <span className={`px-1.5 py-0.5 rounded font-semibold ${row.priority === "Critical" ? "bg-red-100 text-red-800" : row.priority === "High" ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"}`}>{row.priority}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+        <Card className="p-3" style={{ borderLeft: `4px solid ${COLORS.teal}` }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: COLORS.navy }}>Immediate actions</p>
+          <p className="text-xs leading-relaxed" style={{ color: COLORS.text }}>
+            <strong>1.</strong> Diagnose Q1 pass rate collapse (traffic mix + landing/webform friction).
+            <br />
+            <strong>2.</strong> Cap Channel 2 spend; reallocate to Channel 1; analyse Ch2 sub-sources.
+            <br />
+            <strong>3.</strong> US Web Design: accept structural decline or pivot; Motivational Speaking: scale playbook (supply engagement → RPP growth).
+          </p>
+        </Card>
+      </div>
+    );
+
+    const sectionLabels = ["UK Performance", "UK Marketing Channels", "US Categories"];
+    const slideLabels = ["Home", "Summary", "Channels", "Ch2", "Context", "Categories", "Summary"];
+    const sectionRanges = [[0, 1], [2, 3], [4, 5, 6]]; // UK Performance, UK Channels, US Categories
+    const slides = [Slide0, Slide1, Slide3, Slide4, Slide5USContext, Slide5, Slide6];
+
+    function PrintDeck() {
+      return (
+        <div style={{ backgroundColor: COLORS.light, fontFamily: "'Lato', sans-serif", minHeight: '100vh' }}>
+          {slides.map((SlideComponent, i) => (
+            <div key={i} className="slide-page">
+              <div className="slide-inner">
+                <div className="slide-content">
+                  <SlideComponent />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    try {
+      const rootEl = document.getElementById('root');
+      if (typeof ReactDOM.createRoot === 'function') {
+        ReactDOM.createRoot(rootEl).render(<PrintDeck />);
+      } else {
+        ReactDOM.render(<PrintDeck />, rootEl);
+      }
+    } catch (err) {
+      document.getElementById('error-msg').style.display = 'block';
+      document.getElementById('error-msg').textContent = err.message + '\n\n' + err.stack;
+    }
+  </script>
+</body>
+</html>
