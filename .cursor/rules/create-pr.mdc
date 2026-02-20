@@ -1,0 +1,15 @@
+---
+description: When running the create-pr command, always output the full PR in the chat
+globs: 
+alwaysApply: false
+---
+
+# create-pr command behavior
+
+When the user runs **create-pr** (or asks for a PR description):
+
+1. **Always output the full PR in the chat.** Render the complete PR **title** and **body** (all sections: Summary, Jira Acceptance Criteria, Test Plan, Documentation and Testing, Warehouse Choice, JIRA Issues) as copy-pastable markdown in your response.
+2. Do **not** only reference a file (e.g. "see PR_DESCRIPTION.md") or say "the full text is in X." The user must be able to copy the entire PR from the chat.
+3. You may still write or update `PR_DESCRIPTION.md` for persistence, but the primary output must be the full PR content in the chat, in a code block or clearly formatted block so the user can copy it into GitHub.
+
+Example closing line: "Copy everything in the markdown block above into GitHub’s PR description."

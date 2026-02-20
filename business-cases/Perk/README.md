@@ -3,8 +3,8 @@
 Q4 Sales Team Performance Analysis (81 AEs, 4 territories). Interactive HTML deck + written analysis.
 
 **Live Demo**
-- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/Perk/deck/Revenue_Operations_Case_Study.html)
-- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/Perk/deck/Revenue_Operations_Case_Study_Print.html)
+- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/business-cases/Perk/deck/Revenue_Operations_Case_Study.html)
+- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/business-cases/Perk/deck/Revenue_Operations_Case_Study_Print.html)
 
 **Quick start**
 

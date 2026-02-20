@@ -1,0 +1,113 @@
+---
+description: Set up and use dbt MCP (Model Context Protocol) to reason over and interact with a dbt project
+globs: "**/dbt_project.yml,**/*.sql,dbt/**/*"
+alwaysApply: false
+---
+
+# dbt MCP Setup and Usage
+
+Use **dbt-mcp** as the MCP server so the agent can read dbt metadata and, when allowed, run dbt commands. Do not assume paths, profiles, or Python environments — **ask the user** for the information below before generating config or running dbt.
+
+## Information to Collect (Do Not Guess)
+
+Before writing MCP config or advising on dbt MCP, ask the user for:
+
+1. **Absolute path to the dbt project root**  
+   Folder that contains `dbt_project.yml`.
+
+2. **dbt type**
+   - **dbt Core (local)** — CLI only, no dbt Cloud.
+   - **dbt Cloud** — If Cloud: clarify whether they need platform-only, platform + CLI, or limitations (e.g. OAuth vs token, static subdomain).
+
+3. **Python environment**
+   - **system Python** — `dbt` and (if not using uvx) `dbt-mcp` on PATH.
+   - **virtualenv** — Path to venv and how they run `dbt` / `dbt-mcp`.
+   - **conda** — Conda env name or path.
+   - **uv/uvx** — Official docs use `uvx dbt-mcp`; confirm if they use uv.
+
+4. **Permissions**
+   - **Read metadata only** — Discovery tools only (models, sources, tests, lineage); no CLI execution.
+   - **Run dbt commands** — Allow `dbt run`, `dbt test`, `dbt build`, etc. when explicitly requested.
+
+5. **Adapter**  
+   Which adapter is used (e.g. BigQuery, Snowflake, Databricks, Redshift) — for context only; do not hardcode profiles or credentials unless the user provides them.
+
+6. **Confirmation**  
+   User confirms that `dbt debug` (and, if applicable, `dbt parse` or a simple `dbt run`) works in the project root in their chosen environment.
+
+Do not hardcode profiles, credentials, or paths unless the user explicitly provides them.
+
+## Expected MCP Configuration (Template)
+
+Use this structure **after** the user has provided the required information. Cursor MCP config is typically in `~/.cursor/mcp.json` (or the project-specific location per Cursor docs).
+
+### dbt Core / CLI only (no dbt Cloud)
+
+```json
+{
+  "mcpServers": {
+    "dbt": {
+      "command": "uvx",
+      "args": ["dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "<absolute path to dbt project root>",
+        "DBT_PATH": "<absolute path to dbt executable>"
+      }
+    }
+  }
+}
+```
+
+- **Working directory**: Not used in this style; `DBT_PROJECT_DIR` points to the project root.
+- **Environment**: Use the same environment where `dbt` and (if not using uvx) `dbt-mcp` are installed. With `uvx`, uv manages the dbt-mcp environment.
+- **Locating paths**: User can run `which dbt` (macOS/Linux) or `where dbt` (Windows) for `DBT_PATH`. `DBT_PROJECT_DIR` is the directory containing `dbt_project.yml`.
+
+If the client cannot find `uvx`, use the full path to `uvx` (e.g. `which uvx`) as `command`, and keep `args`: `["dbt-mcp"]`.
+
+### Read-only (no dbt CLI execution)
+
+To restrict to metadata/Discovery only and disable CLI tools:
+
+```json
+"env": {
+  "DBT_PROJECT_DIR": "<absolute path>",
+  "DBT_PATH": "<path to dbt>",
+  "DISABLE_DBT_CLI": "true"
+}
+```
+
+### dbt Cloud (platform only or platform + CLI)
+
+If the user has dbt Cloud with a static subdomain and wants OAuth:
+
+- **Platform only**: Set `DBT_HOST` (e.g. `https://abc123.us1.dbt.com`). CLI tools are disabled.
+- **Platform + CLI**: Also set `DBT_PROJECT_DIR` and `DBT_PATH`.
+
+Do not add `DBT_TOKEN` or other secrets unless the user explicitly provides them and asks to use env-based auth.
+
+## Validation Steps
+
+After setup, validate by:
+
+1. **Listing dbt models** — e.g. via MCP discovery tools (`get_all_models`, `list`, etc.).
+2. **Explaining lineage** — Use lineage tools for a specific model the user names.
+3. **Reading sources and tests** — Use `get_all_sources`, `get_test_details` or equivalent.
+4. **Semantic layer / metrics** — If the project uses the semantic layer, inspect metrics/list tools if available.
+
+If validation fails, report:
+
+- The **exact error message** from the MCP client or server.
+- Whether the **MCP server started** (e.g. no "spawn ENOENT" or connection errors).
+- Whether **dbt CLI works** in the project root outside Cursor (e.g. `dbt debug`, `dbt parse`).
+
+## Constraints
+
+- **Do not fabricate** models, sources, metrics, or lineage. If MCP is unavailable or returns no data, say so explicitly.
+- **Prefer reading dbt metadata** via MCP over guessing SQL or project structure.
+- If MCP is not configured or the server is unavailable, state that clearly and point the user to the setup steps and `docs/DBT_MCP_SETUP.md` (if present).
+
+## Reference
+
+- dbt MCP: [dbt-labs/dbt-mcp](https://github.com/dbt-labs/dbt-mcp)
+- Setup: [Set up local MCP](https://docs.getdbt.com/docs/dbt-ai/setup-local-mcp)
+- Cursor integration: [Integrate MCP with Cursor](https://docs.getdbt.com/docs/dbt-ai/integrate-mcp-cursor)

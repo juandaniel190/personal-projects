@@ -3,8 +3,8 @@
 Trading diagnostic deck analyzing UK & US market performance (H2 2024 vs H2 2025). Interactive HTML deck + written analysis.
 
 **Live Demo**
-- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/Bark/deck/Bark_Trading_Diagnostic.html)
-- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/Bark/deck/Bark_Trading_Diagnostic_Print.html)
+- 📊 [Interactive Deck](https://juandaniel190.github.io/personal-projects/business-cases/Bark/deck/Bark_Trading_Diagnostic.html)
+- 📄 [Print Version](https://juandaniel190.github.io/personal-projects/business-cases/Bark/deck/Bark_Trading_Diagnostic_Print.html)
 
 **Quick start**
 
