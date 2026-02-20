@@ -8,10 +8,31 @@
   <style>
     @media print {
       @page { size: 297mm 167mm; margin: 12mm; }  /* 16:9 landscape */
-      body { margin: 0; background: #F5F5EB !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .slide-page { page-break-after: always; page-break-inside: avoid; min-height: 100vh; box-sizing: border-box; padding: 16px 0; display: flex !important; align-items: stretch; }
+      body { margin: 0; padding: 0; background: #F5F5EB !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide-page { 
+        page-break-after: always; 
+        page-break-inside: avoid; 
+        height: 143mm; /* 167mm - 24mm (12mm margin top+bottom) */
+        width: 273mm; /* 297mm - 24mm (12mm margin left+right) */
+        box-sizing: border-box; 
+        padding: 0;
+        margin: 0;
+        display: flex !important; 
+        align-items: stretch;
+        position: relative;
+      }
       .slide-page:last-child { page-break-after: auto; }
-      .slide-inner { flex: 1; background: #fff !important; border-radius: 12px; padding: 24px; box-shadow: none; border: 1px solid #e5e7eb; }
+      .slide-inner { 
+        flex: 1; 
+        background: #fff !important; 
+        border-radius: 12px; 
+        padding: 24px; 
+        box-shadow: none; 
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+      }
       .no-print { display: none !important; }
     }
     @media screen {
@@ -430,9 +451,9 @@
 
     const Slide5 = () => (
       <div className="flex gap-4 h-full">
-        <div className="flex-shrink-0 flex flex-col gap-2 w-[200px]">
-          <img src="images/green.jpg" alt="" className="w-full h-auto object-cover rounded-xl border border-gray-200 flex-1 min-h-0" />
-          <img src="images/green2.jpg" alt="" className="w-full h-auto object-cover rounded-xl border border-gray-200 flex-1 min-h-0" />
+        <div className="flex-shrink-0 flex flex-col gap-2 w-[160px]">
+          <img src="images/green.jpg" alt="" className="w-full h-[calc(50%-4px)] object-cover rounded-xl border border-gray-200" style={{ maxHeight: '220px' }} />
+          <img src="images/green2.jpg" alt="" className="w-full h-[calc(50%-4px)] object-cover rounded-xl border border-gray-200" style={{ maxHeight: '220px' }} />
         </div>
         <div className="flex-1 min-w-0 overflow-hidden flex flex-col">
           <h2 className="text-lg font-bold text-gray-900 leading-snug">Five hypotheses to validate — each requires specific data to confirm or rule out</h2>
@@ -467,7 +488,6 @@
         { priority: "MED", title: "Build Deal Quality Metric", desc: "Pipeline/SQL, Win Rate, Avg Deal Size — composite score to normalize cross-territory comparison." },
       ]},
       { phase: "LATER", time: "60-90 Days", color: COLORS.gray, items: [
-        { priority: "LOW", title: "Territory Redesign", desc: "Quotas range $10M-$12.5M while deal sizes vary 30%. Ensure equitable targets." },
         { priority: "LOW", title: "Monitor NA Hiring Cohort", desc: "10 ramping reps is a big bet. Validate manager bandwidth, lead flow, enablement." },
       ]},
     ];

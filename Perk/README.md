@@ -1,7 +1,6 @@
 # Revenue Operations Case Study — PerkyTravel
 
 Q4 Sales Team Performance Analysis (81 AEs, 4 territories). Interactive HTML deck + written analysis.
-Go to: https://juandaniel190.github.io/personal-projects/Perk/Revenue_Operations_Case_Study.html
 
 **Quick start**
 
