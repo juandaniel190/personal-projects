@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Optional: uncomment to ignore large generated PDFs (keep only the final one in repo)
+# *.pdf

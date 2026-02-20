@@ -21,7 +21,7 @@ The UK business is experiencing a **revenue and profit contraction** despite gro
 
 ### 18-Month Revenue, Profit & Spend Trend
 
-![UK Revenue Trend](chart1_uk_revenue_trend.png)
+![UK Revenue Trend](images/chart1_uk_revenue_trend.png)
 
 The chart above reveals a structural shift: the revenue line has settled ~£100K/month lower than the prior-year comparable, while the gap between revenue and spend has narrowed — compressing profit.
 
@@ -40,11 +40,11 @@ The chart above reveals a structural shift: the revenue line has settled ~£100K
 
 ### Diagnosis: The Funnel Is Breaking at the Top
 
-![UK Funnel Slope](chart9_funnel_slope.png)
+![UK Funnel Slope](images/chart9_funnel_slope.png)
 
 The slope graph above makes the problem immediately visible: all four funnel rates declined, but the **Q1 Pass Rate** fell the hardest at **-11.2 percentage points** — from 57.3% to 46.2%. This single metric is the root cause of the revenue decline.
 
-![UK Funnel Rates Over Time](chart2_uk_funnel_rates.png)
+![UK Funnel Rates Over Time](images/chart2_uk_funnel_rates.png)
 
 The monthly view shows the Q1 Pass Rate began diverging from the Submission Rate around May 2025 and accelerated through the summer, reaching its lowest point in Sep–Oct 2025 (below 40% in some months). The Submission Rate followed downward but less sharply, because users who do pass Q1 are actually converting slightly better (Q1→Submit rate improved from 51.1% to 52.9%).
 
@@ -76,7 +76,7 @@ Channel 2 is the underperforming channel that most urgently requires attention. 
 
 ### Channel Efficiency Comparison
 
-![Channel Scatter](chart4_channel_scatter.png)
+![Channel Scatter](images/chart4_channel_scatter.png)
 
 This bubble chart captures the full story in a single view. Between H2 2024 and H2 2025:
 
@@ -86,13 +86,13 @@ This bubble chart captures the full story in a single view. Between H2 2024 and 
 
 ### Channel 2: Volume vs Conversion Divergence
 
-![Channel 2 Divergence](chart5_ch2_divergence.png)
+![Channel 2 Divergence](images/chart5_ch2_divergence.png)
 
 This is the most telling chart in the entire analysis. Channel 2 sessions surged from ~30K/month in early 2024 to a peak of ~99K in Sep 2025 — a 3.3× increase. But as the bars grew taller, the submission rate (orange line) plummeted from ~23% to ~10%. The two metrics are moving in opposite directions, which is a classic sign of low-quality traffic scaling.
 
 ### Revenue Composition by Channel
 
-![Stacked Revenue](chart6_channel_stacked.png)
+![Stacked Revenue](images/chart6_channel_stacked.png)
 
 The stacked area chart shows that despite Channel 2's massive session growth, its revenue contribution (coral band) has remained relatively thin. Channel 1 (teal) continues to generate the majority of revenue, but its share has been shrinking as budget shifted to Channel 2.
 
@@ -140,13 +140,13 @@ Cap or reduce Channel 2 spend and reallocate budget back to Channel 1. In parall
 
 ### Part 3a: Category Requiring Most Attention — Web Design
 
-![US Category Waterfall](chart7_us_waterfall.png)
+![US Category Waterfall](images/chart7_us_waterfall.png)
 
 Web Design experienced the largest absolute revenue decline of any US category, losing **£605,893** in H2 revenue YoY — accounting for **34.7% of the total US revenue decline** of £1.75M. Personal Trainers was the second largest decliner at -£383K. Only Motivational Speaking grew.
 
 ### Web Design vs Motivational Speaking — Trend Contrast
 
-![Category Contrast](chart8_us_category_contrast.png)
+![Category Contrast](images/chart8_us_category_contrast.png)
 
 These side-by-side panels highlight the divergence. Web Design (left, coral) shows revenue declining alongside collapsing revenue per project (dashed line fell from ~£57 to ~£36). Motivational Speaking (right, teal) shows the opposite: revenue and rev/project both climbed steadily.
 
