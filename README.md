@@ -42,3 +42,4 @@ Everything Cursor uses is under **`.cursor/`**:
 No separate “courses-and-skills” folder; it’s all under `.cursor` so Cursor and any course/agent use the same layout.
 
 <!-- github-connection-test: 2026-02-23 -->
+<!-- auto-review-test: 2026-02-23 -->
