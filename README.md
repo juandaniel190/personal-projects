@@ -40,3 +40,5 @@ Everything Cursor uses is under **`.cursor/`**:
 - **skills/** — dbt Agent Skills in Cursor’s format: each skill is a folder with `SKILL.md`; **tile.json** is the registry. See `.cursor/README.md` and `.cursor/skills/README-dbt-agent-skills.md` for details.
 
 No separate “courses-and-skills” folder; it’s all under `.cursor` so Cursor and any course/agent use the same layout.
+
+<!-- github-connection-test: 2026-02-23 -->
