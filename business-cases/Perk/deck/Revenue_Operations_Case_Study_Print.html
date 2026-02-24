@@ -47,6 +47,14 @@
   <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/recharts@2.0.0/umd/Recharts.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
+  <style>
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide-anim { animation: fadeSlideUp 0.45s ease both; }
+    @media print { .slide-anim { animation: none !important; opacity: 1 !important; transform: none !important; } }
+  </style>
 </head>
 <body>
   <button type="button" class="no-print" onclick="window.print()">Print to PDF</button>
@@ -103,9 +111,9 @@
     ];
 
     const rampData = [
-      { stage: "Ramping (0-3mo)", count: 17, pct: 21, pipAttain: 41.2, color: COLORS.red },
-      { stage: "Early (4-6mo)", count: 18, pct: 22, pipAttain: 69.5, color: COLORS.orange },
-      { stage: "Fully Ramped (7mo+)", count: 46, pct: 57, pipAttain: 89.9, color: COLORS.greenDark },
+      { stage: "Ramping (0-3mo)", count: 17, pct: 21, pipAttain: 41, color: COLORS.red },
+      { stage: "Early (4-6mo)", count: 18, pct: 22, pipAttain: 70, color: COLORS.orange },
+      { stage: "Fully Ramped (7mo+)", count: 46, pct: 57, pipAttain: 90, color: COLORS.greenDark },
     ];
 
     const rampByRegionData = [
@@ -183,8 +191,8 @@
       { range: "100%+", count: 18, color: COLORS.greenDark },
     ];
 
-    const Card = ({ children, className = "" }) => (
-      <div className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>{children}</div>
+    const Card = ({ children, className = "", style }) => (
+      <div className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`} style={style}>{children}</div>
     );
 
     const KPI = ({ value, label, sub, detail, accent = false }) => (
@@ -257,8 +265,8 @@
         <h2 className="text-lg font-bold text-gray-900 leading-snug">EMEA leads all territories; APAC pipeline at 56% signals systemic underperformance</h2>
         <p className="text-xs text-gray-500 mt-0.5 mb-3">Territory attainment vs. target · 81 AEs across 4 regions · Q4</p>
         <div className="grid grid-cols-4 gap-2 mb-4">
-          <KPI value="57.7%" label="Overall SQL" sub="Attainment" detail="1,178 of 2,040 SQLs" />
-          <KPI value="78.7%" label="Overall Pipeline" sub="Attainment" accent />
+          <KPI value="58%" label="Overall SQL" sub="Attainment" detail="1,178 of 2,040 SQLs" />
+          <KPI value="79%" label="Overall Pipeline" sub="Attainment" accent />
           <KPI value="$630M" label="Pipeline" sub="Generated" detail="Target $800M" />
           <KPI value="21pp" label="SQL-Pipeline" sub="Gap" />
         </div>
@@ -281,10 +289,12 @@
 
     const Slide2 = () => (
       <div>
-        <h2 className="text-lg font-bold text-gray-900 leading-snug">Pipeline outpaces SQL by 11-33pp — fewer leads, but larger deals compensate</h2>
-        <p className="text-xs text-gray-500 mt-0.5 mb-3">The persistent gap suggests SQL targets may be structurally miscalibrated</p>
+        <div className="slide-anim" style={{ animationDelay: '0ms' }}>
+          <h2 className="text-lg font-bold text-gray-900 leading-snug">Pipeline outpaces SQL by 11-33pp — fewer leads, but larger deals compensate</h2>
+          <p className="text-xs text-gray-500 mt-0.5 mb-3">The persistent gap suggests SQL targets may be structurally miscalibrated</p>
+        </div>
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <Card className="p-3">
+          <Card className="p-3 slide-anim" style={{ animationDelay: '120ms' }}>
             <h3 className="text-xs font-bold text-gray-700 mb-2">SQL vs Pipeline Gap (pp)</h3>
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={gapData} layout="vertical" barGap={4} margin={{ right: 28 }}>
@@ -304,7 +314,7 @@
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded" style={{ backgroundColor: COLORS.greenDark }} /> Pipeline %</span>
             </div>
           </Card>
-          <Card className="p-3">
+          <Card className="p-3 slide-anim" style={{ animationDelay: '240ms' }}>
             <h3 className="text-xs font-bold text-gray-700 mb-2">Avg Deal Size by Territory ($K)</h3>
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={territoryData} margin={{ right: 36 }}>
@@ -325,7 +335,7 @@
             { icon: <TrendingUp size={14} />, title: "Deal Quality", desc: "LATAM/NA generate $558K-$570K avg deals vs $437K EMEA — fewer but larger." },
             { icon: <Search size={14} />, title: "Qualification", desc: "Reps self-select higher-value deals over volume — explains gap but masks risk." },
           ].map((item, i) => (
-            <Card key={i} className="p-2.5">
+            <Card key={i} className="p-2.5 slide-anim" style={{ animationDelay: `${360 + i * 120}ms` }}>
               <div className="flex items-center gap-1.5 mb-1">
                 <span style={{ color: COLORS.greenDark }}>{item.icon}</span>
                 <span className="font-bold text-xs text-gray-800">{item.title}</span>
@@ -385,7 +395,7 @@
         <div className="grid grid-cols-3 gap-2">
           {[
             { value: "10 of 35", label: "NA AEs Ramping", desc: "Only 46% of NA is fully ramped vs. 71% in LATAM and 69% in EMEA.", icon: <AlertTriangle size={14} />, accent: COLORS.red },
-            { value: "2.2x", label: "Pipeline Multiplier", desc: "Fully ramped AEs at 89.9% pipeline vs. 41.2% for ramping — retention and ramp acceleration are highest-leverage.", icon: <Zap size={14} />, accent: COLORS.greenDark },
+            { value: "2.2x", label: "Pipeline Multiplier", desc: "Fully ramped AEs at 90% pipeline vs. 41% for ramping — retention and ramp acceleration are highest-leverage.", icon: <Zap size={14} />, accent: COLORS.greenDark },
             { value: "r = 0.37", label: "Tenure Effect", desc: "Moderate positive correlation between tenure and pipeline. Coaching quality and territory likely play larger roles.", icon: <TrendingUp size={14} />, accent: COLORS.blue },
           ].map((item, i) => (
             <Card key={i} className="p-2.5">
@@ -480,8 +490,8 @@
     );
 
     const hypotheses = [
-      { num: 1, title: "SQL targets are miscalibrated", evidence: "57.7% SQL attainment while pipeline reaches 78.7%", validate: "Historical SQL trends, market sizing, ICP penetration analysis" },
-      { num: 2, title: "APAC has structural issues beyond ramp", evidence: "Even fully ramped at only 71.3%; two reps near-zero with 6+ months", validate: "Win/loss analysis, competitive landscape, product-market fit data" },
+      { num: 1, title: "SQL targets are miscalibrated", evidence: "58% SQL attainment while pipeline reaches 79%", validate: "Historical SQL trends, market sizing, ICP penetration analysis" },
+      { num: 2, title: "APAC has structural issues beyond ramp", evidence: "Even fully ramped at only 71%; two reps near-zero with 6+ months", validate: "Win/loss analysis, competitive landscape, product-market fit data" },
       { num: 3, title: "Recent hiring wave dilutes aggregate metrics", evidence: "17 of 81 AEs (21%) are ramping; NA has 10 of 17", validate: "Hiring dates, planned ramp timelines, onboarding effectiveness" },
       { num: 4, title: "Top performers master large-deal strategy", evidence: "LATAM/NA avg deals $558K-$570K vs. $437K EMEA", validate: "Deal-level data, vertical breakdown, expansion vs. new logo" },
       { num: 5, title: "Bottom performers need formal intervention", evidence: "7 fully ramped AEs below 50% pipeline attainment", validate: "Manager mapping, coaching logs, PIP history, activity metrics" },
