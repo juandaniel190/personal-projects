@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(gh pr:*)",
+      "Bash(python3:*)",
+      "Bash(which ssconvert:*)",
+      "Bash(git:*)"
+    ]
+  }
+}
