@@ -1,0 +1,119 @@
+================================================================================
+CONTENTSQUARE — BRAND COLOR PALETTE
+================================================================================
+
+Source: Contentsquare rebrand (Nov 2024) by Saffron Brand Consultants
+Status: [Unverified] — Exact hex codes could not be retrieved from an
+        official source. Values below are approximated from:
+        (a) public descriptions ("deep burgundy", "aubergine", "bright coral")
+        (b) standard named-color references for those descriptions.
+        If official brand guidelines are available, replace these values.
+
+------------------------------------------------------------------------
+PRIMARY PALETTE
+------------------------------------------------------------------------
+Name            | Hex       | RGB              | Usage
+----------------|-----------|------------------|-----------------------------
+Aubergine       | #3B1F2B   | (59, 31, 43)     | Primary brand, headlines,
+(Deep Burgundy) |           |                  | dark backgrounds
+                |           |                  |
+Coral           | #E6554A   | (230, 85, 74)    | Accent, CTAs, highlights,
+(Light Carmine) |           |                  | key data callouts
+
+------------------------------------------------------------------------
+EXTENDED PALETTE (for charts & data visualization)
+------------------------------------------------------------------------
+Name            | Hex       | RGB              | Usage
+----------------|-----------|------------------|-----------------------------
+Aubergine Dark  | #2A1520   | (42, 21, 32)     | Deep backgrounds, contrast
+Aubergine Light | #6B4158   | (107, 65, 88)    | Secondary fills
+Coral Light     | #F2887F   | (242, 136, 127)  | Secondary accent, hover
+Warm Gray       | #9E8E94   | (158, 142, 148)  | Neutral, grid lines, labels
+Cream           | #F5F0F1   | (245, 240, 241)  | Light background
+White           | #FFFFFF   | (255, 255, 255)  | Canvas
+
+------------------------------------------------------------------------
+CHART PALETTE — SEQUENTIAL (for ordered data: high → low)
+------------------------------------------------------------------------
+1. #3B1F2B  (darkest — top tier / primary series)
+2. #6B4158  (mid-dark)
+3. #9E6880  (mid)
+4. #D09BA8  (mid-light)
+5. #F2887F  (lightest — bottom tier)
+
+------------------------------------------------------------------------
+CHART PALETTE — CATEGORICAL (for unrelated categories)
+------------------------------------------------------------------------
+1. #3B1F2B  Aubergine       — Primary series
+2. #E6554A  Coral           — Secondary series
+3. #6B4158  Aubergine Light — Tertiary
+4. #F2887F  Coral Light     — Quaternary
+5. #9E8E94  Warm Gray       — Neutral / baseline
+
+------------------------------------------------------------------------
+SIGNAL COLORS (for status indicators)
+------------------------------------------------------------------------
+Healthy / Positive  | #2EAA6E  | Green
+Caution / Warning   | #F2A83E  | Amber
+Risk / Negative     | #E6554A  | Coral (reuse brand accent)
+Neutral / Unknown   | #9E8E94  | Warm Gray
+
+------------------------------------------------------------------------
+PYTHON USAGE
+------------------------------------------------------------------------
+# Import in analysis scripts:
+BRAND = {
+    'aubergine':       '#3B1F2B',
+    'aubergine_dark':  '#2A1520',
+    'aubergine_light': '#6B4158',
+    'coral':           '#E6554A',
+    'coral_light':     '#F2887F',
+    'warm_gray':       '#9E8E94',
+    'cream':           '#F5F0F1',
+    'white':           '#FFFFFF',
+}
+
+SIGNAL = {
+    'healthy':  '#2EAA6E',
+    'caution':  '#F2A83E',
+    'risk':     '#E6554A',
+    'neutral':  '#9E8E94',
+}
+
+SEQ_PALETTE  = ['#3B1F2B', '#6B4158', '#9E6880', '#D09BA8', '#F2887F']
+CAT_PALETTE  = ['#3B1F2B', '#E6554A', '#6B4158', '#F2887F', '#9E8E94']
+
+------------------------------------------------------------------------
+NOTES
+------------------------------------------------------------------------
+- Previous brand (pre-2024) used "Vivid Blue" as the primary color.
+- New identity replaces tech-blue with warm aubergine + coral.
+- Saffron Brand Consultants designed the rebrand.
+- If you have access to the official style guide PDF, update hex codes here.
+
+================================================================================
+CONTENTSQUARE DESIGN SYSTEM TOKENS (in use in cs_apps_analysis.py)
+================================================================================
+Priority: electric light green, purple-blue (lilac), aqua-blue, pink.
+
+From design system:
+  Lilac (purple-blue): 400 #CCC2EB | 600 #9C89D4 | 800 #6D4BD1
+  Purple / pink:       200 #F7EAFB | 600 #DD9FEE | graphic #E4DDF3
+  Magenta (pink):      100 #F3D2EA | 400 #C246AC
+  Ember (risk):        300 #FFD9CD | 600 #FF3C00
+  Peach:              100 #FEF7EC | 300 #FADDAE | 400 #E9C07C
+
+Complementary (not in tokens):
+  Electric light green  #00E5A0  (healthy / success)
+  Aqua-blue            #26C6DA  (Partially lived, categorical)
+
+Semantic mapping in script:
+  AUB / primary     = LILAC_800  (#6D4BD1)
+  AUB_LIGHT        = LILAC_600  (#9C89D4)
+  AUB_MID          = LILAC_400  (#CCC2EB)
+  CORAL / risk     = EMBER_600  (#FF3C00)
+  CORAL_LT         = EMBER_300  (#FFD9CD)
+  GREEN / healthy  = ELECTRIC_GREEN (#00E5A0)
+  AMBER / caution  = Peach-300  (#FADDAE)
+  SEQ = [LILAC_800, LILAC_600, LILAC_400, PURPLE_600, AQUA]
+  CAT = [LILAC_800, ELECTRIC_GREEN, AQUA, PURPLE_600, MAGENTA_100]
