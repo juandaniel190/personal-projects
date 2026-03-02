@@ -282,9 +282,170 @@ The case study defines `HEALTHY_STATUS` as "a ratio between ACV and WAU (ACV/WAU
 
 ## Next Steps
 
-- [ ] Part 1 — Validate figures and finalize recommendations
-- [ ] Part 2 — Account Health redefinition for AI era (Sense Agent)
-- [ ] Part 2 — Monetization challenge: AI pricing model
+- [x] Part 1 — Validate figures and finalize recommendations
+- [x] Part 2 — Account Health redefinition for AI era (Sense Agent)
+- [x] Part 2 — Monetization challenge: AI pricing model
+- [ ] Deck — Build presentation structure (20-min restitution)
+
+---
+
+## Part 2 — The AI-First Transition
+
+> *Part 1 proved that CS Apps is creating value but failing to deliver and protect it. Part 2 answers: how do we capture the extra value Sense delivers per session, and how do we measure health when analyst WAU stops being a reliable signal?*
+
+---
+
+## 2.1 The Monetization Challenge
+
+### Recommendation
+
+**Introduce daily Sense Analyst query quotas by tier (Quota + Tier model), with Sense Chat included free across all plans.** This captures AI value without replacing session-based pricing.
+
+### The Problem: Uncaptured AI Value
+
+Contentsquare prices on website visitor sessions (unchanged by Sense). But Sense increases value-per-session without capturing additional revenue. Clients get more insights from the same sessions — CS charges the same price.
+
+> *The better Sense works, the more value clients extract — but Contentsquare's revenue stays flat.*
+
+### How the Market Is Pricing AI Today
+
+Five models dominate SaaS AI monetization, each with trade-offs:
+
+| Model | How It Works | Companies | Verdict for CS |
+|---|---|---|---|
+| **Flat-Fee Add-On** | Fixed $/year for unlimited AI | Gainsight (Insight Agent add-on) | Simple but misaligned — leaves value on table |
+| **Seat-Based** | Per-user/month, AI included | Pendo ($7K–$35K/yr by MAU tier) | Declining model — penalizes efficiency |
+| **Usage / Token-Based** | Pay per AI query or token | PostHog (20% markup on LLM cost), Anthropic API (token-based) | Transparent but volatile for budgets |
+| **Outcome-Based** | Pay per resolved outcome | Intercom Fin ($0.99/resolved ticket) | Hard in analytics — what's a "resolved insight"? |
+| **Quota + Tier** | Daily/monthly cap per plan, upgrade for more | Anthropic Claude Pro (daily query cap + tier upgrades), Salesforce Agentforce | **Best fit — frequent friction drives upgrades** |
+
+**Key findings:**
+
+- Analytics competitors (Amplitude, Mixpanel, Heap) currently **bundle AI into tiers for free** as a differentiator. This works because their AI features are lightweight (chat assistants, basic summaries). When AI becomes the *primary interface* — as Sense Agent intends — bundling alone won't capture the value.
+- **The Anthropic parallel is instructive:** Claude Pro users hit a daily usage cap and must either wait until the next day or upgrade to a higher tier. This creates frequent, low-friction upgrade pressure without fully blocking work — the user always gets access again tomorrow.
+
+### Contentsquare Pricing: Current Model
+
+Verified from [contentsquare.com/pricing](https://contentsquare.com/pricing/) (Experience Analytics product line):
+
+| Tier | Price | Sessions | AI (Sense) |
+|---|---|---|---|
+| **Free** | €0 | 200K/month | Not listed |
+| **Growth** | From €39/month | Starting at 7K | "Sense, Contentsquare's AI" (broadly included) |
+| **Pro** | Custom | Starting at 1M | Same — no separate Sense tier visible |
+| **Enterprise** | Custom | Starting at 1M | Same — plus Error summaries, Data feeds |
+
+[Unverified] The public pricing page does not distinguish between Sense Chat and Sense Analyst. Whether advanced Sense capabilities are gated per tier behind the scenes is not visible from public information.
+
+### Proposed Model: Daily Quota + Tier
+
+| Tier | Sessions | Sense Chat | Sense Analyst Queries/Day |
+|---|---|---|---|
+| **Free** | 200K/month | Unlimited | Not included |
+| **Growth** | Starting at 7K | Unlimited | 5/day |
+| **Pro** | Starting at 1M | Unlimited | 25/day |
+| **Enterprise** | Custom | Unlimited | Unlimited |
+
+**How it works:** A Growth analyst runs 5 Sense Analyst queries in a day. The 6th is blocked with: *"Your team hit today's 5-query limit. Upgrade to Pro for 25/day, or cap resets tomorrow."* No work is lost — they wait or upgrade.
+
+**Why daily:** Daily limits create frequent friction, driving natural upgrade conversations. Monthly limits create silence after early binge usage — weaker signal.
+
+### Why This Model Wins
+
+1. **Captures uncaptured value** — Revenue tied to AI usage, not just session volume.
+2. **Preserves session pricing** — Sessions remain the base layer; Sense quota is additive.
+3. **Simple to explain** — Global daily cap per tier is transparent and easy for procurement.
+4. **Natural upgrade path** — Regular friction drives tier upgrades without blocking work.
+
+### What the Data Says: One Analysis to Pick the Model
+
+**The question:** Is usage evenly spread across accounts, or do some accounts use much more than others?
+
+If usage is even → Flat-Fee works. If usage is uneven → Flat-Fee subsidizes heavy users. The distribution shape tells you which model fits.
+
+**What we measured** (using analyst sessions/account/month as a proxy for future Sense Analyst usage):
+
+| Metric | Value | What it means |
+|---|---|---|
+| Gini coefficient | **0.63** | High inequality — usage is very unevenly spread |
+| Top 20% of accounts | **65% of all sessions** | A few heavy accounts dominate usage |
+| P90 vs. median | **6x** | The heaviest users use 6x more than a typical account |
+| Usage vs. health (correlation) | **r = 0.09, p = 0.33** | No significant link between usage and being a healthy account |
+
+![Pricing Decision Analysis](./figures/fig_13_pricing_decision_analysis.png)
+
+**How the data eliminates each model:**
+
+| Model | Data test | Result |
+|---|---|---|
+| **Flat-Fee Add-On** | Is usage similar across accounts? | No — Gini 0.63. Heavy users would be subsidized. |
+| **Success-Based Tier** | Does higher usage predict better health or renewal? | No — correlation is near zero and not significant. |
+| **Credit-Based** | Is there clear cost variance across action types? | Cannot test — Sense query logs not yet available. Remains viable with more data. |
+| **Quota + Tier** | Are there natural breakpoints in daily usage? | Yes — P50 = 0.7/day, P75 = 2.3/day, P90 = 4/day. Clear tier clusters exist. |
+
+**Additional data that would sharpen the decision:**
+
+| Data | What it would tell us |
+|---|---|
+| Sense query logs (type, cost, timestamp) | Whether different query types cost enough to justify credits |
+| Query → action taken (export, share, implement) | Whether high usage correlates with outcomes — which would revive Success-Based |
+| Renewal outcomes by usage tier | Whether heavy users actually renew at higher rates |
+
+---
+
+## 2.2 Redefining Account Health
+
+### Recommendation
+
+**Replace the single ACV/WAU ratio with a 4-pillar composite score** that measures value delivered — not human platform activity.
+
+### Why the Current Metric Breaks
+
+Part 1 proved two structural flaws. Sense Agent introduces a third:
+
+1. **Conflation (H8):** `ACV / AVG_WAU_GLOBAL` uses platform-wide WAU. "Not started" CS Apps accounts appear healthy because CS Digital inflates the denominator.
+2. **AI-driven WAU decline:** WAU measures **analysts logging into the platform weekly**. Sense Agent automates analysis that previously required manual sessions — one analyst with AI replaces several. WAU drops even for *successful, high-value* accounts. The metric classifies them as unhealthy.
+3. **Pricing is unaffected, but health is:** Contentsquare prices on website visitor sessions (unchanged by Sense). But the health metric depends on analyst WAU, which Sense directly reduces. The pricing model and health model diverge.
+
+> *Sense doesn't hurt revenue (session volume stays flat). It hurts the health score (analyst WAU drops). The metric will punish exactly the accounts where AI is working best.*
+
+### Proposed: 4-Pillar Composite Score
+
+| Pillar | Weight | What It Measures | Data Available Today? |
+|---|---|---|---|
+| **Implementation** | 20% | SDK integration, go-live status | Yes (IMPLEMENTATION_STATUS_APPS) |
+| **Adoption** | 25% | Certified users, module breadth, user reach | Partial (certification + module data) |
+| **Engagement Quality** | 30% | Core module depth + **Sense Analyst queries/day** | Requires Sense telemetry |
+| **Value Realization** | 25% | Insights exported, dashboards built, NPS | Requires new instrumentation |
+
+**Design principle:** Every pillar should *improve* (or stay stable) as AI adoption increases. If Sense replaces manual sessions but increases insights consumed and queries run, the score should go up — not down. Sense queries/day (from the daily-quota model in 2.1) becomes a direct input to the Engagement Quality pillar.
+
+![Prototype Health Model](./figures/fig_11_prototype_health.png)
+
+### Implementation Roadmap
+
+| Phase | Timeline | Action |
+|---|---|---|
+| **Instrument** | Months 1–2 | Add CS Apps-specific WAU; instrument Sense query telemetry |
+| **Prototype** | Months 2–3 | Build composite score with available pillars; backtest against churn |
+| **Validate** | Months 3–4 | Compare predictive power vs. current ACV/WAU |
+| **Deploy** | Months 5–6 | Replace metric in dashboards; train CS team |
+
+**Critical dependency:** Validation requires historical churn/renewal outcome data not in this dataset.
+
+---
+
+## Part 2 — Synthesis
+
+> *The pricing model and health metric face different but connected problems. Pricing misses the extra value Sense delivers per session. Health punishes accounts where Sense is working — because analyst WAU drops. The daily-quota model solves pricing by capturing AI value as a new revenue layer. The composite health score solves measurement by replacing declining WAU with Sense query activity. Together, they realign the business around AI-delivered value.*
+
+---
+
+## Next Steps
+
+- [x] Part 1 — Validate figures and finalize recommendations
+- [x] Part 2 — Account Health redefinition for AI era (Sense Agent)
+- [x] Part 2 — Monetization challenge: AI pricing model
 - [ ] Deck — Build presentation structure (20-min restitution)
 
 ---
