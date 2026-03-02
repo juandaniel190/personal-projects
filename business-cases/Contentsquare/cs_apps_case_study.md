@@ -359,36 +359,33 @@ Verified from [contentsquare.com/pricing](https://contentsquare.com/pricing/) (E
 
 ### What the Data Says: One Analysis to Pick the Model
 
-**The question:** Is usage evenly spread across accounts, or do some accounts use much more than others?
+**The question:** Is usage evenly spread across accounts, or concentrated among a few?
 
-If usage is even → Flat-Fee works. If usage is uneven → Flat-Fee subsidizes heavy users. The distribution shape tells you which model fits.
-
-**What we measured** (using analyst sessions/account/month as a proxy for future Sense Analyst usage):
+Using analyst sessions/account/month as a proxy for future Sense usage:
 
 | Metric | Value | What it means |
 |---|---|---|
-| Gini coefficient | **0.63** | High inequality — usage is very unevenly spread |
 | Top 20% of accounts | **65% of all sessions** | A few heavy accounts dominate usage |
-| P90 vs. median | **6x** | The heaviest users use 6x more than a typical account |
-| Usage vs. health (correlation) | **r = 0.09, p = 0.33** | No significant link between usage and being a healthy account |
+| P90 vs. median | **6x** | Heavy users use 6x more than a typical account |
+| Usage vs. health correlation | **r = 0.09, p = 0.33** | No link between high usage and account health |
 
 ![Pricing Decision Analysis](./figures/fig_13_pricing_decision_analysis.png)
 
-**How the data eliminates each model:**
+**How the data picks the model:**
 
-| Model | Data test | Result |
+| Model | What the data says | Verdict |
 |---|---|---|
-| **Flat-Fee Add-On** | Is usage similar across accounts? | No — Gini 0.63. Heavy users would be subsidized. |
-| **Success-Based Tier** | Does higher usage predict better health or renewal? | No — correlation is near zero and not significant. |
-| **Credit-Based** | Is there clear cost variance across action types? | Cannot test — Sense query logs not yet available. Remains viable with more data. |
-| **Quota + Tier** | Are there natural breakpoints in daily usage? | Yes — P50 = 0.7/day, P75 = 2.3/day, P90 = 4/day. Clear tier clusters exist. |
+| **Flat-Fee Add-On** | Usage is too concentrated (top 20% = 65%). Heavy users would be subsidized. | Eliminated |
+| **Success-Based Tier** | No correlation between usage and health. Can't prove usage drives outcomes. | Eliminated |
+| **Credit-Based** | Cannot test — Sense query logs not available yet. | Needs more data |
+| **Quota + Tier** | Natural daily breakpoints exist (P50 = 0.7, P75 = 2.3, P90 = 4 queries/day). | **Confirmed** |
 
 **Additional data that would sharpen the decision:**
 
 | Data | What it would tell us |
 |---|---|
 | Sense query logs (type, cost, timestamp) | Whether different query types cost enough to justify credits |
-| Query → action taken (export, share, implement) | Whether high usage correlates with outcomes — which would revive Success-Based |
+| Query → action taken (export, share) | Whether usage correlates with outcomes — would revive Success-Based |
 | Renewal outcomes by usage tier | Whether heavy users actually renew at higher rates |
 
 ---
