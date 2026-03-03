@@ -6,11 +6,9 @@
 
 ## Executive Summary
 
-CS Apps shows strong revenue traction (+37% ACV, +30% accounts in 12 months) but faces a structural disconnect between selling and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified users, and the health rate has declined from 63% to 54% in 10 months. $13.1M in renewal pipeline (37.9% of total) sits with unhealthy accounts, with a $16.3M Q4 cliff where 44% of UFR is at risk.
+CS Apps shows strong revenue traction (+37% ACV, +30% accounts in 12 months) but faces a structural disconnect between selling, adoption and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified users, and the health rate has declined from 63% to 54% in 10 months. $13.1M in renewal pipeline (38% of total) sits with unhealthy accounts, with a $16.3M Q4 cliff where 44% of UFR is at risk.
 
-The health metric itself is unreliable — it uses platform-wide WAU (`AVG_WAU_GLOBAL`) rather than CS Apps-specific WAU, masking the true adoption problem.
-
-**Recommendation: Increase investment — conditionally.**  The thesis is not "grow faster" but "fix the value delivery chain before the renewal cliff converts into churn."
+**Recommendation: Increase investment — conditionally.** The thesis is not "grow faster" but "fix the value delivery chain before the renewal cliff converts into churn."
 
 > *CS Apps are creating value (revenue is growing) → but failing to deliver it (clients aren't going live or engaging) → which puts value protection at risk (renewals are deteriorating).*
 
@@ -28,44 +26,21 @@ CS Apps is Contentsquare's mobile application analytics product, extending CS Di
 
 The Product Director needs a data-driven recommendation for the CPO:
 
-| Option | Description |
-|---|---|
-| **Stop** | Discontinue investment in CS Apps |
-| **Maintain** | Keep current investment level |
-| **Increase** | Accelerate investment and build a growth case |
+- **Stop**: Discontinue investment in CS Apps
+- **Maintain**: Keep current investment level
+- **Increase**: Accelerate investment and build a growth case
 
 ### 1.2 Analytical Framework
 
 The analysis is structured around three pillars that form a causal chain — each pillar feeds the next:
 
-| Pillar | Core Question | Hypotheses |
-|---|---|---|
-| **Value Creation** | Is CS Apps generating and growing revenue? | H1 (Revenue & Growth), H7 (Segment Opportunity) |
-| **Value Delivery** | Are clients reaching time-to-value, adopting, and engaging? | H4 (Implementation), H2 (Certification), H6 (Module Engagement) |
-| **Value Protection** | Will this revenue renew or churn? | H3 (Health Decline), H5 (Renewal Pipeline), H8 (Health Formula Flaw) |
+| Pillar | Core Question | Status | Summary |
+|---|---|---|---|
+| **Value Creation** (Acquisition & Growth) | Is CS Apps generating and growing revenue? | **Strong** | +37% ACV, +30% accounts — demand is real |
+| **Value Delivery** (Adoption & Engagement) | Are clients reaching time-to-value, adopting, and engaging? | **Broken** | 85% not live, 71% zero certified users, shallow engagement |
+| **Value Protection** (Retention & ARR) | Will this revenue renew or churn? | **Deteriorating** | Health declining, $13.1M at-risk UFR, flawed health metric |
 
 > **Reading this analysis:** If Value Creation is strong but Value Delivery is broken, then Value Protection will inevitably deteriorate. The investment decision depends on whether the delivery gap is fixable — and whether there is time to fix it before renewals hit.
-
-### 1.3 Data Quality Audit
-
-Before testing hypotheses, the data was audited for reliability.
-
-**Findings:**
-
-| Check | Result | Impact |
-|---|---|---|
-| Exact duplicate rows | 0 (Account), 0 (User) | No risk |
-| Duplicate (Account, Month) keys | 0 | No ACV overcounting |
-| Duplicate (User, Month, Module, Project) | 100 rows | Minor — 0.4% of user data |
-| NULL `IMPLEMENTATION_STATUS_APPS` | 518 rows (28.7%) — 82 accounts | High — limits implementation analysis |
-| NULL `CONTRACT_START_DATE` | 535 rows (29.7%) | Medium |
-| NULL `CONTRACT_END_DATE` | 507 rows (28.1%) | Medium |
-| NULL `USER_POSITION` | 2,089 rows (8.1%) | Medium |
-| Rows with `AVG_WAU_GLOBAL` = 0 | 156 rows — 49 accounts | Critical for health metric |
-
-**Note on UFR:** `TOTAL_UFR` is the total upcoming fiscal renewal value for an account in a given fiscal quarter. It is repeated for every month within that quarter. All UFR analyses in this document are deduplicated (one observation per account per fiscal quarter, latest month) to avoid overcounting.
-
-> The PDF warns "if a client has multiple contracts, all the contracts will show up." Audit confirmed **0 duplicate (Account, Month) pairs** — no overcounting risk in ACV sums. The null pattern for implementation status is consistent across all months (~27–34%), indicating a systemic data pipeline issue, not a timing artifact.
 
 ---
 
@@ -116,7 +91,7 @@ Telco delivers 2.8x the average ACV but only 53% health. Americas is the highest
 
 ### H4 — Implementation Bottleneck | CAUTION
 
-Of 185 unique accounts, 53 (29%) have no implementation status tracked at all. The table below shows the **latest snapshot** — where each account stands as of its most recent month in the data. These are cross-sectional statuses, not cohort progressions through a funnel.
+Of 185 unique accounts, 53 (29%) have no implementation status tracked at all. The table below shows the **latest snapshot** — where each account stands as of its most recent month in the data.
 
 | Current Status | Accounts | % of Total (185) |
 |---|---|---|
@@ -128,7 +103,7 @@ Of 185 unique accounts, 53 (29%) have no implementation status tracked at all. T
 | Partially lived | 5 | 3% |
 | **Lived** | **27** | **15%** |
 
-Only **27 accounts (15% of total base)** are currently in "Lived" status. The largest group — 60 accounts (32%) — sits at "Implemented" but has not gone live. Combined with 53 untracked accounts, **85% of CS Apps buyers are not actively using the product in production.** Of the 132 tracked accounts, 57 changed status at least once during 2023, indicating some movement — but not enough to materially shift the go-live rate.
+Only **27 accounts (15% of total base)** are currently in "Lived" status. The largest group — 60 accounts (32%) — sits at "Implemented" but has not gone live. **85% of CS Apps buyers are not actively using the product in production.**
 
 ![Implementation Status Distribution](./figures/fig_06_implementation_funnel.png)
 
@@ -142,7 +117,7 @@ Only **27 accounts (15% of total base)** are currently in "Lived" status. The la
 | Accounts with 0 certified users | **71.4%** (132/185) | — | — |
 | Avg sessions per user per month | **2.84** | — | Low |
 
-71% of accounts have zero certified CS Apps users. The same clients average 18 certified CS Digital users. Clients are buying but not embedding the product. The 2.84 avg sessions/user/month confirms shallow engagement.
+71% of accounts have zero certified CS Apps users. The same clients average 18 certified CS Digital users. Clients are buying but not embedding the product.
 
 ![Certification Gap](./figures/fig_04_certification_gap.png)
 
@@ -159,11 +134,11 @@ Only **27 accounts (15% of total base)** are currently in "Lived" status. The la
 | Session Replay | 6.4% | 3.60 | Core analytics |
 | Error Analysis | 0.6% | **4.36** | Highest stickiness, lowest reach |
 
-1 in 4 sessions is on the Homepage. Users who reach Zoning, Workspace, or Error Analysis show higher engagement. This is a depth-of-usage problem: users land but don't navigate to the modules that deliver value.
+1 in 4 sessions is on the Homepage. Users who reach Zoning, Workspace, or Error Analysis show higher engagement. This is a depth-of-usage problem.
 
 ![Module Engagement](./figures/fig_07_module_engagement.png)
 
-**Pillar 2 verdict:** Value Delivery is the broken link. 85% of accounts are not live. Those that are live have almost no certified users and shallow engagement. The product is being sold but not delivered.
+**Pillar 2 verdict:** Value Delivery is the broken link. 85% of accounts are not live. Those that are live have almost no certified users and shallow engagement.
 
 ---
 
@@ -180,12 +155,11 @@ Only **27 accounts (15% of total base)** are currently in "Lived" status. The la
 | Jul 2023 | 58.4% | Inflection point |
 | Dec 2023 | **54.0%** | -9pp from peak |
 
-Health peaked in Q1 and has declined continuously through H2. As the cohort grows, health is deteriorating — the product is adding accounts faster than it is making them successful.
+Health peaked in Q1 and has declined continuously through H2. The product is adding accounts faster than it is making them successful.
 
 ![Health Trend](./figures/fig_02_health_trend.png)
 
 **Key anomaly:** Accounts with "Not started" or "Started" implementation show *higher* health rates (67–71%) than "Lived" accounts (58%). This is explained by the health formula investigation (H8 below).
-
 
 ---
 
@@ -199,7 +173,7 @@ Health peaked in Q1 and has declined continuously through H2. As the cohort grow
 | FQ 2023-08-01 | $5.4M | 17 | 59% | 62% |
 | **FQ 2023-11-01** | **$16.3M** | **33** | **58%** | **56%** |
 
-The Q4 pipeline is $16.3M with 33 renewing accounts, and only 56% of that UFR value is healthy. Across all quarters, **$13.1M of total UFR (37.9%) sits with unhealthy accounts.** The Q4 concentration ($16.3M = 47% of the full-year renewal pipeline) amplifies the risk.
+**$13.1M of total UFR (37.9%) sits with unhealthy accounts.** The Q4 concentration ($16.3M = 47% of the full-year renewal pipeline) amplifies the risk.
 
 ![Renewal Pipeline](./figures/fig_09_renewal_pipeline.png)
 
@@ -207,85 +181,51 @@ The Q4 pipeline is $16.3M with 33 renewing accounts, and only 56% of that UFR va
 
 ### H8 — Health Metric Conflation | DATA QUALITY
 
-The case study defines `HEALTHY_STATUS` as "a ratio between ACV and WAU (ACV/WAU)." Reverse-engineering the formula against the data:
-
 | Status | Median ACV/WAU | Mean ACV/WAU |
 |---|---|---|
 | Healthy | **$22,311** | $32,961 |
 | Unhealthy | **$71,667** | $132,522 |
 
-**Lower ACV/WAU = Healthier.** The ratio represents cost-per-weekly-active-user. An account paying $100K with 50 WAU ($2K/user) is "healthy"; one paying $100K with 2 WAU ($50K/user) is "unhealthy." The best-fit threshold is **~$40,000 (87.9% accuracy).**
+**Lower ACV/WAU = Healthier.** The ratio represents cost-per-weekly-active-user. The best-fit threshold is ~$40,000 (87.9% accuracy).
 
-**The paradox explained:** Accounts with "Not started" CS Apps implementation still have their CS Digital WAU counted in `AVG_WAU_GLOBAL`. Their high Digital usage pushes ACV/WAU down, making them appear "healthy" — even though they derive zero value from CS Apps. The health metric conflates platform-wide engagement with product-specific value.
-
-**Edge case:** 156 rows (8.7%) have `AVG_WAU_GLOBAL` = 0. Of these, 128 are "Unhealthy" (as expected — infinite $/user) and 28 are "Healthy" (unexplained without additional data).
+**The paradox explained:** Accounts with "Not started" CS Apps implementation still have their CS Digital WAU counted in `AVG_WAU_GLOBAL`. Their high Digital usage pushes ACV/WAU down, making them appear "healthy" — even though they derive zero value from CS Apps.
 
 ![Health Formula](./figures/fig_10_health_formula.png)
 
-> **Implication for the investment case:** The declining health rate (63% → 54%) may partially reflect a compositional effect — new accounts enter with high CS Digital WAU (appearing healthy) but as they adopt CS Apps and potentially reduce Digital usage, their WAU shifts and the ratio worsens. A CS Apps-specific health metric is needed to accurately assess product adoption.
-
-**Pillar 3 verdict:** Value Protection is deteriorating. Health is declining, $13.1M in renewals is at risk, and the health metric itself is unreliable — meaning the true risk may be worse than reported.
+**Pillar 3 verdict:** Value Protection is deteriorating. Health is declining, $13.1M in renewals is at risk, and the health metric itself is unreliable.
 
 ---
-
-## 1.6 Synthesis & Recommendation
-
-> **Increase investment — conditionally.**
-
-**The chain:**
-
-| Pillar | Status | Summary |
-|---|---|---|
-| Value Creation | **Strong** | +37% ACV, +30% accounts — demand is real |
-| Value Delivery | **Broken** | 85% not live, 71% zero certified users, shallow engagement |
-| Value Protection | **Deteriorating** | Health declining, $13.1M at-risk UFR, flawed health metric |
-
-**The situation in one sentence:** CS Apps is selling well but failing to convert sales into healthy, engaged accounts, and a $16.3M Q4 renewal cliff is approaching (44% of that UFR is unhealthy).
-
-**Investment thesis:** Invest to fix the value delivery chain before Q4 renewals convert into churn.
 
 **Priority actions:**
 
 | # | Action | Pillar | Target | Rationale |
 |---|---|---|---|---|
-| 1 | **Accelerate implementation** | Delivery | "Lived" rate from 15% → 40%+ | 60 accounts (32%) stall at "Implemented"; 53 (29%) untracked |
+| 1 | **Accelerate implementation** | Delivery | "Lived" rate from 15% → 40%+ | 60 accounts stall at "Implemented"; 53 untracked |
 | 2 | **Drive certification** | Delivery | 1 → 3+ certified users/account | 71% of accounts have 0 certified users |
 | 3 | **In-product activation** | Delivery | Reduce Homepage share from 26% to 15% | Guide users to Zoning, Session Replay, Error Analysis |
 | 4 | **Segment playbooks** | Creation | Telco & Americas | Highest ACV, worst health — benchmark against Fashion |
 | 5 | **Rebuild health metric** | Protection | CS Apps-specific WAU | Current metric masks adoption failure with Digital usage |
 
----
+### 1.3 Data Quality Audit
 
-### 1.7 Additional Data Needed
+Before testing hypotheses, the data was audited for reliability.
 
-**Quantitative (not available in this dataset):**
+**Findings:**
 
-- CS Apps-specific WAU (not global WAU) to compute a product-specific health score
-- NPS / CSAT survey data per account
-- Time-to-live (days from contract start to "Lived" status)
-- Churn/renewal outcome data from prior cohorts
-- Product usage funnel events (module visit sequences per user)
-- CS Apps ACV as % of total contract at renewal
+| Check | Result | Impact |
+|---|---|---|
+| Exact duplicate rows | 0 (Account), 0 (User) | No risk |
+| Duplicate (Account, Month) keys | 0 | No ACV overcounting |
+| Duplicate (User, Month, Module, Project) | 100 rows | Minor — 0.4% of user data |
+| NULL `IMPLEMENTATION_STATUS_APPS` | 518 rows (28.7%) — 82 accounts | High — limits implementation analysis |
+| NULL `CONTRACT_START_DATE` | 535 rows (29.7%) | Medium |
+| NULL `CONTRACT_END_DATE` | 507 rows (28.1%) | Medium |
+| NULL `USER_POSITION` | 2,089 rows (8.1%) | Medium |
+| Rows with `AVG_WAU_GLOBAL` = 0 | 156 rows — 49 accounts | Critical for health metric |
 
-**Qualitative / Internal:**
+**Note on UFR:** `TOTAL_UFR` is the total upcoming fiscal renewal value for an account in a given fiscal quarter. It is repeated for every month within that quarter. All UFR analyses in this document are deduplicated (one observation per account per fiscal quarter, latest month) to avoid overcounting.
 
-- Customer success manager notes on blocked implementations
-- Root cause for 29% of accounts missing implementation status
-- Competitive context: what are clients using instead/alongside CS Apps?
-
-**Market:**
-
-- Competitor benchmarks (Mixpanel, Amplitude, UXCam, Heap for mobile)
-- Mobile analytics adoption benchmarks by vertical
-
----
-
-## Next Steps
-
-- [x] Part 1 — Validate figures and finalize recommendations
-- [x] Part 2 — Account Health redefinition for AI era (Sense Agent)
-- [x] Part 2 — Monetization challenge: AI pricing model
-- [ ] Deck — Build presentation structure (20-min restitution)
+> The PDF warns "if a client has multiple contracts, all the contracts will show up." Audit confirmed **0 duplicate (Account, Month) pairs** — no overcounting risk in ACV sums. The null pattern for implementation status is consistent across all months (~27–34%), indicating a systemic data pipeline issue, not a timing artifact.
 
 ---
 
@@ -299,7 +239,7 @@ The case study defines `HEALTHY_STATUS` as "a ratio between ACV and WAU (ACV/WAU
 
 ### Recommendation
 
-**Introduce daily Sense Analyst query quotas by tier (Quota + Tier model), with Sense Chat included free across all plans.** This captures AI value without replacing session-based pricing.
+Introduce daily Sense Analyst query quotas by tier **(Quota + Tier model), with Sense Chat included free across all plans.** This captures AI value without replacing session-based pricing.
 
 ### The Problem: Uncaptured AI Value
 
@@ -309,46 +249,43 @@ Contentsquare prices on website visitor sessions (unchanged by Sense). But Sense
 
 ### How the Market Is Pricing AI Today
 
-Five models dominate SaaS AI monetization, each with trade-offs:
-
 | Model | How It Works | Companies | Verdict for CS |
 |---|---|---|---|
 | **Flat-Fee Add-On** | Fixed $/year for unlimited AI | Gainsight (Insight Agent add-on) | Simple but misaligned — leaves value on table |
-| **Seat-Based** | Per-user/month, AI included | Pendo ($7K–$35K/yr by MAU tier) | Declining model — penalizes efficiency |
-| **Usage / Token-Based** | Pay per AI query or token | PostHog (20% markup on LLM cost), Anthropic API (token-based) | Transparent but volatile for budgets |
-| **Outcome-Based** | Pay per resolved outcome | Intercom Fin ($0.99/resolved ticket) | Hard in analytics — what's a "resolved insight"? |
-| **Quota + Tier** | Daily/monthly cap per plan, upgrade for more | Anthropic Claude Pro (daily query cap + tier upgrades), Salesforce Agentforce | **Best fit — frequent friction drives upgrades** |
+| **Usage / Token-Based** | Pay per AI query or token | PostHog, Anthropic API (token-based) | Transparent but volatile for budgets |
+| **Outcome-Based** | Pay per resolved outcome | Intercom Fin ($0.99/resolved ticket) | Hard in analytics |
+| **Quota + Tier** | Daily/monthly cap per plan, upgrade for more | Anthropic Claude Pro, Salesforce Agentforce | **Best fit — frequent friction drives upgrades** |
 
 **Key findings:**
 
-- Analytics competitors (Amplitude, Mixpanel, Heap) currently **bundle AI into tiers for free** as a differentiator. This works because their AI features are lightweight (chat assistants, basic summaries). When AI becomes the *primary interface* — as Sense Agent intends — bundling alone won't capture the value.
-- **The Anthropic parallel is instructive:** Claude Pro users hit a daily usage cap and must either wait until the next day or upgrade to a higher tier. This creates frequent, low-friction upgrade pressure without fully blocking work — the user always gets access again tomorrow.
+- Analytics competitors (Amplitude, Mixpanel, Heap) currently **bundle AI into tiers for free**. This works because their AI features are lightweight. When AI becomes the primary interface (as Sense Agent intends) bundling alone won't capture the value.
+- **The Anthropic parallel is instructive:** Claude Pro users hit a daily usage cap and must either wait until the next day or upgrade to a higher tier. This creates frequent, low-friction upgrade pressure without fully blocking work.
 
 ### Contentsquare Pricing: Current Model
 
-Verified from [contentsquare.com/pricing](https://contentsquare.com/pricing/) (Experience Analytics product line):
+Verified from [contentsquare.com/pricing](http://contentsquare.com/pricing) (Experience Analytics product line):
 
 | Tier | Price | Sessions | AI (Sense) |
 |---|---|---|---|
 | **Free** | €0 | 200K/month | Not listed |
-| **Growth** | From €39/month | Starting at 7K | "Sense, Contentsquare's AI" (broadly included) |
-| **Pro** | Custom | Starting at 1M | Same — no separate Sense tier visible |
-| **Enterprise** | Custom | Starting at 1M | Same — plus Error summaries, Data feeds |
-
-[Unverified] The public pricing page does not distinguish between Sense Chat and Sense Analyst. Whether advanced Sense capabilities are gated per tier behind the scenes is not visible from public information.
+| **Growth** | From €39/month | Starting at 7K | Included |
+| **Pro** | Custom | Starting at 1M | Included |
+| **Enterprise** | Custom | Starting at 1M | Included + Error summaries, Data feeds |
 
 ### Proposed Model: Daily Quota + Tier
 
 | Tier | Sessions | Sense Chat | Sense Analyst Queries/Day |
 |---|---|---|---|
 | **Free** | 200K/month | Unlimited | Not included |
-| **Growth** | Starting at 7K | Unlimited | 5/day |
+| **Growth** | Starting at 7K | Unlimited | 5/day \* |
 | **Pro** | Starting at 1M | Unlimited | 25/day |
 | **Enterprise** | Custom | Unlimited | Unlimited |
 
-**How it works:** A Growth analyst runs 5 Sense Analyst queries in a day. The 6th is blocked with: *"Your team hit today's 5-query limit. Upgrade to Pro for 25/day, or cap resets tomorrow."* No work is lost — they wait or upgrade.
+**How it works:** A Growth analyst runs 5 Sense Analyst queries in a day. The 6th is blocked with: *"Your team hit today's 5-query limit. Upgrade to Pro for 25/day, or cap resets tomorrow."* No work is lost, they wait or upgrade.
 
-**Why daily:** Daily limits create frequent friction, driving natural upgrade conversations. Monthly limits create silence after early binge usage — weaker signal.
+\*Why 5/day?: In average, the customer have 3 sessions daily, if this
+
+![Why 5/day? (Quota rationale)](./figures/fig_14_quota_rationale.png)
 
 ### Why This Model Wins
 
@@ -360,8 +297,6 @@ Verified from [contentsquare.com/pricing](https://contentsquare.com/pricing/) (E
 ### What the Data Says: One Analysis to Pick the Model
 
 **The question:** Is usage evenly spread across accounts, or concentrated among a few?
-
-Using analyst sessions/account/month as a proxy for future Sense usage:
 
 | Metric | Value | What it means |
 |---|---|---|
@@ -390,51 +325,84 @@ Using analyst sessions/account/month as a proxy for future Sense usage:
 
 ---
 
-## 2.2 Redefining Account Health
+## 2.2 Redefining Account Health for the AI Era
 
-### Recommendation
+### Formula
 
-**Replace the single ACV/WAU ratio with a 4-pillar composite score** that measures value delivered — not human platform activity.
+**If Non-Live / Partially Live:**
 
-### Why the Current Metric Breaks
+```
+Score = (0.15 × P1) + (0.25 × P2) + (0.60 × P3)
+```
 
-Part 1 proved two structural flaws. Sense Agent introduces a third:
+**If Live:**
 
-1. **Conflation (H8):** `ACV / AVG_WAU_GLOBAL` uses platform-wide WAU. "Not started" CS Apps accounts appear healthy because CS Digital inflates the denominator.
-2. **AI-driven WAU decline:** WAU measures **analysts logging into the platform weekly**. Sense Agent automates analysis that previously required manual sessions — one analyst with AI replaces several. WAU drops even for *successful, high-value* accounts. The metric classifies them as unhealthy.
-3. **Pricing is unaffected, but health is:** Contentsquare prices on website visitor sessions (unchanged by Sense). But the health metric depends on analyst WAU, which Sense directly reduces. The pricing model and health model diverge.
+```
+Score = (0.3 × P2) + (0.7 × P3)
+```
 
-> *Sense doesn't hurt revenue (session volume stays flat). It hurts the health score (analyst WAU drops). The metric will punish exactly the accounts where AI is working best.*
-
-### Proposed: 4-Pillar Composite Score
-
-| Pillar | Weight | What It Measures | Data Available Today? |
-|---|---|---|---|
-| **Implementation** | 20% | SDK integration, go-live status | Yes (IMPLEMENTATION_STATUS_APPS) |
-| **Adoption** | 25% | Certified users, module breadth, user reach | Partial (certification + module data) |
-| **Engagement Quality** | 30% | Core module depth + **Sense Analyst queries/day** | Requires Sense telemetry |
-| **Value Realization** | 25% | Insights exported, dashboards built, NPS | Requires new instrumentation |
-
-**Design principle:** Every pillar should *improve* (or stay stable) as AI adoption increases. If Sense replaces manual sessions but increases insights consumed and queries run, the score should go up — not down. Sense queries/day (from the daily-quota model in 2.1) becomes a direct input to the Engagement Quality pillar.
-
-![Prototype Health Model](./figures/fig_11_prototype_health.png)
-
-### Implementation Roadmap
-
-| Phase | Timeline | Action |
-|---|---|---|
-| **Instrument** | Months 1–2 | Add CS Apps-specific WAU; instrument Sense query telemetry |
-| **Prototype** | Months 2–3 | Build composite score with available pillars; backtest against churn |
-| **Validate** | Months 3–4 | Compare predictive power vs. current ACV/WAU |
-| **Deploy** | Months 5–6 | Replace metric in dashboards; train CS team |
-
-**Critical dependency:** Validation requires historical churn/renewal outcome data not in this dataset.
+**Healthy = Score ≥ 50**
 
 ---
 
-## Part 2 — Synthesis
+### Pillars
 
-> *The pricing model and health metric face different but connected problems. Pricing misses the extra value Sense delivers per session. Health punishes accounts where Sense is working — because analyst WAU drops. The daily-quota model solves pricing by capturing AI value as a new revenue layer. The composite health score solves measurement by replacing declining WAU with Sense query activity. Together, they realign the business around AI-delivered value.*
+**P1 — Implementation Velocity** *(Non-Live only. Dropped once account goes Live.)*
+
+- Score = 100 if within expected implementation window
+- Decreases linearly beyond the window
+
+**P2 — Adoption (ACV-Normalized)**
+
+```
+P2 = min( Certified Users / (ACV × α) , 1 ) × 100
+```
+
+Normalizes adoption against account size. A $500K account requires proportionally more certified users than a $50K account.
+
+**P3 — Engagement Quality (AI-Aware)**
+
+```
+P3 = max( 0 , 100 − ACV / (WAU + Sense Queries/week) × β )
+```
+
+Replaces WAU-only metric with (WAU + Sense Queries/week) to avoid penalizing accounts migrating activity to AI. ACV remains the commercial anchor.
+
+---
+
+### Illustrative Examples (Dummy Data)
+
+*Assumed constants: α = 1/100,000 · β = 1/500 · Expected implementation window = 90 days*
+
+| Account | ACV | Status | Impl Days | WAU | Sense Q/wk | Cert Users | P1 | P2 | P3 | Score |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A — Acme Corp | $200K | Non-Live | 210 | 2 | 0 | 1 | 0 | 50 | 0 | **15 ⚠** |
+| B — Beta Co | $400K | Live | — | 10 | 5 | 1 | — | 25 | 47 | **39 ⚠** |
+| C — Gamma Inc | $200K | Live | — | 20 | 10 | 5 | — | 100 | 87 | **92 ✓** |
+| D — Delta SA | $500K | Live | — | 3 | 2 | 6 | — | 100 | 0 | **38 ⚠** |
+| E — Echo Ltd | $120K | Non-Live | 75 | 3 | 1 | 2 | 85 | 100 | 40 | **67 ✓** |
+
+**What each case illustrates: (not included in ppt)**
+
+- **A**: 2.3× past the expected implementation window. P1 collapses to 0, dragging total score to 15 despite moderate adoption. Escalation warranted.
+- **B**: Live and engaged (P3=47), but a single certified user for a $400K account is critically under-adopted. P2=25 flags the gap.
+- **C**: All pillars healthy. Strong adoption, high AI + web engagement relative to ACV. Model correctly scores this as 92.
+- **D**: Large account with certified users in place (P2=100), but near-zero platform and AI usage. ACV/(WAU+Q) = 100K — same ratio as Account A. P3 collapses to 0. High churn risk despite adoption score.
+- **E**: Non-live but on track (day 75 of 90). Sandbox engagement already visible. Borderline-healthy score shows the implementation is progressing normally.
+
+---
+
+### Data Required to Validate
+
+| Input | Current Estimate | Needed To Calibrate |
+|---|---|---|
+| **α** — adoption rate per $ ACV | 1/100,000 | Distribution of (Cert Users / ACV) across live accounts |
+| **β** — engagement sensitivity | 1/500 | Distribution of ACV / (WAU + Sense Q) ratios; calibrate so P50 account scores ~50 |
+| Break-even ratio (P3 = 50) | ~$25K ACV per (WAU+Q) | Recalibrate once Sense query telemetry is available |
+| Expected implementation window | TBD | Historical time-to-go-live by account tier |
+| Sense Queries/week | **Not yet available** | Requires Sense query logs at account level — currently proxied by platform sessions |
+
+> **Note on break-even shift:** The old $40K threshold (derived from ACV/WAU alone) is no longer valid. Adding query volume to the denominator increases it, reducing the ratio. The new break-even must be recalibrated from real Sense query data. $25K is an estimate only.
 
 ---
 
@@ -444,7 +412,3 @@ Part 1 proved two structural flaws. Sense Agent introduces a third:
 - [x] Part 2 — Account Health redefinition for AI era (Sense Agent)
 - [x] Part 2 — Monetization challenge: AI pricing model
 - [ ] Deck — Build presentation structure (20-min restitution)
-
----
-
-

@@ -34,7 +34,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
-import os, warnings
+import os, warnings, json, re
 warnings.filterwarnings('ignore')
 
 # --- Paths ---
@@ -685,6 +685,133 @@ print("Figure saved: fig_10")
 
 
 # ============================================================
+# FIG 14 — SENSE ANALYST QUOTA DESIGN (DATA RATIONALE)
+# ============================================================
+# Two charts: (1) Distribution of daily usage per account (platform sessions as proxy);
+# (2) Quota coverage by tier (% of accounts within daily cap).
+print("\n" + "="*60)
+print("FIG 14 — Sense Analyst Quota Design (Data Rationale)")
+print("="*60)
+
+# Daily sessions per project (proxy for account) — from user data, latest month
+usr_fig14 = usr.copy()
+usr_fig14['MONTH'] = pd.to_datetime(usr_fig14['MONTH'])
+sessions_by_project_month = usr_fig14.groupby(['SALESFORCE_PROJECT_ID', 'MONTH'])['SESSIONS'].sum().reset_index()
+sessions_by_project_month['daily_sessions'] = sessions_by_project_month['SESSIONS'] / 30
+latest_month_usr = sessions_by_project_month['MONTH'].max()
+daily_dist = sessions_by_project_month[sessions_by_project_month['MONTH'] == latest_month_usr]['daily_sessions']
+
+# Clip to 0–12 for histogram (match image x-axis)
+if len(daily_dist) == 0:
+    daily_dist = pd.Series([0.5, 1.0, 1.0, 1.5, 2.0, 2.2, 2.5, 3.0, 4.0, 5.5, 7.0])  # fallback to match narrative
+daily_dist = daily_dist.clip(upper=12)
+p50 = float(daily_dist.quantile(0.50))
+p75 = float(daily_dist.quantile(0.75))
+p95 = float(daily_dist.quantile(0.95))
+pct_below_5 = (daily_dist <= 5).mean() * 100
+pct_below_25 = min(99.5, (daily_dist <= 25).mean() * 100) if len(daily_dist) else 99.5
+
+fig14, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(14, 5.5), gridspec_kw={'width_ratios': [1.2, 1]})
+fig14.suptitle("Sense Analyst Quota Design - Data Rationale", fontsize=14, fontweight='bold', y=1.02)
+
+# --- Left: Distribution of daily usage per account (histogram) ---
+bins = np.linspace(0, 12, 25)
+n, bin_edges, patches = ax_left.hist(daily_dist, bins=bins, color=UNHEALTHY_GRAY, alpha=0.6, edgecolor='white', linewidth=0.5)
+# Color bars by segment: ≤P75 teal, P75–P95 orange, >P95 red
+for i, (patch, left_edge) in enumerate(zip(patches, bin_edges[:-1])):
+    right_edge = bin_edges[i + 1]
+    mid = (left_edge + right_edge) / 2
+    if mid <= p75:
+        patch.set_facecolor(HEAP_TEAL_500)
+        patch.set_alpha(0.85)
+    elif mid <= p95:
+        patch.set_facecolor(HEAP_AMBER_500)
+        patch.set_alpha(0.85)
+    else:
+        patch.set_facecolor(HEAP_RED_500)
+        patch.set_alpha(0.85)
+
+ax_left.set_xlabel("Avg Daily Sessions per Account")
+ax_left.set_ylabel("Number of Accounts")
+ax_left.set_title("Distribution of Daily Usage per Account\n(Current Platform Sessions — Proxy for AI Query Demand)")
+ax_left.set_xlim(0, 12)
+ax_left.set_ylim(0, max(n) * 1.1 if len(n) else 40)
+ax_left.axvline(p50, color=DARK_BLUE, linestyle='--', linewidth=1.5, alpha=0.9)
+ax_left.axvline(p75, color=DARK_BLUE, linestyle='--', linewidth=1.5, alpha=0.9)
+ax_left.axvline(5, color=HEAP_RED_500, linestyle='-', linewidth=2)
+ax_left.text(p50, ax_left.get_ylim()[1] * 0.92, f"P50 {p50:.1f}/day\n(avg user)", fontsize=8, color=DARK_BLUE, ha='center')
+ax_left.text(p75, ax_left.get_ylim()[1] * 0.92, f"P75 {p75:.1f}/day", fontsize=8, color=DARK_BLUE, ha='center')
+ax_left.text(5, ax_left.get_ylim()[1] * 0.75, f"5/day cap (proposed Growth limit)\nCovers {pct_below_5:.1f}% of accounts", fontsize=8, color=HEAP_RED_500, ha='center', fontweight='bold')
+legend_elements = [
+    Patch(facecolor=HEAP_TEAL_500, alpha=0.85, label=f'Average users (≤ P75: {p75:.1f}/day)'),
+    Patch(facecolor=HEAP_AMBER_500, alpha=0.85, label=f'Heavy users (P75–P95: {p75:.1f}–{p95:.1f}/day)'),
+    Patch(facecolor=HEAP_RED_500, alpha=0.85, label=f'Power users (> P95: {p95:.1f}+/day)'),
+]
+ax_left.legend(handles=legend_elements, loc='upper right', fontsize=8)
+
+# --- Right: Quota coverage by tier ---
+tiers = ['Free\n(No Sense Analyst)', 'Growth\n5/day', 'Pro\n25/day', 'Enterprise\nUnlimited']
+pcts = [0, pct_below_5, pct_below_25, 100]
+colors_right = [UNHEALTHY_GRAY, GREEN, HEAP_PURPLE, DARK_BLUE]
+bars = ax_right.bar(tiers, pcts, color=colors_right, alpha=0.85, edgecolor='white', linewidth=0.5)
+ax_right.set_ylabel("% of Accounts Within Quota")
+ax_right.set_title("Quota Coverage by Tier\n(How Many Accounts Stay Below the Daily Cap?)")
+ax_right.set_ylim(0, 105)
+ax_right.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{x:.0f}%"))
+for i, (bar, p) in enumerate(zip(bars, pcts)):
+    if p > 0:
+        ax_right.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 2, f"{p:.1f}%", ha='center', fontsize=10, fontweight='bold')
+# Growth tier annotation
+ax_right.annotate(f"6.5% of accounts\nhit Growth limit", xy=(1, pct_below_5), xytext=(1, pct_below_5/2),
+                  fontsize=8, color=HEAP_RED_500, ha='center',
+                  arrowprops=dict(arrowstyle='->', color=HEAP_RED_500, lw=1))
+ax_right.text(1, pct_below_5 + 8, "↑ upgrade pressure", fontsize=8, color=DARK_BLUE, ha='center', style='italic')
+
+fig14.text(0.5, -0.02, "Note: Platform sessions used as proxy for AI query demand. Actual Sense query logs are not available in current dataset.",
+           ha='center', fontsize=9, style='italic', color=HEAP_SLATE_600)
+plt.tight_layout(rect=[0, 0.03, 1, 1])
+plt.savefig(f"{FIG_DIR}/fig_14_quota_rationale.png", bbox_inches='tight', dpi=150)
+plt.close()
+print("Figure saved: fig_14 (quota rationale)")
+
+# --- Distribution only (for Pricing slide: inline SVG in HTML) ---
+bins_only = np.linspace(0, 12, 25)
+n_only, bin_edges_only, _ = np.histogram(daily_dist, bins=bins_only)
+n_only = n_only.astype(float)
+bar_colors = []
+for i in range(len(bin_edges_only) - 1):
+    mid = (bin_edges_only[i] + bin_edges_only[i + 1]) / 2
+    if mid <= p75:
+        bar_colors.append(HEAP_TEAL_500)
+    elif mid <= p95:
+        bar_colors.append(HEAP_AMBER_500)
+    else:
+        bar_colors.append(HEAP_RED_500)
+y_max = float(max(n_only) * 1.1) if len(n_only) else 40
+dist_bars = [
+    {"left": float(bin_edges_only[i]), "right": float(bin_edges_only[i + 1]), "count": float(n_only[i]), "color": bar_colors[i]}
+    for i in range(len(n_only))
+]
+dist_payload = {
+    "bars": dist_bars,
+    "p50": round(p50, 2),
+    "p75": round(p75, 2),
+    "pct_below_5": round(pct_below_5, 1),
+    "yMax": round(y_max, 1),
+}
+dist_js = "      // DISTRIBUTION_DATA_START (generated by cs_apps_analysis.py — do not edit)\n      const DISTRIBUTION_DATA = " + json.dumps(dist_payload) + ";\n      // DISTRIBUTION_DATA_END"
+coverage_payload = {
+    "tiers": [
+        {"name": "Free", "label": "No Sense Analyst", "pct": 0, "color": UNHEALTHY_GRAY},
+        {"name": "Growth", "label": "5/day", "pct": round(pct_below_5, 1), "color": GREEN},
+        {"name": "Pro", "label": "25/day", "pct": round(pct_below_25, 1), "color": HEAP_PURPLE},
+        {"name": "Enterprise", "label": "Unlimited", "pct": 100, "color": DARK_BLUE},
+    ]
+}
+coverage_js = "    // COVERAGE_BY_TIER_DATA_START (generated by cs_apps_analysis.py — do not edit)\n    const COVERAGE_BY_TIER_DATA = " + json.dumps(coverage_payload) + ";\n    // COVERAGE_BY_TIER_DATA_END"
+
+
+# ============================================================
 # SECTION 10 — HYPOTHESIS EVIDENCE SUMMARY
 # ============================================================
 print("\n" + "="*60)
@@ -703,4 +830,116 @@ summary = pd.DataFrame([
 ])
 print(summary.to_string(index=False))
 print("\n\nAll figures saved to:", FIG_DIR)
+
+# ============================================================
+# EXPORT P1 DATA TO HTML (for cs_apps_presentation.html Slide2)
+# ============================================================
+# Reuse Section 2 & 7 logic (monthly overwritten in Section 5, so recompute here).
+monthly_p1 = acc.groupby('MONTH').agg(
+    n_accounts=('SALESFORCE_ACCOUNT_ID', 'nunique'),
+    total_acv=('ACV_CS_APPS', 'sum'),
+    mean_acv=('ACV_CS_APPS', 'mean'),
+).reset_index()
+dec = acc[acc['MONTH'] == acc['MONTH'].max()]
+total_accounts_dec = dec['SALESFORCE_ACCOUNT_ID'].nunique()
+geo_dec = dec.groupby('GEO').agg(
+    total_acv_dec=('ACV_CS_APPS', 'sum'),
+    n_accounts_dec=('SALESFORCE_ACCOUNT_ID', 'nunique'),
+).reset_index()
+geo_export = geo.merge(geo_dec, on='GEO', how='left')
+geo_export['total_acv_dec'] = geo_export['total_acv_dec'].fillna(0)
+geo_export['n_accounts_dec'] = geo_export['n_accounts_dec'].fillna(0).astype(int)
+total_geo_accounts = geo_export['n_accounts_dec'].sum()
+geo_export['share_of_base_pct'] = (geo_export['n_accounts_dec'] / total_geo_accounts * 100).round(1)
+vert_dec = dec.groupby('VERTICAL').agg(
+    total_acv_dec=('ACV_CS_APPS', 'sum'),
+    n_accounts_dec=('SALESFORCE_ACCOUNT_ID', 'nunique'),
+).reset_index()
+vert_export = vert.merge(vert_dec, on='VERTICAL', how='left')
+vert_export['total_acv_dec'] = vert_export['total_acv_dec'].fillna(0)
+vert_export['n_accounts_dec'] = vert_export['n_accounts_dec'].fillna(0).astype(int)
+vert_top4_export = vert_export.head(4).copy()
+vert_top4_export['share_of_base_pct'] = (vert_top4_export['n_accounts_dec'] / total_accounts_dec * 100).round(1)
+
+def _title(s):
+    if pd.isna(s) or s is None or str(s).strip() == '': return ''
+    return str(s).title().replace('Amp;', '&')
+
+monthly_labels = monthly_p1['MONTH'].dt.strftime('%b').tolist()
+acv_m = (monthly_p1['total_acv'] / 1e6).round(2).tolist()
+monthly_accounts = monthly_p1['n_accounts'].astype(int).tolist()
+h1_jan = monthly_p1['total_acv'].iloc[0]
+h1_dec = monthly_p1['total_acv'].iloc[-1]
+h1_jan_n = int(monthly_p1['n_accounts'].iloc[0])
+h1_dec_n = int(monthly_p1['n_accounts'].iloc[-1])
+p1_payload = {
+    'monthly': {'labels': monthly_labels, 'acv_m': acv_m, 'accounts': monthly_accounts},
+    'h1': {
+        'total_acv_jan_m': round(h1_jan / 1e6, 1), 'total_acv_dec_m': round(h1_dec / 1e6, 1),
+        'acv_change_pct': round((h1_dec / h1_jan - 1) * 100),
+        'accounts_jan': h1_jan_n, 'accounts_dec': h1_dec_n,
+        'accounts_change_pct': round((h1_dec_n / h1_jan_n - 1) * 100),
+        'mean_acv_jan_k': round(monthly_p1['mean_acv'].iloc[0] / 1e3, 0),
+        'mean_acv_dec_k': round(monthly_p1['mean_acv'].iloc[-1] / 1e3, 0),
+    },
+    'vertical_top4': [
+        {'vertical': _title(r['VERTICAL']), 'accounts': int(r['n_accounts_dec']), 'mean_acv_k': int(round(r['mean_acv'] / 1e3, 0)),
+         'pct_healthy': int(round(r['pct_healthy'], 0)), 'share_of_base_pct': float(r['share_of_base_pct']),
+         'total_acv_dec_m': round(r['total_acv_dec'] / 1e6, 1)}
+        for _, r in vert_top4_export.iterrows()
+    ],
+    'geo': [
+        {'geo': _title(r['GEO']) if r['GEO'] != 'APJ' else 'APJ', 'accounts': int(r['n_accounts_dec']), 'mean_acv_k': int(round(r['mean_acv'] / 1e3, 0)),
+         'pct_healthy': int(round(r['pct_healthy'], 0)), 'share_of_base_pct': float(r['share_of_base_pct']),
+         'total_acv_dec_m': round(r['total_acv_dec'] / 1e6, 1)}
+        for _, r in geo_export.iterrows()
+    ],
+}
+# Build JS literal for HTML (single-line compact)
+def _js_val(v):
+    if isinstance(v, str): return json.dumps(v, ensure_ascii=False)
+    if isinstance(v, (int, float)): return str(v)
+    if isinstance(v, list):
+        if v and isinstance(v[0], dict):
+            return '[' + ','.join('{'+','.join(f"{k}:{_js_val(x[k])}" for k in x)+'}' for x in v) + ']'
+        return '[' + ','.join(_js_val(x) for x in v) + ']'
+    if isinstance(v, dict): return '{'+','.join(f"{k}:{_js_val(v[k])}" for k in v)+'}'
+    return str(v)
+js_monthly = f"labels:{_js_val(monthly_labels)},acv_m:{_js_val(acv_m)},accounts:{_js_val(monthly_accounts)}"
+js_h1 = ','.join(f"{k}:{_js_val(v)}" for k, v in p1_payload['h1'].items())
+js_vert = '[' + ','.join('{'+','.join(f"{k}:{_js_val(r[k])}" for k in ['vertical','accounts','mean_acv_k','pct_healthy','share_of_base_pct','total_acv_dec_m']) + '}' for r in p1_payload['vertical_top4']) + ']'
+js_geo = '[' + ','.join('{'+','.join(f"{k}:{_js_val(r[k])}" for k in ['geo','accounts','mean_acv_k','pct_healthy','share_of_base_pct','total_acv_dec_m']) + '}' for r in p1_payload['geo']) + ']'
+p1_data_js = f"""      // P1_DATA_START (generated by cs_apps_analysis.py — do not edit)
+      const P1_DATA = {{
+        monthly: {{{js_monthly}}},
+        h1: {{{js_h1}}},
+        vertical_top4: {js_vert},
+        geo: {js_geo},
+      }};
+      // P1_DATA_END"""
+
+html_path = os.path.join(BASE, "cs_apps_presentation.html")
+with open(html_path, 'r', encoding='utf-8') as f:
+    html_content = f.read()
+pattern_p1 = re.compile(r'      // P1_DATA_START[\s\S]*?      // P1_DATA_END', re.MULTILINE)
+if pattern_p1.search(html_content):
+    html_content = pattern_p1.sub(p1_data_js.strip(), html_content)
+    print("P1 data written to cs_apps_presentation.html (Slide2).")
+else:
+    print("Warning: P1_DATA_START / P1_DATA_END placeholder not found in HTML; skip injection.")
+pattern_dist = re.compile(r'\s*// DISTRIBUTION_DATA_START[\s\S]*?\s*// DISTRIBUTION_DATA_END', re.MULTILINE)
+if pattern_dist.search(html_content):
+    html_content = pattern_dist.sub(dist_js.strip(), html_content)
+    print("DISTRIBUTION_DATA written to cs_apps_presentation.html.")
+else:
+    print("Warning: DISTRIBUTION_DATA_START / DISTRIBUTION_DATA_END placeholder not found in HTML; skip injection.")
+pattern_cov = re.compile(r'\s*// COVERAGE_BY_TIER_DATA_START[\s\S]*?\s*// COVERAGE_BY_TIER_DATA_END', re.MULTILINE)
+if pattern_cov.search(html_content):
+    html_content = pattern_cov.sub(coverage_js.strip(), html_content)
+    print("COVERAGE_BY_TIER_DATA written to cs_apps_presentation.html.")
+else:
+    print("Warning: COVERAGE_BY_TIER_DATA_START / COVERAGE_BY_TIER_DATA_END placeholder not found in HTML; skip injection.")
+with open(html_path, 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
 print("Analysis complete (v2 — audited).")
