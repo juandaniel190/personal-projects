@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS Apps — Investment Decision Analysis | Contentsquare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { lato: ['Lato', 'sans-serif'] },
+          colors: {
+            'cs-dark': '#0A0D4B',
+            'cs-green': '#31d891',
+            'cs-purple': '#6D28D9',
+            'cs-bg': '#F8F8FF',
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: #E8E8F5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      margin: 0;
+    }
+    .slide-enter { animation: slideIn 0.25s ease-out; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(14px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    table { border-collapse: collapse; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    const C = {
+      bg:           '#F8F8FF',
+      dark:         '#0A0D4B',
+      green:        '#31d891',
+      purple:       '#6D28D9',
+      purpleMid:    '#8B5CF6',
+      purpleLight:  '#EDE9FE',
+      gray:         '#475569',
+      grayLight:    '#E2E8F0',
+      red:          '#EF4444',
+      amber:        '#F59E0B',
+    };
+
+    const TABS = [
+      "Home", "Exec Summary", "P1 Creation", "P2 Delivery",
+      "P3 Protection", "Action Plan", "Monetization", "Pricing Model", "Health KPI"
+    ];
+
+    /* ─── Micro-components ─────────────────────────────────────────── */
+
+    const Card = ({ children, className = "" }) => (
+      <div className={`bg-white rounded-xl border border-slate-200 shadow-sm p-3 ${className}`}>
+        {children}
+      </div>
+    );
+
+    const KPI = ({ value, label, sub, accent, danger }) => (
+      <div className="text-center">
+        <div
+          className="text-2xl font-black leading-none"
+          style={{ color: danger ? C.red : accent ? C.green : C.dark }}
+        >{value}</div>
+        <div className="text-[11px] font-bold text-slate-500 mt-0.5">{label}</div>
+        {sub && <div className="text-[10px] text-slate-400">{sub}</div>}
+      </div>
+    );
+
+    const Pill = ({ children, color = "dark" }) => {
+      const styles = {
+        dark:    { background: C.dark,         color: '#fff' },
+        green:   { background: C.green,        color: C.dark },
+        purple:  { background: C.purple,       color: '#fff' },
+        red:     { background: '#FEE2E2',      color: '#B91C1C' },
+        amber:   { background: '#FEF3C7',      color: '#92400E' },
+        gray:    { background: '#F1F5F9',      color: '#475569' },
+        success: { background: '#D1FAE5',      color: '#065F46' },
+      };
+      const s = styles[color] || styles.dark;
+      return (
+        <span
+          className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black"
+          style={s}
+        >{children}</span>
+      );
+    };
+
+    const InsightBanner = ({ children }) => (
+      <div
+        className="flex items-start gap-2 rounded-lg px-4 py-2.5"
+        style={{ background: C.dark, color: '#fff' }}
+      >
+        <svg className="w-4 h-4 mt-0.5 shrink-0" fill={C.green} viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+        </svg>
+        <p className="text-sm font-bold leading-snug">{children}</p>
+      </div>
+    );
+
+    const SLabel = ({ children }) => (
+      <div
+        className="text-[10px] font-black uppercase tracking-widest mb-1"
+        style={{ color: C.green }}
+      >{children}</div>
+    );
+
+    const Fig = ({ src, alt, className = "" }) => (
+      <div className={`rounded-lg overflow-hidden border border-slate-100 flex items-center justify-center bg-slate-50 ${className}`}>
+        <img src={src} alt={alt} className="w-full h-full object-contain" />
+      </div>
+    );
+
+    const CheckIcon = ({ color }) => (
+      <svg className="w-3.5 h-3.5 shrink-0" fill={color || C.green} viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+    );
+
+    /* ─── Slides ───────────────────────────────────────────────────── */
+
+    const Slide0 = () => (
+      <div className="flex flex-col items-center justify-center h-full gap-5">
+        {/* CS Badge */}
+        <div
+          className="flex items-center justify-center w-24 h-24 rounded-3xl shadow-xl"
+          style={{ background: C.dark }}
+        >
+          <span className="text-5xl font-black" style={{ color: C.green }}>CS</span>
+        </div>
+
+        <div className="text-center max-w-2xl">
+          <h1 className="text-4xl font-black leading-tight" style={{ color: C.dark }}>
+            CS Apps — Investment<br />Decision Analysis
+          </h1>
+          <p className="text-sm text-slate-500 mt-3 font-medium">
+            Senior Manager, Product Data Analyst Case Study · Contentsquare
+          </p>
+        </div>
+
+        {/* Three-pillar strip */}
+        <div className="flex gap-3">
+          {[
+            { label: "Value Creation",   bg: "#D1FAE5", text: "#065F46", border: "#6EE7B7" },
+            { label: "Value Delivery",   bg: "#FEF3C7", text: "#92400E", border: "#FCD34D" },
+            { label: "Value Protection", bg: "#FEE2E2", text: "#991B1B", border: "#FCA5A5" },
+          ].map(({ label, bg, text, border }) => (
+            <div
+              key={label}
+              className="px-5 py-2 rounded-full text-sm font-bold border"
+              style={{ background: bg, color: text, borderColor: border }}
+            >{label}</div>
+          ))}
+        </div>
+
+        {/* Outcome badge */}
+        <div
+          className="flex items-center gap-2 px-6 py-2.5 rounded-full shadow-md"
+          style={{ background: C.green, color: C.dark }}
+        >
+          <CheckIcon color={C.dark} />
+          <span className="text-sm font-black">Recommendation: Increase — Conditionally</span>
+        </div>
+
+        <p className="text-xs text-slate-400 text-center max-w-lg leading-relaxed">
+          CS Apps are creating value (revenue is growing) → but failing to deliver it (clients aren't going live) → which puts value protection at risk (renewals are deteriorating).
+        </p>
+      </div>
+    );
+
+    const Slide1 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          Revenue is growing but delivery is broken — increase investment to fix before the renewal cliff
+        </InsightBanner>
+
+        {/* 3-column pillars */}
+        <div className="grid grid-cols-3 gap-3" style={{ flex: '1 1 0' }}>
+          {[
+            {
+              icon: "✓", iconBg: "#D1FAE5", iconText: "#065F46",
+              title: "P1 — Value Creation", status: "Strong", sc: "success",
+              items: ["+37% ACV growth (Jan→Dec 2023)", "+30% new accounts (134→174)", "Real demand confirmed"],
+            },
+            {
+              icon: "✗", iconBg: "#FEE2E2", iconText: "#B91C1C",
+              title: "P2 — Value Delivery", status: "Broken", sc: "red",
+              items: ["85% of accounts not live in production", "71% have zero certified CS Apps users", "Shallow module engagement (26% Homepage)"],
+            },
+            {
+              icon: "↓", iconBg: "#FEF3C7", iconText: "#92400E",
+              title: "P3 — Value Protection", status: "Deteriorating", sc: "amber",
+              items: ["Health declined −9pp from peak (63%→54%)", "$13.1M renewal UFR at-risk (38%)", "Health metric flaw exposed (H8)"],
+            },
+          ].map(({ icon, iconBg, iconText, title, status, sc, items }) => (
+            <Card key={title} className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className="flex items-center justify-center w-7 h-7 rounded-full text-sm font-black"
+                  style={{ background: iconBg, color: iconText }}
+                >{icon}</span>
+                <div>
+                  <div className="text-xs font-black" style={{ color: C.dark }}>{title}</div>
+                  <Pill color={sc}>{status}</Pill>
+                </div>
+              </div>
+              <ul className="space-y-1 mt-1">
+                {items.map(item => (
+                  <li key={item} className="text-xs text-slate-600 flex items-start gap-1.5">
+                    <span className="font-bold mt-0.5" style={{ color: C.green }}>›</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ))}
+        </div>
+
+        {/* Recommendation strip */}
+        <div className="rounded-xl p-3" style={{ background: C.dark }}>
+          <div className="text-[10px] font-black uppercase tracking-wider mb-2" style={{ color: C.green }}>
+            Priority Recommendations
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { tag: "Marketing", text: "Benchmark Fashion (73% healthy) playbook vs. Telco (53%)" },
+              { tag: "Product",   text: "Build in-app activation flows — reduce Homepage share 26% → 15%" },
+              { tag: "Features",  text: "Prioritize Error Analysis & Workspace — highest engagement stickiness" },
+            ].map(({ tag, text }) => (
+              <div key={tag} className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                <div className="text-[10px] font-black uppercase mb-1" style={{ color: C.green }}>{tag}</div>
+                <div className="text-xs leading-snug" style={{ color: 'rgba(255,255,255,0.9)' }}>{text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide2 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          +37% ACV and +30% accounts confirm real demand — growth from volume, with Telco and Americas as untapped opportunity
+        </InsightBanner>
+
+        <div className="grid grid-cols-5 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+          {/* Left col */}
+          <div className="col-span-2 flex flex-col gap-2">
+            <Card className="grid grid-cols-2 gap-3 py-2.5">
+              <KPI value="$15.5M" label="Total ACV"    sub="Dec 2023"  accent />
+              <KPI value="+37%"   label="ACV Growth"   sub="Jan→Dec"   accent />
+              <KPI value="174"    label="Accounts"     sub="+30% YoY" />
+              <KPI value="2.8×"   label="Telco ACV"    sub="vs. average" />
+            </Card>
+            <Fig src="./figures/fig_01_acv_account_growth.png" alt="ACV & Account Growth" className="flex-1" />
+          </div>
+
+          {/* Right col */}
+          <div className="col-span-3 flex flex-col gap-2">
+            <Fig src="./figures/fig_08_segment_analysis.png" alt="Segment Analysis" className="flex-1" style={{ minHeight: 0 }} />
+            <Card className="p-2">
+              <div className="text-[10px] font-black uppercase tracking-wider mb-1.5" style={{ color: C.dark }}>
+                Segment Snapshot
+              </div>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    {["Vertical / Geo", "Mean ACV", "% Healthy", "Accts"].map(h => (
+                      <th key={h} className={`py-1 font-black text-slate-400 ${h === "Vertical / Geo" ? "text-left" : "text-right"}`}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { v: "Telco",            acv: "$234K", h: "52.9%", a: 13,  hc: "#D97706" },
+                    { v: "General Retailer", acv: "$92K",  h: "59.7%", a: 47,  hc: "#475569" },
+                    { v: "Fashion ★",        acv: "$59K",  h: "73.0%", a: 18,  hc: "#059669" },
+                    { v: "Americas (Geo)",   acv: "$113K", h: "51.9%", a: 46,  hc: "#D97706" },
+                    { v: "EMEA (Geo)",       acv: "$74K",  h: "62.0%", a: 127, hc: "#475569" },
+                  ].map(({ v, acv, h, a, hc }) => (
+                    <tr key={v} className="border-b border-slate-50">
+                      <td className="py-1 font-semibold" style={{ color: C.dark }}>{v}</td>
+                      <td className="text-right font-bold" style={{ color: C.green }}>{acv}</td>
+                      <td className="text-right font-bold" style={{ color: hc }}>{h}</td>
+                      <td className="text-right text-slate-400">{a}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          </div>
+        </div>
+
+        {/* Callout */}
+        <div className="flex items-center gap-2 rounded-lg px-3 py-2 border"
+          style={{ background: '#D1FAE5', borderColor: '#6EE7B7' }}>
+          <CheckIcon color="#059669" />
+          <span className="text-xs font-bold" style={{ color: '#065F46' }}>
+            "Fashion 73% health with $59K ACV reveals a playbook gap, not a product gap — benchmark this against Telco & Americas"
+          </span>
+        </div>
+      </div>
+    );
+
+    const Slide3 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          85% of buyers are not live; 71% have zero certified users — a structural delivery failure after the sale
+        </InsightBanner>
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { value: "15%",  label: "Accounts Live",        sub: "27 of 185 total",     danger: true },
+            { value: "85%",  label: "Not in Production",    sub: "never went live",      danger: true },
+            { value: "71%",  label: "Zero Certified Users", sub: "132 / 185 accounts",  danger: true },
+            { value: "26×",  label: "Cert User Gap",        sub: "Apps vs CS Digital",  danger: true },
+          ].map(k => <Card key={k.label}><KPI {...k} /></Card>)}
+        </div>
+
+        {/* 3 evidence cards */}
+        <div className="grid grid-cols-3 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+          <Card className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <SLabel>Implementation Funnel</SLabel>
+              <Pill color="red">CAUTION</Pill>
+            </div>
+            <Fig src="./figures/fig_06_implementation_funnel.png" alt="Implementation Funnel" className="flex-1" />
+            <div className="text-xs text-slate-600 rounded p-2 border"
+              style={{ background: '#FEF2F2', borderColor: '#FECACA' }}>
+              Only 15% "Lived". 32% stuck at "Implemented". 29% NULL status — systemic data pipeline issue confirmed across all months.
+            </div>
+          </Card>
+
+          <Card className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <SLabel>Certification Gap</SLabel>
+              <Pill color="red">CAUTION</Pill>
+            </div>
+            <Fig src="./figures/fig_04_certification_gap.png" alt="Certification Gap" className="flex-1" />
+            <div className="text-xs text-slate-600 rounded p-2 border"
+              style={{ background: '#FEF2F2', borderColor: '#FECACA' }}>
+              0.69 avg certified users vs. 18.1 for CS Digital. Clients are buying but not embedding the product in their team.
+            </div>
+          </Card>
+
+          <Card className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <SLabel>Module Engagement</SLabel>
+              <Pill color="amber">SHALLOW</Pill>
+            </div>
+            <Fig src="./figures/fig_07_module_engagement.png" alt="Module Engagement" className="flex-1" />
+            <div className="text-xs text-slate-600 rounded p-2 border"
+              style={{ background: '#FFFBEB', borderColor: '#FDE68A' }}>
+              Homepage = 26% of sessions (navigation, not value). Error Analysis: highest stickiness (4.36) but only 0.6% reach.
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+
+    const Slide4 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          $13.1M in renewals sits with unhealthy accounts as health declines 9pp from peak — Q4 cliff is real
+        </InsightBanner>
+
+        <div className="grid grid-cols-5 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+          {/* Left */}
+          <div className="col-span-2 flex flex-col gap-2">
+            <SLabel>Health Trend (Jan–Dec 2023)</SLabel>
+            <Fig src="./figures/fig_02_health_trend.png" alt="Health Trend" className="flex-1" />
+            <Card className="border" style={{ borderColor: '#FCD34D', background: '#FFFBEB' }}>
+              <div className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: '#92400E' }}>
+                Health Anomaly — H8
+              </div>
+              <p className="text-xs leading-snug" style={{ color: '#78350F' }}>
+                Non-live accounts score <strong>healthier</strong> than live ones. CS Digital WAU is counted in{' '}
+                <code className="text-[10px] font-mono bg-amber-100 px-1 rounded">AVG_WAU_GLOBAL</code>{' '}
+                for unimplemented accounts — inflating their score and masking adoption failure.
+              </p>
+            </Card>
+          </div>
+
+          {/* Right */}
+          <div className="col-span-3 flex flex-col gap-2">
+            <SLabel>Renewal Pipeline Risk</SLabel>
+            <Fig src="./figures/fig_09_renewal_pipeline.png" alt="Renewal Pipeline" className="flex-1" />
+            <Card className="p-2">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b-2" style={{ borderColor: C.dark }}>
+                    {["Fiscal Quarter", "UFR", "Accts", "% Accts Healthy", "% UFR Healthy"].map(h => (
+                      <th key={h} className={`py-1.5 font-black ${h === "Fiscal Quarter" ? "text-left" : "text-right"}`}
+                        style={{ color: C.dark }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { q: "FQ 2022-11-01", ufr: "$5.0M",  a: 20, ah: "60%", uh: "57%", hot: false },
+                    { q: "FQ 2023-02-01", ufr: "$2.8M",  a: 16, ah: "62%", uh: "58%", hot: false },
+                    { q: "FQ 2023-05-01", ufr: "$5.1M",  a: 23, ah: "87%", uh: "88%", hot: false },
+                    { q: "FQ 2023-08-01", ufr: "$5.4M",  a: 17, ah: "59%", uh: "62%", hot: false },
+                    { q: "FQ 2023-11-01 ⚠", ufr: "$16.3M", a: 33, ah: "58%", uh: "56%", hot: true },
+                  ].map(({ q, ufr, a, ah, uh, hot }) => (
+                    <tr key={q} className="border-b border-slate-50" style={hot ? { background: '#FEF2F2' } : {}}>
+                      <td className="py-1.5 font-semibold" style={{ color: hot ? C.red : '#334155' }}>{q}</td>
+                      <td className="text-right font-bold" style={{ color: hot ? C.red : C.dark }}>{ufr}</td>
+                      <td className="text-right text-slate-400">{a}</td>
+                      <td className="text-right font-bold" style={{ color: parseInt(ah) >= 80 ? '#059669' : parseInt(ah) >= 60 ? '#D97706' : C.red }}>{ah}</td>
+                      <td className="text-right font-bold" style={{ color: parseInt(uh) >= 80 ? '#059669' : parseInt(uh) >= 60 ? '#D97706' : C.red }}>{uh}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-2 flex items-center justify-between">
+                <div className="text-xs font-black" style={{ color: C.red }}>
+                  Total At-Risk UFR: $13.1M (37.9% of pipeline)
+                </div>
+                <Pill color="red">HIGH RISK</Pill>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide5 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          Five actions close the delivery gap before Q4 — with three data pipeline fixes that are prerequisites
+        </InsightBanner>
+
+        {/* Action table */}
+        <Card style={{ flex: '1 1 0' }}>
+          <SLabel>Priority Action Plan</SLabel>
+          <table className="w-full text-xs mt-1">
+            <thead>
+              <tr className="border-b-2" style={{ borderColor: C.dark }}>
+                {["#", "Action", "Pillar", "Target", "Rationale"].map(h => (
+                  <th key={h} className={`py-1.5 font-black ${h === "#" ? "text-center" : "text-left"}`}
+                    style={{ color: C.dark }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { n: 1, action: "Accelerate implementation",         pillar: "Delivery",    pc: "amber",   target: '"Lived" rate: 15% → 40%+',         rat: "60 accounts stall at Implemented; 53 untracked" },
+                { n: 2, action: "Drive certification",               pillar: "Delivery",    pc: "amber",   target: "0 → 3+ certified users/account",   rat: "71% of accounts have 0 certified users" },
+                { n: 3, action: "In-product activation flows",       pillar: "Delivery",    pc: "amber",   target: "Homepage share 26% → 15%",         rat: "Guide users to Zoning, Session Replay, Error Analysis" },
+                { n: 4, action: "Segment playbooks (Telco & Americas)", pillar: "Creation", pc: "success", target: "Benchmark Fashion 73% health",       rat: "Highest ACV verticals with worst health rates" },
+                { n: 5, action: "Rebuild health metric",             pillar: "Protection",  pc: "red",     target: "CS Apps-specific WAU formula",      rat: "Current metric masks adoption failure via Digital WAU" },
+              ].map(({ n, action, pillar, pc, target, rat }) => (
+                <tr key={n} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="py-2 text-center pr-2">
+                    <span
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-black text-white"
+                      style={{ background: C.dark }}
+                    >{n}</span>
+                  </td>
+                  <td className="py-2 font-semibold" style={{ color: C.dark }}>{action}</td>
+                  <td className="py-2"><Pill color={pc}>{pillar}</Pill></td>
+                  <td className="py-2 text-slate-700">{target}</td>
+                  <td className="py-2 text-slate-500">{rat}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+
+        {/* Data quality cards */}
+        <div>
+          <SLabel>Data Quality Audit — Prerequisites Before Scaling</SLabel>
+          <div className="grid grid-cols-3 gap-2 mt-1">
+            {[
+              {
+                title: "NULL Implementation Status",
+                stat: "28.7% / 82 accounts",
+                impact: "HIGH", ic: "amber",
+                desc: "518 rows untracked — consistent ~27–34% across all months; systemic pipeline issue",
+              },
+              {
+                title: "NULL Contract Dates",
+                stat: "29% start · 28% end",
+                impact: "MEDIUM", ic: "gray",
+                desc: "Limits cohort analysis and time-to-live calculations for implementation velocity metric",
+              },
+              {
+                title: "AVG_WAU_GLOBAL = 0",
+                stat: "156 rows — 49 accounts",
+                impact: "CRITICAL", ic: "red",
+                desc: "Breaks health metric for ~27% of base — health score is undefined for these accounts",
+              },
+            ].map(({ title, stat, impact, ic, desc }) => (
+              <Card key={title} className="border-l-4" style={{ borderLeftColor: C.amber }}>
+                <div className="flex items-start justify-between mb-1">
+                  <div className="text-xs font-black" style={{ color: C.dark }}>{title}</div>
+                  <Pill color={ic}>{impact}</Pill>
+                </div>
+                <div className="text-sm font-black mb-1" style={{ color: C.amber }}>{stat}</div>
+                <div className="text-xs text-slate-500 leading-snug">{desc}</div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide6 = () => {
+      const quotaData = [
+        { name: "P50 (median)", qpd: 0.7 },
+        { name: "P75",          qpd: 2.3 },
+        { name: "P90",          qpd: 4.0 },
+      ];
+      const barColors = [C.green, C.purpleMid, C.dark];
+
+      return (
+        <div className="flex flex-col h-full gap-3">
+          <InsightBanner>
+            Analytics AI is currently bundled free — the window to monetize Sense before competitors act is now
+          </InsightBanner>
+
+          <div className="grid grid-cols-5 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+            {/* Market matrix */}
+            <div className="col-span-3 flex flex-col gap-2">
+              <Card className="flex-1 overflow-hidden">
+                <SLabel>How the Market Prices AI Today</SLabel>
+                <table className="w-full text-xs mt-1">
+                  <thead>
+                    <tr className="border-b-2" style={{ borderColor: C.dark }}>
+                      {["Model", "How It Works", "Companies", "CS Verdict"].map(h => (
+                        <th key={h} className={`py-1.5 font-black ${h === "CS Verdict" ? "text-right" : "text-left"}`}
+                          style={{ color: C.dark }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { m: "Flat-Fee Add-On",  how: "Fixed $/yr for unlimited AI",      co: "Gainsight",            v: "Eliminated",     vc: "red",     hi: false },
+                      { m: "Seat-Based",       how: "Per-user/mo, AI included",         co: "Pendo",                v: "Eliminated",     vc: "red",     hi: false },
+                      { m: "Usage / Token",    how: "Pay per AI query or token",        co: "PostHog, Anthropic",   v: "More data",      vc: "gray",    hi: false },
+                      { m: "Outcome-Based",    how: "Pay per resolved outcome",         co: "Intercom Fin",         v: "Eliminated",     vc: "red",     hi: false },
+                      { m: "Quota + Tier ★",  how: "Daily cap per plan, upgrade more", co: "Claude Pro, Agentforce", v: "Confirmed",    vc: "success", hi: true },
+                    ].map(({ m, how, co, v, vc, hi }) => (
+                      <tr key={m} className="border-b border-slate-50"
+                        style={hi ? { background: '#F0FDF4' } : {}}>
+                        <td className="py-1.5 font-bold" style={{ color: hi ? '#059669' : C.dark }}>{m}</td>
+                        <td className="py-1.5 text-slate-600">{how}</td>
+                        <td className="py-1.5 text-slate-400 text-[10px]">{co}</td>
+                        <td className="py-1.5 text-right"><Pill color={vc}>{v}</Pill></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Card>
+            </div>
+
+            {/* Right side */}
+            <div className="col-span-2 flex flex-col gap-2">
+              <Fig src="./figures/fig_13_pricing_decision_analysis.png" alt="Pricing Decision Analysis" className="flex-1" />
+
+              <Card>
+                <SLabel>Sense Query Natural Breakpoints (queries/day)</SLabel>
+                <div style={{ height: 90 }}>
+                  <svg width="100%" height="90" viewBox="0 0 260 90">
+                    {[0,1,2,3,4,5].map(v => {
+                      const y = 8 + (1 - v/5) * 60;
+                      return (
+                        <g key={v}>
+                          <line x1="28" x2="252" y1={y} y2={y} stroke={C.grayLight} strokeWidth={v===0?1.5:0.7} />
+                          <text x="24" y={y+3} textAnchor="end" fontSize="7" fill={C.gray}>{v}</text>
+                        </g>
+                      );
+                    })}
+                    {[
+                      { label: "P50 (median)", qpd: 0.7, color: C.green,     cx: 82  },
+                      { label: "P75",          qpd: 2.3, color: C.purpleMid, cx: 145 },
+                      { label: "P90",          qpd: 4.0, color: C.dark,      cx: 208 },
+                    ].map(({ label, qpd, color, cx }) => {
+                      const bh = Math.max((qpd / 5) * 60, 2);
+                      const by = 68 - bh;
+                      return (
+                        <g key={label}>
+                          <rect x={cx-22} y={by} width="44" height={bh} rx="3" fill={color} />
+                          <text x={cx} y={by-2} textAnchor="middle" fontSize="8" fontWeight="700" fill={color}>{qpd}</text>
+                          <text x={cx} y="83" textAnchor="middle" fontSize="7.5" fill={C.gray}>{label}</text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+              </Card>
+
+              <Card className="text-white" style={{ background: C.dark }}>
+                <div className="text-[10px] font-black uppercase mb-1.5" style={{ color: C.green }}>Usage Concentration</div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {[
+                    { val: "65%",  label: "sessions from top 20% accounts", c: C.green },
+                    { val: "6×",   label: "P90 vs. median usage",           c: '#fff' },
+                    { val: "r=0.09", label: "usage↔health correlation",     c: C.amber },
+                  ].map(({ val, label, c }) => (
+                    <div key={val}>
+                      <div className="text-base font-black" style={{ color: c }}>{val}</div>
+                      <div className="text-[9px] text-white/60 leading-tight">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const Slide7 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          Quota + Tier adds AI revenue without disrupting session pricing — daily friction drives natural upgrades
+        </InsightBanner>
+
+        <div className="grid grid-cols-2 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+          {/* Current model */}
+          <Card className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-black uppercase tracking-wider text-slate-400">Current Model</div>
+              <Pill color="gray">Sense bundled free</Pill>
+            </div>
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b-2 border-slate-200">
+                  {["Tier", "Sessions", "AI (Sense)"].map(h => (
+                    <th key={h} className={`py-1.5 font-black text-slate-500 ${h === "Tier" ? "text-left" : "text-right"}`}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { t: "Free",       s: "200K/month",    ai: "Not listed" },
+                  { t: "Growth",     s: "From 7K",       ai: "Included" },
+                  { t: "Pro",        s: "From 1M",       ai: "Included" },
+                  { t: "Enterprise", s: "Custom",        ai: "Included + extras" },
+                ].map(({ t, s, ai }) => (
+                  <tr key={t} className="border-b border-slate-50">
+                    <td className="py-2 font-semibold" style={{ color: C.dark }}>{t}</td>
+                    <td className="text-right text-slate-500">{s}</td>
+                    <td className="text-right text-slate-400 italic">{ai}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="mt-auto rounded-lg p-2.5 text-xs border"
+              style={{ background: '#FEF2F2', borderColor: '#FECACA', color: '#B91C1C' }}>
+              <strong>Problem:</strong> Heavy users extract 6× more AI value. Bundling leaves revenue on the table and subsidizes the top 20%.
+            </div>
+          </Card>
+
+          {/* Proposed model */}
+          <Card className="flex flex-col gap-2 border-2" style={{ borderColor: C.green }}>
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-black uppercase tracking-wider" style={{ color: C.dark }}>Proposed Model</div>
+              <Pill color="green">Quota + Tier ★</Pill>
+            </div>
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b-2" style={{ borderColor: C.dark }}>
+                  {["Tier", "Sessions", "Sense Chat", "Analyst Q/Day"].map(h => (
+                    <th key={h} className={`py-1.5 font-black ${h === "Tier" ? "text-left" : "text-right"}`}
+                      style={{ color: C.dark }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { t: "Free",       s: "200K/month", chat: "—",  q: "Not included" },
+                  { t: "Growth",     s: "From 7K",    chat: "∞",  q: "5 / day ★" },
+                  { t: "Pro",        s: "From 1M",    chat: "∞",  q: "25 / day" },
+                  { t: "Enterprise", s: "Custom",     chat: "∞",  q: "Unlimited" },
+                ].map(({ t, s, chat, q }) => (
+                  <tr key={t} className="border-b border-slate-50">
+                    <td className="py-2 font-semibold" style={{ color: C.dark }}>{t}</td>
+                    <td className="text-right text-slate-500">{s}</td>
+                    <td className="text-right font-bold" style={{ color: C.green }}>{chat}</td>
+                    <td className="text-right font-bold" style={{ color: C.dark }}>{q}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="text-[10px] text-slate-500 rounded p-1.5" style={{ background: '#F8FAFC' }}>
+              ★ Why 5/day: avg. account has ~3 daily sessions → 5 queries covers typical analyst workflow with natural headroom
+            </div>
+          </Card>
+        </div>
+
+        {/* Bottom row */}
+        <div className="grid grid-cols-5 gap-2">
+          <div className="col-span-2 flex gap-2">
+            <Fig src="./figures/fig_12_pricing_comparison.png" alt="Pricing Comparison" className="flex-1" style={{ height: 110 }} />
+            <Fig src="./figures/fig_14_quota_rationale.png"   alt="Quota Rationale"    className="flex-1" style={{ height: 110 }} />
+          </div>
+          <div className="col-span-3 flex flex-col gap-2">
+            <div className="rounded-xl p-2.5" style={{ background: C.dark }}>
+              <div className="text-[10px] font-black uppercase mb-1" style={{ color: C.green }}>How It Works</div>
+              <p className="text-xs leading-snug" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                "A Growth analyst runs 5 Sense queries in a day. The 6th is blocked:{' '}
+                <em>'Your team hit today's 5-query limit. Upgrade to Pro for 25/day, or cap resets tomorrow.'</em>{' '}
+                No work is lost — wait or upgrade."
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {[
+                "Captures uncaptured AI value",
+                "Preserves session pricing",
+                "Simple for procurement",
+                "Natural upgrade path",
+              ].map(w => (
+                <div key={w} className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 border"
+                  style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                  <CheckIcon color="#059669" />
+                  <span className="text-[10px] font-semibold" style={{ color: '#065F46' }}>{w}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    const Slide8 = () => (
+      <div className="flex flex-col h-full gap-3">
+        <InsightBanner>
+          The current health metric masks adoption failure — a new three-pillar formula accounts for AI engagement
+        </InsightBanner>
+
+        <div className="grid grid-cols-5 gap-3" style={{ flex: '1 1 0', minHeight: 0 }}>
+          {/* Left: formula + figures */}
+          <div className="col-span-2 flex flex-col gap-2">
+            <Card className="text-white" style={{ background: C.dark }}>
+              <SLabel>New Health Formula</SLabel>
+              <div className="space-y-1.5 mt-1">
+                <div className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                  <div className="text-[10px] font-black mb-0.5" style={{ color: C.green }}>IF Non-Live / Partially Live:</div>
+                  <code className="text-xs font-mono text-white">Score = 0.15·P1 + 0.25·P2 + 0.60·P3</code>
+                </div>
+                <div className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                  <div className="text-[10px] font-black mb-0.5" style={{ color: C.green }}>IF Live:</div>
+                  <code className="text-xs font-mono text-white">Score = 0.30·P2 + 0.70·P3</code>
+                </div>
+                <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Healthy = Score ≥ 50</div>
+              </div>
+              <div className="mt-2 space-y-1.5">
+                {[
+                  { p: "P1", name: "Implementation Velocity", wt: "15% (non-live)", def: "100 if within window; linear decay beyond it" },
+                  { p: "P2", name: "Adoption (ACV-normalized)", wt: "25–30%", def: "min(Cert Users / (ACV × α), 1) × 100" },
+                  { p: "P3", name: "Engagement Quality (AI-aware)", wt: "60–70%", def: "uses WAU + Sense Queries/wk to avoid penalizing AI migration" },
+                ].map(({ p, name, wt, def }) => (
+                  <div key={p} className="flex items-start gap-2">
+                    <span
+                      className="flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black shrink-0"
+                      style={{ background: C.green, color: C.dark }}
+                    >{p}</span>
+                    <div>
+                      <div className="text-xs font-bold text-white">{name}</div>
+                      <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.55)' }}>{wt} — {def}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            <div className="grid grid-cols-2 gap-2" style={{ flex: '0 0 auto' }}>
+              <Fig src="./figures/fig_10_health_formula.png" alt="Current health formula flaw" style={{ height: 100 }} />
+              <Fig src="./figures/fig_11_prototype_health.png" alt="New health formula" style={{ height: 100 }} />
+            </div>
+          </div>
+
+          {/* Right: examples table + calibration */}
+          <div className="col-span-3 flex flex-col gap-2">
+            <Card style={{ flex: '1 1 0', overflow: 'hidden' }}>
+              <SLabel>Illustrative Examples (Dummy Data)</SLabel>
+              <div className="text-[10px] text-slate-400 mb-1.5">α = 1/100,000 · β = 1/500 · Expected implementation window = 90 days</div>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b-2" style={{ borderColor: C.dark }}>
+                    {["Account", "ACV", "Status", "WAU", "Cert", "P1", "P2", "P3", "Score"].map(h => (
+                      <th key={h}
+                        className={`py-1.5 font-black ${h === "Account" ? "text-left" : "text-right"}`}
+                        style={{ color: C.dark }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "A — Acme Corp",  acv: "$200K", st: "Non-Live", wau: 2,  cert: 1, p1: 0,   p2: 50,  p3: 0,  score: 15, pass: false },
+                    { name: "B — Beta Co",    acv: "$400K", st: "Live",     wau: 10, cert: 1, p1: "—", p2: 25,  p3: 47, score: 39, pass: false },
+                    { name: "C — Gamma Inc",  acv: "$200K", st: "Live",     wau: 20, cert: 5, p1: "—", p2: 100, p3: 87, score: 92, pass: true  },
+                    { name: "D — Delta SA",   acv: "$500K", st: "Live",     wau: 3,  cert: 6, p1: "—", p2: 100, p3: 0,  score: 38, pass: false },
+                    { name: "E — Echo Ltd",   acv: "$120K", st: "Non-Live", wau: 3,  cert: 2, p1: 85,  p2: 100, p3: 40, score: 67, pass: true  },
+                  ].map(({ name, acv, st, wau, cert, p1, p2, p3, score, pass }) => (
+                    <tr key={name} className="border-b border-slate-50"
+                      style={{ background: pass ? 'rgba(209,250,229,0.3)' : 'rgba(254,226,226,0.2)' }}>
+                      <td className="py-1.5 font-semibold text-[11px]" style={{ color: C.dark }}>{name}</td>
+                      <td className="text-right text-slate-600">{acv}</td>
+                      <td className="text-right">
+                        <Pill color={st === 'Live' ? 'success' : 'gray'}>{st}</Pill>
+                      </td>
+                      <td className="text-right text-slate-500">{wau}</td>
+                      <td className="text-right text-slate-500">{cert}</td>
+                      <td className="text-right text-slate-400">{p1}</td>
+                      <td className="text-right text-slate-400">{p2}</td>
+                      <td className="text-right text-slate-400">{p3}</td>
+                      <td className="text-right font-black text-sm"
+                        style={{ color: pass ? '#059669' : C.red }}>
+                        {score} {pass ? '✓' : '⚠'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+
+            <Card className="border" style={{ borderColor: '#FCD34D', background: '#FFFBEB' }}>
+              <div className="text-[10px] font-black uppercase tracking-wider mb-1.5" style={{ color: '#92400E' }}>
+                Data Required to Calibrate (Not Yet Available)
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                {[
+                  { d: "α — adoption rate per $ ACV",    n: "Distribution of (Cert Users / ACV) across live accounts" },
+                  { d: "β — engagement sensitivity",     n: "ACV / (WAU + Sense Q) ratios; P50 account should score ~50" },
+                  { d: "Expected implementation window", n: "Historical time-to-go-live by account tier" },
+                  { d: "Sense Queries/week ⚠",           n: "Not yet available — requires Sense query logs at account level" },
+                ].map(({ d, n }) => (
+                  <div key={d} className="flex items-start gap-1">
+                    <span className="mt-0.5 shrink-0" style={{ color: C.amber }}>›</span>
+                    <div>
+                      <div className="text-[10px] font-black" style={{ color: '#78350F' }}>{d}</div>
+                      <div className="text-[10px]" style={{ color: '#92400E' }}>{n}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+
+    const SLIDES = [Slide0, Slide1, Slide2, Slide3, Slide4, Slide5, Slide6, Slide7, Slide8];
+
+    /* ─── Navigation Bar ────────────────────────────────────────────── */
+
+    const SlideNav = ({ current, total, onPrev, onNext, onChange }) => (
+      <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-slate-100">
+        <button
+          onClick={onPrev}
+          disabled={current === 0}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Prev
+        </button>
+
+        <div className="flex items-center gap-1.5">
+          {Array.from({ length: total }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => onChange(i)}
+              title={TABS[i]}
+              style={{
+                width:  i === current ? 20 : 8,
+                height: 8,
+                borderRadius: 4,
+                background: i === current ? C.dark : C.grayLight,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={onNext}
+          disabled={current === total - 1}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+        >
+          Next
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    );
+
+    /* ─── App ───────────────────────────────────────────────────────── */
+
+    const App = () => {
+      const [slide, setSlide] = useState(0);
+      const total = SLIDES.length;
+
+      const goTo = useCallback((i) => {
+        if (i >= 0 && i < total) setSlide(i);
+      }, [total]);
+
+      useEffect(() => {
+        const handler = (e) => {
+          if (e.key === 'ArrowRight') goTo(slide + 1);
+          if (e.key === 'ArrowLeft')  goTo(slide - 1);
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+      }, [slide, goTo]);
+
+      const SlideComponent = SLIDES[slide];
+
+      return (
+        <div
+          className="w-full flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-slate-200"
+          style={{ maxWidth: 1024, background: C.bg }}
+        >
+          {/* Top tab bar */}
+          <div className="flex items-center overflow-x-auto no-scrollbar bg-white border-b border-slate-200 px-1">
+            {TABS.map((tab, i) => (
+              <button
+                key={tab}
+                onClick={() => goTo(i)}
+                className="shrink-0 px-3 py-3 text-xs font-bold whitespace-nowrap transition-all border-b-2"
+                style={{
+                  borderBottomColor: i === slide ? C.dark : 'transparent',
+                  color: i === slide ? C.dark : '#94A3B8',
+                }}
+              >
+                {i === slide && (
+                  <span
+                    className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 mb-0.5"
+                    style={{ background: C.green, display: 'inline-block', verticalAlign: 'middle' }}
+                  />
+                )}
+                {tab}
+              </button>
+            ))}
+            <div className="ml-auto pl-4 pr-3 text-xs text-slate-400 font-mono shrink-0">
+              {slide + 1}/{total}
+            </div>
+          </div>
+
+          {/* Slide content */}
+          <div style={{ height: 560, overflow: 'hidden', padding: 16 }}>
+            <div key={slide} className="slide-enter h-full">
+              <SlideComponent />
+            </div>
+          </div>
+
+          {/* Bottom nav */}
+          <SlideNav
+            current={slide}
+            total={total}
+            onPrev={() => goTo(slide - 1)}
+            onNext={() => goTo(slide + 1)}
+            onChange={goTo}
+          />
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
