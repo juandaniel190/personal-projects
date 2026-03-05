@@ -708,29 +708,36 @@
             {[
               {
                 pillar: 'P2 Adoption',
+                priority: 'High',
                 objective: 'Improve engagement and adoption of the platform',
                 kpis: ['"Lived" rate: 15% → 40%+', '0 → 3+ certified users/account', 'Homepage share 26% → 15%'],
                 initiatives: ['Accelerate implementation', 'Drive certification', 'In-product activation flows'],
               },
               {
                 pillar: 'P3 Retention',
+                priority: 'Medium',
                 objective: 'Secure the Q4 renewal cliff before procurement conversations start',
                 kpis: ['Renewal rate ≥90% on $16.3M Q4 UFR'],
                 initiatives: ['Triage 33 Q4 accounts by go-live status; assign owners to non-live'],
               },
               {
                 pillar: 'P1 Acquisition',
+                priority: 'Low',
                 objective: 'Sustain and accelerate revenue and account growth',
                 kpis: ['Benchmark Fashion 73% health'],
                 initiatives: ['Segment playbooks (Telco & Americas)'],
               },
-            ].map(({ pillar, objective, kpis, initiatives }) => (
+            ].map(({ pillar, priority, objective, kpis, initiatives }) => {
+              const priorityColors = { High: { bg: '#EDE9FE', text: C.purple }, Medium: { bg: '#D1FAE5', text: C.green }, Low: { bg: '#F1F5F9', text: C.gray } };
+              const pc = priorityColors[priority];
+              return (
               <div key={pillar} className="rounded-lg border border-slate-200 bg-white grid grid-cols-3 divide-x divide-slate-100" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
                 <div className="px-3 py-2">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-xs font-bold" style={{ color: C.dark }}>{pillar}</span>
                     <span className="text-slate-300">|</span>
                     <span className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: C.gray }}>Objective</span>
+                    <span className="ml-auto text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded" style={{ background: pc.bg, color: pc.text }}>{priority}</span>
                   </div>
                   <div className="text-xs leading-snug" style={{ color: C.gray }}>{objective}</div>
                 </div>
@@ -747,7 +754,8 @@
                   </ul>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
