@@ -776,7 +776,7 @@ print("Figure saved: fig_14 (quota rationale)")
 
 # --- Distribution only (for Pricing slide: inline SVG in HTML) ---
 bins_only = np.linspace(0, 12, 25)
-n_only, bin_edges_only, _ = np.histogram(daily_dist, bins=bins_only)
+n_only, bin_edges_only = np.histogram(daily_dist, bins=bins_only)
 n_only = n_only.astype(float)
 bar_colors = []
 for i in range(len(bin_edges_only) - 1):

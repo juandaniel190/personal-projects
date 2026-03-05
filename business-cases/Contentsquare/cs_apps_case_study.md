@@ -46,42 +46,93 @@ The analysis is structured around three pillars that form a causal chain — eac
 
 ## Pillar 1 — Value Creation (Revenue & Growth)
 
-> *Is CS Apps generating and growing revenue meaningfully?*
+> *Is CS Apps generating and growing revenue meaningfully — and is it deepening its position within each client's total Contentsquare relationship?*
+
+### Data Scope Note
+
+This dataset covers **only accounts with active CS Apps contracts**. `TOTAL_ACTIVE_ACV` for each account represents their full Contentsquare spend (CS Apps + CS Digital + other add-ons). We do not know how many CS Digital-only accounts exist — the dataset does not include them. The analysis below cannot measure CS Apps' market penetration across all CS clients. What it **can** measure is **wallet penetration**: how large a share of each account's total Contentsquare spend is CS Apps — and whether that share is growing.
+
+---
 
 ### H1 — Revenue & Account Growth | INVEST
 
 | Metric | Jan 2023 | Dec 2023 | Change |
 |---|---|---|---|
-| Total CS Apps ACV | $11.3M | $15.5M | **+37.4%** |
-| Number of Accounts | 134 | 174 | **+29.9%** |
-| Mean ACV per account | ~$84K | ~$89K | Stable |
+| Total CS Apps ACV | $11.3M | $15.5M | **+37%** |
+| Total relationship ACV (all products) | $48.7M | $62.9M | +29% |
+| Number of accounts | 134 | 174 | **+30%** |
+| Mean CS Apps ACV per account | ~$84K | ~$89K | Stable |
+| **CS Apps penetration (Apps / Total ACV)** | **23.1%** | **24.6%** | **+1.5pp** |
 
-Revenue is growing driven by new account acquisition, not price increases. The median ACV remains stable around $60K, suggesting consistent deal sizes with the growth coming from volume.
+CS Apps ACV is growing faster than total relationship ACV (+37% vs. +29%). This means CS Apps is increasing its share of the Contentsquare wallet — penetration grew from 23.1% to 24.6% over the year.
 
 ![ACV & Account Growth](./figures/fig_01_acv_account_growth.png)
 
 ---
 
-### H7 — High-Value Segment Opportunity | OPPORTUNITY
+### H1b — Wallet Penetration Trend (Jan → Dec 2023)
 
-| Vertical | Accounts | Mean ACV | % Healthy |
+Penetration = CS Apps ACV / Total Contentsquare ACV for the same accounts.
+
+| Month | CS Apps ACV | Total ACV | CS Apps Penetration |
 |---|---|---|---|
-| **Telco** | 13 | **$234K** | 52.9% |
-| General Retailer | 47 | $92K | 59.7% |
-| Energy/Utilities | 9 | $84K | 52.9% |
-| Fashion | 18 | $59K | **73.0%** |
+| Jan 2023 | $11.26M | $48.69M | 23.1% |
+| Feb 2023 | $11.46M | $48.39M | 23.7% |
+| Mar 2023 | $11.45M | $48.53M | 23.6% |
+| Apr 2023 | $11.58M | $49.51M | 23.4% |
+| May 2023 | $11.59M | $50.54M | 22.9% |
+| Jun 2023 | $11.84M | $51.65M | 22.9% |
+| Jul 2023 | $12.87M | $56.28M | 22.9% |
+| Aug 2023 | $13.07M | $56.78M | 23.0% |
+| Sep 2023 | $13.51M | $57.24M | 23.6% |
+| Oct 2023 | $14.51M | $59.80M | 24.3% |
+| Nov 2023 | $14.77M | $60.38M | 24.5% |
+| **Dec 2023** | **$15.48M** | **$62.88M** | **24.6%** |
 
-| Geo | Accounts | Mean ACV | % Healthy |
-|---|---|---|---|
-| **Americas** | 46 | **$113K** | 51.9% |
-| APJ | 12 | $92K | 62.0% |
-| EMEA | 127 | $74K | 62.0% |
+**Reading:** Penetration dips mid-year (May–Jul) as new accounts enter with large CS Digital contracts — the total relationship grows faster than CS Apps ACV temporarily. By H2, CS Apps recovers and outpaces total growth. The direction is positive but the rate of penetration gain is modest (+1.5pp in 12 months). CS Apps still represents roughly 1 in 4 dollars of these clients' Contentsquare spend.
 
-Telco delivers 2.8x the average ACV but only 53% health. Americas is the highest-ACV geo but the least healthy (52%). Fashion, with lower ACV, leads with 73% health — suggesting a playbook problem, not a product problem.
+---
+
+### H7 — Wallet Penetration by Segment | OPPORTUNITY
+
+The segment tables below show two dimensions: CS Apps ACV (what we're billing for Apps) and the total Contentsquare relationship (the full stake at risk). **CS Apps % of relationship** = wallet penetration per segment.
+
+**By Vertical (Dec 2023):**
+
+| Vertical | Accounts | Mean CS Apps ACV | Mean Total ACV | CS Apps % | % Healthy |
+|---|---|---|---|---|---|
+| Telco | 10 | $272K | $940K | **29%** | 50% |
+| Energy, Util & Resources | 8 | $100K | $275K | **36%** | 25% |
+| General Retailer | 46 | $96K | $392K | 24% | 46% |
+| BFSI | 26 | $92K | $298K | 31% | 58% |
+| **Luxury** | **2** | **$90K** | **$1,369K** | **7%** | 100% |
+| Food & Beverages | 14 | $82K | $262K | 31% | 57% |
+| M&A | 8 | $65K | $330K | 20% | 50% |
+| Travel, Leisure & Logistics | 15 | $62K | $237K | 26% | 67% |
+
+**By Geo (Dec 2023):**
+
+| Geo | Accounts | Mean CS Apps ACV | Mean Total ACV | CS Apps % | % Healthy |
+|---|---|---|---|---|---|
+| Americas | 42 | $115K | $530K | **22%** | 43% |
+| EMEA | 121 | $76K | $319K | 24% | 57% |
+| APJ | 11 | $129K | $206K | **63%** | 64% |
+
+**What this reveals:**
+
+- **Luxury:** The outlier. $1.37M mean total relationship but only 7% is CS Apps ($90K). Two accounts — but if CS Apps ever delivers value here and expands, each account has 13× the upsell room of a typical account. The 100% health rate is not meaningful with n=2.
+- **Telco:** $940K mean total relationship, 29% penetration, 50% health. A failing Telco CS Apps account is a risk to the full $940K — not just the $272K Apps line. These accounts warrant dedicated intervention.
+- **Americas:** Only 22% penetration despite the highest total relationship ($530K/account). CS Apps is under-represented in the geo with the most value at stake. Lowest health (43%).
+- **APJ:** 63% penetration — Apps is proportionally dominant in these accounts. They have far less CS Digital relative to Apps compared to other geos. Smaller total relationships but Apps is central.
+- **Energy:** 36% penetration but 25% health — highest penetration risk outside APJ.
+
+The segment view reframes the strategic question: **which accounts have the most total relationship value where CS Apps penetration is low and health is poor?** Those are the accounts where adoption failure threatens the whole Contentsquare relationship, not just the CS Apps line.
 
 ![Segment Analysis](./figures/fig_08_segment_analysis.png)
 
-**Pillar 1 verdict:** Value Creation is strong. CS Apps is selling well and growing. The problem is not demand — it's what happens after the sale.
+---
+
+**Pillar 1 verdict:** CS Apps is growing and increasing wallet penetration (+1.5pp in 2023). But at 24.6% mean penetration, CS Apps still represents a minority of each client's Contentsquare spend. The acquisition story is not just volume (+30% accounts) — it's deepening position within high-value accounts. The adoption failure documented in Pillar 2 is not just a CS Apps problem: it puts the full Contentsquare relationship at risk. In segments like Telco ($940K total, 29% Apps) and Americas ($530K total, 22% Apps), a failed renewal conversation touches the entire account, not a line item.
 
 ---
 

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heap palette — CS Apps analysis</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ffffff; padding: 2rem; margin: 0; }
+    h1 { color: #1e293b; font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    section { margin-bottom: 2rem; }
+    .section-title { font-weight: 600; color: #334155; margin-bottom: 0.75rem; font-size: 0.9rem; }
+    .swatch { display: inline-block; width: 100px; height: 64px; border-radius: 8px; margin: 4px; vertical-align: middle; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .swatch-label { display: inline-block; vertical-align: middle; margin-left: 8px; font-size: 0.8rem; color: #475569; }
+    .row { margin-bottom: 0.5rem; }
+    .seq-bar { height: 32px; border-radius: 6px; margin-bottom: 4px; }
+    .cat-bar { height: 24px; border-radius: 4px; margin-bottom: 2px; display: block; }
+  </style>
+</head>
+<body>
+  <h1>Heap palette (heap.io)</h1>
+  <p>Charts: <strong>white background</strong>. Priority 3 (use when a graph needs 3 colors): dark blue, green, purple. Need more → use extended palette.</p>
+
+  <section>
+    <div class="section-title">Priority 3 — use for 3-color charts</div>
+    <div class="row"><span class="swatch" style="background:#0A0D4B"></span><span class="swatch-label">DARK_BLUE #0A0D4B</span></div>
+    <div class="row"><span class="swatch" style="background:#31d891"></span><span class="swatch-label">HEAP_GREEN #31d891</span></div>
+    <div class="row"><span class="swatch" style="background:#6D28D9"></span><span class="swatch-label">HEAP_PURPLE #6D28D9</span></div>
+  </section>
+
+  <section>
+    <div class="section-title">Primary — Violet (purple)</div>
+    <div class="row"><span class="swatch" style="background:#6D28D9"></span><span class="swatch-label">HEAP_VIOLET_800 #6D28D9 (AUB / primary)</span></div>
+    <div class="row"><span class="swatch" style="background:#7C3AED"></span><span class="swatch-label">HEAP_VIOLET_600 #7C3AED (AUB_LIGHT)</span></div>
+    <div class="row"><span class="swatch" style="background:#8B5CF6"></span><span class="swatch-label">HEAP_VIOLET_500 #8B5CF6 (AUB_MID)</span></div>
+    <div class="row"><span class="swatch" style="background:#A78BFA"></span><span class="swatch-label">HEAP_VIOLET_400 #A78BFA</span></div>
+    <div class="row"><span class="swatch" style="background:#EDE9FE"></span><span class="swatch-label">HEAP_VIOLET_100 #EDE9FE (light fill)</span></div>
+  </section>
+
+  <section>
+    <div class="section-title">Success / Healthy — Emerald & Teal</div>
+    <div class="row"><span class="swatch" style="background:#059669"></span><span class="swatch-label">HEAP_EMERALD_600 #059669</span></div>
+    <div class="row"><span class="swatch" style="background:#31d891"></span><span class="swatch-label">HEAP_GREEN #31d891 (GREEN)</span></div>
+    <div class="row"><span class="swatch" style="background:#34D399"></span><span class="swatch-label">HEAP_EMERALD_400 #34D399</span></div>
+    <div class="row"><span class="swatch" style="background:#14B8A6"></span><span class="swatch-label">HEAP_TEAL_500 #14B8A6 (accent / Partially lived)</span></div>
+  </section>
+
+  <section>
+    <div class="section-title">Risk / Caution</div>
+    <div class="row"><span class="swatch" style="background:#EF4444"></span><span class="swatch-label">HEAP_RED_500 #EF4444 (CORAL / risk)</span></div>
+    <div class="row"><span class="swatch" style="background:#F59E0B"></span><span class="swatch-label">HEAP_AMBER_500 #F59E0B (AMBER / caution)</span></div>
+  </section>
+
+  <section>
+    <div class="section-title">Neutrals</div>
+    <div class="row"><span class="swatch" style="background:#475569"></span><span class="swatch-label">HEAP_SLATE_600 #475569 (DARK_TEXT)</span></div>
+    <div class="row"><span class="swatch" style="background:#E2E8F0"></span><span class="swatch-label">HEAP_SLATE_200 #E2E8F0</span></div>
+  </section>
+
+  <section>
+    <div class="section-title">Sequential palette (SEQ)</div>
+    <div class="seq-bar" style="background:#6D28D9; width:20%"></div>
+    <div class="seq-bar" style="background:#7C3AED; width:20%"></div>
+    <div class="seq-bar" style="background:#8B5CF6; width:20%"></div>
+    <div class="seq-bar" style="background:#A78BFA; width:20%"></div>
+    <div class="seq-bar" style="background:#34D399; width:20%"></div>
+    <p style="margin-top:0.5rem;">Violet 800 → 600 → 500 → 400 → Emerald 400</p>
+  </section>
+
+  <section>
+    <div class="section-title">Categorical palette (CAT)</div>
+    <span class="cat-bar" style="background:#6D28D9; width:80px; display:inline-block"></span>
+    <span class="cat-bar" style="background:#10B981; width:80px; display:inline-block"></span>
+    <span class="cat-bar" style="background:#14B8A6; width:80px; display:inline-block"></span>
+    <span class="cat-bar" style="background:#A78BFA; width:80px; display:inline-block"></span>
+    <span class="cat-bar" style="background:#475569; width:80px; display:inline-block"></span>
+    <p style="margin-top:0.5rem;">Violet 800 · Emerald 500 · Teal 500 · Violet 400 · Slate 600</p>
+  </section>
+</body>
+</html>

@@ -245,7 +245,7 @@
           subtitle: "Renewal pipeline & health",
           coreQuestion: "Will this revenue renew or churn?",
           status: "At Risk",
-          summary: "Health metric is unreliable. The real risk: 33 accounts renewing $16.3M in Q4 with no Apps adoption to justify the spend",
+          summary: "Health metric is unreliable. The real risk: 33 accounts renewing if CS Apps adoption to justify the spend",
         },
       ];
       return (
@@ -255,17 +255,18 @@
           <div className="shrink-0 space-y-2 text-xs leading-snug" style={{ color: C.gray }}>
             <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.gray }}>Executive Summary</div>
             <p>
-              CS Apps shows strong revenue traction (+37% ACV, +30% accounts) but only 15% are live in production, 71% have zero certified users, and the health metric is unreliable: CS Digital WAU makes non-users appear healthy. The retention risk is not active churn — it is renewal refusal. 33 accounts renewing $16.3M in Q4 have no ROI evidence to justify the spend.
+              CS Apps shows strong revenue traction (+37% ACV, +30% accounts) but a clear gap between <strong style={{ color: C.dark }}>selling and delivering value</strong>.
+              Only <strong style={{ color: C.dark }}>15% of accounts are live</strong>, <strong style={{ color: C.dark }}>71% have zero certified users</strong>, and the <strong style={{ color: C.dark }}>health metric is flawed</strong> because it blends CS Digital usage into CS Apps health, making non-users appear healthy.
+              The real risk is <strong style={{ color: C.dark }}>renewal refusal from non-users with no ROI evidence</strong>, not active churn.
+              <strong style={{ color: C.dark }}>$16.3M renews in Q4 across 33 accounts</strong>, creating concentrated exposure.
             </p>
-            <p className="font-bold" style={{ color: C.dark }}>
-              Recommendation: Increase investment, conditionally. The thesis is not "grow faster" but "implement now, before 33 accounts reach renewal with nothing to show for CS Apps."
-            </p>
+
             {/* Story flow boxes */}
             <div className="flex items-center gap-0 mt-1">
               {[
                 "Acquisition is strong (revenue is growing)",
                 "but adoption is fragile (clients aren't going live or engaging)",
-                "creating a latent renewal risk: non-adopters face procurement conversations with no ROI evidence, and the metric that was supposed to catch this is broken",
+                "creating a latent renewal risk: non-adopters face procurement conversations with no ROI evidence.",
               ].map((text, i) => (
                 <React.Fragment key={i}>
                   <div className="flex-1 rounded-lg border px-2 py-1.5 text-[10px] leading-snug" style={{ background: '#F8FAFC', borderColor: C.grayBorder, color: C.gray }}>{text}</div>
@@ -566,7 +567,7 @@
             <div className="flex flex-col gap-1.5 border-t pt-2" style={{ borderColor: C.grayBorder }}>
               <h2 className="text-sm font-bold" style={{ color: C.dark }}>H2 | Certification &amp; Adoption Gap</h2>
               <ul className="text-xs leading-snug list-disc pl-4 space-y-1" style={{ color: C.gray }}>
-                <li><strong style={{ color: C.dark }}>Avg certified users per account:</strong> 0.69 (CS Digital: 18.1): <strong style={{ color: C.dark }}>26× gap</strong></li>
+                <li><strong style={{ color: C.dark }}>Avg certified users per account:</strong> 0.69 (vs 18.1 on CS Digital): <strong style={{ color: C.dark }}>26× gap</strong></li>
                 <li><strong style={{ color: C.dark }}>Accounts with 0 certified users:</strong> 71% (132/185)</li>
                 <li><strong style={{ color: C.dark }}>Avg sessions per user per month:</strong> 2.84 (low engagement signal)</li>
               </ul>
@@ -712,16 +713,16 @@
                 initiatives: ['Accelerate implementation', 'Drive certification', 'In-product activation flows'],
               },
               {
+                pillar: 'P3 Retention',
+                objective: 'Secure the Q4 renewal cliff before procurement conversations start',
+                kpis: ['Renewal rate ≥90% on $16.3M Q4 UFR'],
+                initiatives: ['Triage 33 Q4 accounts by go-live status; assign owners to non-live'],
+              },
+              {
                 pillar: 'P1 Acquisition',
                 objective: 'Sustain and accelerate revenue and account growth',
                 kpis: ['Benchmark Fashion 73% health'],
                 initiatives: ['Segment playbooks (Telco & Americas)'],
-              },
-              {
-                pillar: 'P3 Retention',
-                objective: 'Triage Q4 renewal accounts before procurement conversations begin',
-                kpis: ['Rebuild health metric with CS Apps-specific WAU', 'Identify and review all 33 Q4 renewal accounts by implementation status'],
-                initiatives: ['Rebuild health metric (remove CS Digital WAU from CS Apps health score)', 'Q4 pre-renewal triage: assign implementation owners to all non-live accounts in the Q4 cohort'],
               },
             ].map(({ pillar, objective, kpis, initiatives }) => (
               <div key={pillar} className="rounded-lg border border-slate-200 bg-white grid grid-cols-3 divide-x divide-slate-100" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
