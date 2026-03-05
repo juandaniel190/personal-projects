@@ -6,11 +6,11 @@
 
 ## Executive Summary
 
-CS Apps shows strong revenue traction (+37% ACV, +30% accounts in 12 months) but faces a structural disconnect between selling, adoption and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified users, and the health rate has declined from 63% to 54% in 10 months. $13.1M in renewal pipeline (38% of total) sits with unhealthy accounts, with a $16.3M Q4 cliff where 44% of UFR is at risk.
+CS Apps shows strong revenue traction (+37% ACV, +30% accounts in 12 months) but faces a structural disconnect between selling, adopting, and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified users, and the current health metric is unreliable: it mixes CS Digital usage into CS Apps scores, making non-users appear healthy. The real retention risk is not active churn from dissatisfied users. It is renewal refusal from non-users who will have no ROI evidence when Q4 contracts come up. $16.3M renews in Q4 across 33 accounts.
 
-**Recommendation: Increase investment — conditionally.** The thesis is not "grow faster" but "fix the value delivery chain before the renewal cliff converts into churn."
+**Recommendation: Increase investment — conditionally.** The thesis is not "grow faster" but "implement now, before 33 accounts reach renewal with nothing to show for CS Apps."
 
-> *CS Apps are creating value (revenue is growing) → but failing to deliver it (clients aren't going live or engaging) → which puts value protection at risk (renewals are deteriorating).*
+> *CS Apps are creating value (revenue is growing) → but failing to deliver it (clients aren't going live or engaging) → creating a latent renewal risk: non-adopters face procurement conversations with no ROI evidence, and the metric that was supposed to catch this is broken.*
 
 ---
 
@@ -38,7 +38,7 @@ The analysis is structured around three pillars that form a causal chain — eac
 |---|---|---|---|
 | **Value Creation** (Acquisition & Growth) | Is CS Apps generating and growing revenue? | **Strong** | +37% ACV, +30% accounts — demand is real |
 | **Value Delivery** (Adoption & Engagement) | Are clients reaching time-to-value, adopting, and engaging? | **Broken** | 85% not live, 71% zero certified users, shallow engagement |
-| **Value Protection** (Retention & ARR) | Will this revenue renew or churn? | **Deteriorating** | Health declining, $13.1M at-risk UFR, flawed health metric |
+| **Value Protection** (Retention & ARR) | Will this revenue renew or churn? | **At Risk** | Health metric is unreliable. The real risk: 33 accounts renewing $16.3M in Q4 with no Apps adoption to justify the spend |
 
 > **Reading this analysis:** If Value Creation is strong but Value Delivery is broken, then Value Protection will inevitably deteriorate. The investment decision depends on whether the delivery gap is fixable — and whether there is time to fix it before renewals hit.
 
@@ -161,6 +161,8 @@ Health peaked in Q1 and has declined continuously through H2. The product is add
 
 **Key anomaly:** Accounts with "Not started" or "Started" implementation show *higher* health rates (67–71%) than "Lived" accounts (58%). This is explained by the health formula investigation (H8 below).
 
+This anomaly is not a coincidence. It exposes the core flaw: the health metric cannot distinguish between a healthy CS Apps account and an account that happens to have strong CS Digital usage. Any health trend derived from this metric is untrustworthy. The 63% to 54% decline could reflect genuine Apps deterioration, dilution from 30% more new accounts entering the base pre-live, or shifts in Digital usage unrelated to Apps entirely.
+
 ---
 
 ### H5 — Renewal Pipeline at Risk | HIGH RISK
@@ -174,6 +176,10 @@ Health peaked in Q1 and has declined continuously through H2. The product is add
 | **FQ 2023-11-01** | **$16.3M** | **33** | **58%** | **56%** |
 
 **$13.1M of total UFR (37.9%) sits with unhealthy accounts.** The Q4 concentration ($16.3M = 47% of the full-year renewal pipeline) amplifies the risk.
+
+Note: the $13.1M figure is derived from the same unreliable health metric. Some accounts classified as unhealthy may be misclassified. The metric should not be used as the sole basis for risk segmentation until the health formula is corrected.
+
+Data note: the account dataset contains 174 unique accounts in December 2023, while the implementation data references 185 unique accounts. The 11-account gap is unexplained. It may indicate accounts that churned out of the active base but remain in historical user or implementation records. This is an additional data quality issue that should be investigated.
 
 ![Renewal Pipeline](./figures/fig_09_renewal_pipeline.png)
 
@@ -192,7 +198,7 @@ Health peaked in Q1 and has declined continuously through H2. The product is add
 
 ![Health Formula](./figures/fig_10_health_formula.png)
 
-**Pillar 3 verdict:** Value Protection is deteriorating. Health is declining, $13.1M in renewals is at risk, and the health metric itself is unreliable.
+**Pillar 3 verdict:** The current health metric is not a reliable measure of retention risk. The accurate framing is this: the retention problem is latent, not active. Accounts are likely renewing today because CS Apps is bundled with CS Digital. The real cliff arrives when procurement asks "what did we get from CS Apps?" and 85% of accounts have no answer. The Q4 cohort ($16.3M, 33 accounts) is the intervention target, not a lagging indicator of health decline.
 
 ---
 

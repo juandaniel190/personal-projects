@@ -587,8 +587,8 @@ total_ufr_a = renewals_only['TOTAL_UFR'].sum()
 print(f"Total UFR (deduplicated): ${total_ufr_a:,.0f}")
 print(f"At risk (unhealthy): ${at_risk:,.0f} ({at_risk/total_ufr_a*100:.1f}%)")
 
-# --- Fig 09 (H5): Renewal — reduced height ---
-fig, ax = plt.subplots(figsize=(10, 3.5))
+# --- Fig 09 (H5): Renewal — narrow width for 30% column (table 70% / chart 30%) ---
+fig, ax = plt.subplots(figsize=(3.5, 3.5))
 ax2r = ax.twinx()
 q_labels = ufr['FISCAL_QUARTER'].astype(str)
 ax.bar(q_labels, ufr['total_ufr']/1e6, color=DARK_BLUE, alpha=0.85, width=0.5, label='Total UFR ($M)')

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CS Apps — Investment Decision Analysis | Contentsquare</title>
+  <title>CS Apps | Investment Decision Analysis | Contentsquare</title>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -28,9 +28,10 @@
     html, body {
       font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
       background: #e5e7eb !important;
-      min-height: 100vh;
       margin: 0;
       padding: 0;
+      height: fit-content;
+      min-height: 0;
     }
     body {
       display: flex;
@@ -39,7 +40,6 @@
       padding: 16px;
     }
     #root {
-      min-height: 200px;
       width: 100%;
       display: flex;
       justify-content: center;
@@ -54,7 +54,19 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     table { border-collapse: collapse; }
 
-    .pillar-block { border: 1px solid #e5e5e5; }
+    .pillar-block { border: 1px solid #e5e5e5; border-radius: 12px; gap: 0px; }
+
+    @media print {
+      @page { size: 297mm 167mm; margin: 0; }
+      html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide-page { page-break-after: always; page-break-inside: avoid; height: 167mm; width: 297mm; box-sizing: border-box; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: stretch; justify-content: stretch; overflow: hidden; }
+      .slide-page:last-child { page-break-after: auto; }
+      .slide-page-inner { width: 1024px !important; height: 560px !important; max-width: none !important; padding: 15px !important; margin: 0 !important; flex: none !important; background: #fff !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; overflow: hidden; transform: scale(1.096, 1.125); transform-origin: 0 0; box-sizing: border-box; }
+      .slide-page.cover-slide .slide-page-inner,
+      .slide-page.dark-slide .slide-page-inner { background: #0A0D4B !important; }
+      .no-print { display: none !important; }
+      .print-deck-root { background: #fff !important; padding: 0 !important; }
+    }
   </style>
 </head>
 <body>
@@ -86,7 +98,7 @@
 
     const TABS = [
       "Part 1", "Exec Summary", "P1 Acquisition", "P2 Adoption",
-      "P3 Retention", "Action Plan", "Part 2", "Monetization", "Pricing Model", "Data Behind Pricing", "Health KPI"
+      "P3 Retention", "Action Plan", "Part 2", "Monetization", "Pricing Model", "Data Behind Pricing", "Health KPI", "Thank you"
     ];
 
     /* ─── Micro-components ─────────────────────────────────────────── */
@@ -185,7 +197,7 @@
     const SlideCover = () => (
       <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy }}>
         <div className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: C.green }}>
-          Case Study: Senior Manager, Product Data Analyst — Contentsquare
+          Case Study: Senior Manager, Product Data Analyst | Contentsquare
         </div>
         <h1 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
           Part 1: Investment Decision
@@ -199,7 +211,7 @@
         </p>
         <ul className="text-xs leading-relaxed space-y-1.5 list-none pl-0" style={{ color: 'rgba(255,255,255,0.7)' }}>
           <li className="flex items-start gap-2"><span style={{ color: C.green }}>1.</span> What hypotheses frame the investment decision?</li>
-          <li className="flex items-start gap-2"><span style={{ color: C.green }}>2.</span> What does the data say — and where is data quality a problem?</li>
+          <li className="flex items-start gap-2"><span style={{ color: C.green }}>2.</span> What does the data say, and where is data quality a problem?</li>
           <li className="flex items-start gap-2"><span style={{ color: C.green }}>3.</span> What 2–3 insights answer the question?</li>
           <li className="flex items-start gap-2"><span style={{ color: C.green }}>4.</span> What additional data would deepen the analysis?</li>
           <li className="flex items-start gap-2"><span style={{ color: C.green }}>5.</span> What is the strategic recommendation?</li>
@@ -217,7 +229,7 @@
           subtitle: "Revenue & account base",
           coreQuestion: "Is CS Apps generating and growing revenue?",
           status: "Strong",
-          summary: "+37% ACV, +30% accounts — demand is real",
+          summary: "+37% ACV, +30% accounts: demand is real \n",
         },
         {
           id: "P2",
@@ -233,26 +245,27 @@
           subtitle: "Renewal pipeline & health",
           coreQuestion: "Will this revenue renew or churn?",
           status: "At Risk",
-          summary: "Health declining, $7.2M Q4 UFR at risk if adoption gap is not closed",
+          summary: "Health metric is unreliable. The real risk: 33 accounts renewing $16.3M in Q4 with no Apps adoption to justify the spend",
         },
       ];
       return (
         <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
-          <SlideTitle>Revenue is growing but delivery is broken — increase investment to fix before the renewal cliff</SlideTitle>
+          <SlideTitle>Revenue is growing but delivery is broken | increase investment to fix adoption before the renewal cliff</SlideTitle>
 
           <div className="shrink-0 space-y-2 text-xs leading-snug" style={{ color: C.gray }}>
+            <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.gray }}>Executive Summary</div>
             <p>
-              CS Apps shows strong revenue traction (+37% ACV, +30% accounts in 12 months) but faces a structural disconnect between selling, adoption, and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified users, and the health rate has declined from 63% to 54% in 10 months. $7.2M of the Q4 renewal cliff ($16.3M) sits with unhealthy accounts — 44% of the most critical renewal quarter is at risk of churn.
+              CS Apps shows strong revenue traction (+37% ACV, +30% accounts) but only 15% are live in production, 71% have zero certified users, and the health metric is unreliable: CS Digital WAU makes non-users appear healthy. The retention risk is not active churn — it is renewal refusal. 33 accounts renewing $16.3M in Q4 have no ROI evidence to justify the spend.
             </p>
             <p className="font-bold" style={{ color: C.dark }}>
-              Recommendation: Increase investment — conditionally. The thesis is not "grow faster" but "fix the adoption chain before the renewal cliff converts into churn."
+              Recommendation: Increase investment, conditionally. The thesis is not "grow faster" but "implement now, before 33 accounts reach renewal with nothing to show for CS Apps."
             </p>
             {/* Story flow boxes */}
             <div className="flex items-center gap-0 mt-1">
               {[
                 "Acquisition is strong (revenue is growing)",
                 "but adoption is fragile (clients aren't going live or engaging)",
-                "which puts retention at risk (renewals will deteriorate if adoption is not fixed)",
+                "creating a latent renewal risk: non-adopters face procurement conversations with no ROI evidence, and the metric that was supposed to catch this is broken",
               ].map((text, i) => (
                 <React.Fragment key={i}>
                   <div className="flex-1 rounded-lg border px-2 py-1.5 text-[10px] leading-snug" style={{ background: '#F8FAFC', borderColor: C.grayBorder, color: C.gray }}>{text}</div>
@@ -264,52 +277,47 @@
             </div>
           </div>
 
-          <div className="flex gap-2 flex-1 min-h-0 overflow-hidden">
-            <div className="shrink-0 flex items-center justify-center" style={{ width: 14 }}>
-              <div className="text-[9px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: C.grayLight, writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Analytical framework</div>
-            </div>
-            <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-y-auto">
-            {pillars.map(({ id, title, subtitle, coreQuestion, status, summary }) => (
+          <div className="grid grid-cols-3 gap-4 shrink-0 overflow-y-auto items-start flex-wrap" style={{ columnGap: '10px' }}>
+            {pillars.map(({ id, title, subtitle, coreQuestion, status, summary }, index) => (
               <div
                 key={id}
-                className="pillar-block flex flex-col p-4 rounded bg-white shrink-0"
-                style={{ borderColor: C.grayBorder }}
+                className="pillar-block flex flex-col p-4 bg-white min-h-0 overflow-y-auto"
+                style={{ borderColor: C.grayBorder, height: '100%' }}
               >
                 <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.grayLight }}>
                   Pillar
                 </div>
-                <div className="text-sm font-bold leading-tight mb-0.5" style={{ color: C.dark }}>{id} — {title}</div>
-                <div className="text-xs mb-3" style={{ color: C.gray }}>{subtitle}</div>
+                <div className="text-sm font-bold leading-tight mb-0.5" style={{ color: C.dark }}>{id}: {title}</div>
+                <div className="text-xs mb-2" style={{ color: C.gray }}>{subtitle}</div>
 
                 <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.grayLight }}>
                   Core Question
                 </div>
-                <div className="text-xs mb-3 leading-snug" style={{ color: C.gray }}>{coreQuestion}</div>
+                <div className="text-xs leading-snug mb-2" style={{ color: C.gray, minHeight: '2.5rem' }}>{coreQuestion}</div>
 
                 <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.grayLight }}>
                   Status
                 </div>
-                <div className="text-sm font-bold mb-3" style={{ color: C.dark }}>{status}</div>
+                <div className="text-sm font-bold mb-2" style={{ color: C.dark }}>{status}</div>
 
                 <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: C.grayLight }}>
                   Summary
                 </div>
-                <div className="text-xs leading-snug" style={{ color: C.gray }}>{summary}</div>
+                <div className="text-xs leading-snug mt-auto" style={{ color: C.gray }}>{summary}</div>
               </div>
             ))}
-            </div>
           </div>
 
-          <div className="shrink-0 border-t pt-1 pb-0.5 grid grid-cols-3 gap-4 min-w-0" style={{ borderColor: C.grayBorder }}>
-              <ul className="text-[10px] leading-tight list-disc pl-3 space-y-0 min-w-0" style={{ color: C.gray }}>
+          <div className="shrink-0 border-t pt-1.5 pb-0.5 grid grid-cols-3 gap-4 min-w-0" style={{ borderColor: C.grayBorder }}>
+              <ul className="text-xs leading-snug list-disc pl-3 space-y-0.5 min-w-0" style={{ color: C.gray }}>
                 <li>Focus on strategic segments (e.g. Telco, Americas)</li>
               </ul>
-              <ul className="text-[10px] leading-tight list-disc pl-3 space-y-0 min-w-0" style={{ color: C.gray }}>
+              <ul className="text-xs leading-snug list-disc pl-3 space-y-0.5 min-w-0" style={{ color: C.gray }}>
                 <li>Increase visibility of high-stickiness modules (Workspace, Error Analysis) to drive engagement</li>
                 <li>Focus on implementation and integration bottleneck</li>
               </ul>
-              <ul className="text-[10px] leading-tight list-disc pl-3 space-y-0 min-w-0" style={{ color: C.gray }}>
-                <li>Launch a Q4 renewal risk programme: pre-renewal health reviews for all unhealthy accounts</li>
+              <ul className="text-xs leading-snug list-disc pl-3 space-y-0.5 min-w-0" style={{ color: C.gray }}>
+                <li>Triage the 33 Q4 accounts now: identify which are non-live, assign implementation owners, and build the ROI case before renewal conversations start</li>
               </ul>
           </div>
         </div>
@@ -338,13 +346,13 @@
       const accY = (v) => y1 - ((v - accMin) / (accMax - accMin)) * (y1 - y0);
       return (
       <div className="flex flex-col h-full gap-3" style={{ background: C.bg }}>
-        <SlideTitle>P1: +37% ACV and +30% accounts in 12 months — demand is real, the problem is not sales</SlideTitle>
-        <SlideSubtitle>P1 Acquisition &amp; Growth — Is CS Apps generating and growing revenue meaningfully?</SlideSubtitle>
+        <SlideTitle>P1: +37% ACV and +30% accounts in 12 months | demand is real, the problem is not sales</SlideTitle>
+        <SlideSubtitle>P1 Acquisition &amp; Growth: Is CS Apps generating and growing revenue meaningfully?</SlideSubtitle>
 
         <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
           {/* Column 1: H1 — Revenue & Account Growth */}
           <div className="flex flex-col gap-3 overflow-hidden">
-            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H1 — Revenue &amp; Account Growth</h2>
+            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H1 | Revenue &amp; Account Growth</h2>
             <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder }}>
               <table className="w-full text-xs">
                 <thead>
@@ -411,7 +419,7 @@
 
           {/* Column 2: H7 — Top 4 verticals + Geo (from export_p1_data.py / Section 7) */}
           <div className="flex flex-col gap-3 overflow-hidden min-h-0">
-            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H7 — High-Value Segment Opportunity</h2>
+            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H7 | High-Value Segment Opportunity</h2>
             <div className="rounded-lg border bg-white overflow-hidden shrink-0" style={{ borderColor: C.grayBorder }}>
               <table className="w-full text-xs" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
@@ -486,7 +494,7 @@
               <li className="flex items-start gap-1.5"><span style={{ color: C.green }}>→</span><span><strong style={{ color: C.dark }}>Fashion:</strong> lower ACV but best health (~73%) → benchmark for enablement</span></li>
             </ul>
             <p className="text-xs leading-snug shrink-0 font-bold" style={{ color: C.dark }}>
-              P1 verdict: Acquisition is strong. CS Apps is selling well and growing. The problem is not demand — it&apos;s what happens after the sale.
+              P1 verdict: Acquisition is strong. CS Apps is selling well and growing. The problem is not demand; it&apos;s what happens after the sale.
             </p>
           </div>
         </div>
@@ -520,8 +528,8 @@
 
       return (
       <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
-        <SlideTitle>P2: 85% of accounts are not live and 71% have zero certified users — adoption is the broken link</SlideTitle>
-        <SlideSubtitle>P2 Adoption &amp; Engagement — Are clients reaching time-to-value, adopting, and engaging?</SlideSubtitle>
+        <SlideTitle>P2: 85% of accounts are not live and 71% have zero certified users. Adoption is the broken link</SlideTitle>
+        <SlideSubtitle>P2 Adoption &amp; Engagement: Are clients reaching time-to-value, adopting, and engaging?</SlideSubtitle>
 
         {/* Two columns */}
         <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
@@ -529,7 +537,7 @@
           {/* Left column: H4 chart + H2 certification below */}
           <div className="flex flex-col gap-3 min-h-0 overflow-hidden">
             <div className="flex flex-col gap-2">
-              <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H4 — Implementation Bottleneck</h2>
+              <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H4 | Implementation Bottleneck</h2>
               <div className="rounded-lg border bg-white overflow-hidden shrink-0" style={{ borderColor: C.grayBorder }}>
                 <svg width="100%" viewBox={`0 0 ${implW} ${implH}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block' }}>
                   <text x={implW/2} y={12} textAnchor="middle" fontSize="10" fontWeight="bold" fill={C.dark}>CS Apps Implementation Status (latest snapshot)</text>
@@ -556,11 +564,11 @@
 
             {/* H2 Certification moved to left column */}
             <div className="flex flex-col gap-1.5 border-t pt-2" style={{ borderColor: C.grayBorder }}>
-              <h2 className="text-sm font-bold" style={{ color: C.dark }}>H2 — Certification &amp; Adoption Gap</h2>
+              <h2 className="text-sm font-bold" style={{ color: C.dark }}>H2 | Certification &amp; Adoption Gap</h2>
               <ul className="text-xs leading-snug list-disc pl-4 space-y-1" style={{ color: C.gray }}>
-                <li><strong style={{ color: C.dark }}>Avg certified users per account:</strong> 0.69 (CS Digital: 18.1) — <strong style={{ color: C.dark }}>26× gap</strong></li>
+                <li><strong style={{ color: C.dark }}>Avg certified users per account:</strong> 0.69 (CS Digital: 18.1): <strong style={{ color: C.dark }}>26× gap</strong></li>
                 <li><strong style={{ color: C.dark }}>Accounts with 0 certified users:</strong> 71% (132/185)</li>
-                <li><strong style={{ color: C.dark }}>Avg sessions per user per month:</strong> 2.84 — Low engagement signal</li>
+                <li><strong style={{ color: C.dark }}>Avg sessions per user per month:</strong> 2.84 (low engagement signal)</li>
               </ul>
               <p className="text-xs leading-snug" style={{ color: C.gray }}>
                 Same clients average 18.1 certified users on CS Digital. They are buying CS Apps but not embedding it.
@@ -570,9 +578,9 @@
 
           {/* Right column: H6 table only — full height */}
           <div className="flex flex-col gap-2 min-h-0 overflow-hidden">
-            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H6 — Shallow Module Engagement</h2>
+            <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H6 | Shallow Module Engagement</h2>
             <p className="text-xs leading-snug shrink-0" style={{ color: C.gray }}>
-              1 in 4 sessions lands on the Homepage. Users who reach Zoning, Workspace, or Error Analysis show higher engagement — this is a depth-of-usage problem.
+              1 in 4 sessions lands on the Homepage. Users who reach Zoning, Workspace, or Error Analysis show higher engagement; this is a depth-of-usage problem.
             </p>
             <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder }}>
               <table className="w-full text-xs">
@@ -598,7 +606,7 @@
             </div>
             <p className="text-xs leading-snug shrink-0" style={{ color: C.gray }}>
               <span style={{ display: 'inline-block', width: 10, height: 10, background: lightGreen, borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>
-              Highlighted rows = high stickiness modules (Workspace, Error Analysis) — low reach but strongest engagement signal.
+              Highlighted rows = high stickiness modules (Workspace, Error Analysis), showing low reach but strongest engagement signal.
             </p>
           </div>
         </div>
@@ -615,34 +623,24 @@
 
     const Slide4 = () => {
       const ufrData = [
-        { q: 'FQ 2022-11-01', qShort: "FQ '22-11", ufrM: 5.0, accts: 20, pctAccts: 60, pctUfr: 57 },
-        { q: 'FQ 2023-02-01', qShort: "FQ '23-02", ufrM: 2.8, accts: 16, pctAccts: 62, pctUfr: 58 },
-        { q: 'FQ 2023-05-01', qShort: "FQ '23-05", ufrM: 5.1, accts: 23, pctAccts: 87, pctUfr: 88 },
-        { q: 'FQ 2023-08-01', qShort: "FQ '23-08", ufrM: 5.4, accts: 17, pctAccts: 59, pctUfr: 62 },
-        { q: 'FQ 2023-11-01', qShort: "FQ '23-11", ufrM: 16.3, accts: 33, pctAccts: 58, pctUfr: 56 },
+        { q: 'FQ 2022-11-01', qShort: "FQ '22-11", ufrM: 5.0, accts: 20, pctAccts: 60, pctUfr: 57, renewalRate: 90.0, acvRetained: 84.7 },
+        { q: 'FQ 2023-02-01', qShort: "FQ '23-02", ufrM: 2.8, accts: 16, pctAccts: 62, pctUfr: 58, renewalRate: 81.2, acvRetained: 78.4 },
+        { q: 'FQ 2023-05-01', qShort: "FQ '23-05", ufrM: 5.1, accts: 23, pctAccts: 87, pctUfr: 88, renewalRate: 95.7, acvRetained: 96.4 },
+        { q: 'FQ 2023-08-01', qShort: "FQ '23-08", ufrM: 5.4, accts: 17, pctAccts: 59, pctUfr: 62, renewalRate: 94.1, acvRetained: 96.7 },
+        { q: 'FQ 2023-11-01', qShort: "FQ '23-11", ufrM: 16.3, accts: 33, pctAccts: 58, pctUfr: 56, renewalRate: null, acvRetained: null },
       ];
-      const last = ufrData[ufrData.length - 1];
-      const chartW = 520; const chartH = 240;
-      const pad = { t: 32, r: 56, b: 36, l: 52 };
-      const x0 = pad.l; const x1 = chartW - pad.r; const y0 = pad.t; const y1 = chartH - pad.b;
-      const ufrMax = 18; const n = ufrData.length;
-      const barW = (x1 - x0) / n * 0.5;
-      const xCenter = (i) => x0 + (i + 0.5) * (x1 - x0) / n;
-      const ufrToY = (v) => y1 - (v / ufrMax) * (y1 - y0);
-      const pctToY = (v) => y1 - (v / 100) * (y1 - y0);
 
       return (
       <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
-        <SlideTitle>P3: $7.2M of the Q4 renewal cliff sits with unhealthy accounts — retention is at risk if adoption is not fixed</SlideTitle>
-        <SlideSubtitle>P3 Retention &amp; ARR — Will the revenue CS Apps has created survive renewal, or is it at risk of churn?</SlideSubtitle>
+        <SlideTitle>P3: The health metric is broken and the Q4 cliff is real. 33 accounts renewing $16.3M have never used the product</SlideTitle>
+        <SlideSubtitle>P3 Retention &amp; ARR: Will the revenue CS Apps has created survive renewal, or is it at risk of churn?</SlideSubtitle>
 
         <div className="flex flex-col gap-3 flex-1 min-h-0">
-          <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H5 — Renewal Pipeline at Risk</h2>
+          <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H5 | Renewal Pipeline at Risk</h2>
 
-          {/* Top: table (left, content-fit) + chart (right, natural aspect ratio) */}
-          <div className="grid grid-cols-2 gap-3 shrink-0">
-            {/* Left: Table — shrinks to content */}
-            <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder }}>
+          {/* Table (60%) + Bullet points (40%) */}
+          <div className="grid gap-3 shrink-0 flex-1 min-h-0" style={{ gridTemplateColumns: '60% 40%' }}>
+            <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder, height: 'fit-content' }}>
               <table className="w-full text-xs">
                 <thead>
                   <tr style={{ borderBottom: `2px solid ${C.dark}` }}>
@@ -650,59 +648,47 @@
                     <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
                     <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Accts</th>
                     <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>% Accts Healthy</th>
-                    <th className="py-1.5 font-bold text-right pr-3" style={{ color: C.dark }}>% UFR Healthy</th>
+                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>% UFR Healthy</th>
+                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Renewal Rate</th>
+                    <th className="py-1.5 font-bold text-right pr-3" style={{ color: C.dark }}>ACV Retained</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {ufrData.map((d, i) => (
-                    <tr key={d.q} className={i < ufrData.length - 1 ? 'border-b border-slate-100' : ''} style={i === ufrData.length - 1 ? { fontWeight: 700, background: '#F8FAFC' } : {}}>
-                      <td className="py-1.5 pl-3" style={{ color: C.dark }}>{d.q}</td>
-                      <td className="py-1.5 text-right" style={{ color: C.dark }}>${d.ufrM}M</td>
-                      <td className="py-1.5 text-right" style={{ color: C.gray }}>{d.accts}</td>
-                      <td className="py-1.5 text-right" style={{ color: i === ufrData.length - 1 ? C.dark : C.gray }}>{d.pctAccts}%</td>
-                      <td className="py-1.5 text-right pr-3" style={{ color: i === ufrData.length - 1 ? C.dark : C.gray }}>{d.pctUfr}%</td>
-                    </tr>
-                  ))}
+                  {ufrData.map((d, i) => {
+                    const isLast = i === ufrData.length - 1;
+                    return (
+                      <tr key={d.q} className={!isLast ? 'border-b border-slate-100' : ''} style={isLast ? { fontWeight: 700, background: '#F8FAFC' } : {}}>
+                        <td className="py-1.5 pl-3" style={{ color: C.dark }}>{d.q}</td>
+                        <td className="py-1.5 text-right" style={{ color: C.dark }}>${d.ufrM}M</td>
+                        <td className="py-1.5 text-right" style={{ color: C.gray }}>{d.accts}</td>
+                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{d.pctAccts}%</td>
+                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{d.pctUfr}%</td>
+                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>
+                          {d.renewalRate != null ? `${d.renewalRate.toFixed(1)}%` : '—'}
+                        </td>
+                        <td className="py-1.5 text-right pr-3" style={{ color: isLast ? C.dark : C.gray }}>
+                          {d.acvRetained != null ? `${d.acvRetained.toFixed(1)}%` : 'Target ≥90%'}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
-
-            {/* Right: Chart — border fits the SVG's natural rendered size */}
-            <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder }}>
-              <svg width="100%" viewBox={`0 0 ${chartW} ${chartH}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block' }}>
-                <text x={chartW/2} y={18} textAnchor="middle" fontSize="12" fontWeight="bold" fill={C.dark}>Renewal Pipeline (UFR) vs Health Rate</text>
-                {ufrData.map((d, i) => (
-                  <rect key={d.q} x={xCenter(i) - barW/2} y={ufrToY(d.ufrM)} width={barW} height={y1 - ufrToY(d.ufrM)} fill={C.navy} opacity={0.85} rx={1} />
-                ))}
-                <polyline fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                  points={ufrData.map((d, i) => `${xCenter(i)},${pctToY(d.pctUfr)}`).join(' ')} />
-                {ufrData.map((d, i) => (
-                  <circle key={`pct-${d.q}`} cx={xCenter(i)} cy={pctToY(d.pctUfr)} r={4} fill={C.green} />
-                ))}
-                <text x={xCenter(n - 1) + barW/2 + 8} y={ufrToY(last.ufrM) - 4} textAnchor="start" fontSize="10" fontWeight="bold" fill={C.navy}>${last.ufrM}M</text>
-                <text x={xCenter(n - 1) + barW/2 + 8} y={pctToY(last.pctUfr) + 4} textAnchor="start" fontSize="10" fontWeight="bold" fill={C.green}>{last.pctUfr}% healthy</text>
-                <line x1={x0} x2={x1} y1={y1} y2={y1} stroke={C.grayBorder} strokeWidth="1" />
-                <line x1={x0} x2={x0} y1={y0} y2={y1} stroke={C.grayBorder} strokeWidth="1" />
-                {ufrData.map((d, i) => (
-                  <text key={`l-${d.q}`} x={xCenter(i)} y={chartH - 10} textAnchor="middle" fontSize="9" fill={C.gray}>{d.qShort}</text>
-                ))}
-                <text x={x0 - 8} y={y1 + 5} textAnchor="end" fontSize="8" fill={C.gray}>$0</text>
-                <text x={x0 - 8} y={y0 + 5} textAnchor="end" fontSize="8" fill={C.gray}>$18M</text>
-                <rect x={x0} y={y0 - 14} width={10} height={8} fill={C.navy} opacity={0.85} rx={1} />
-                <text x={x0 + 13} y={y0 - 7} fontSize="8" fill={C.gray}>UFR ($M)</text>
-                <circle cx={x0 + 70} cy={y0 - 10} r={4} fill={C.green} />
-                <text x={x0 + 77} y={y0 - 7} fontSize="8" fill={C.gray}>% UFR Healthy</text>
-              </svg>
+            <div className="rounded-lg bg-white overflow-hidden flex flex-col p-3">
+              <ul className="text-xs leading-snug list-disc pl-4 space-y-2" style={{ color: C.gray }}>
+                <li>Health peaked around ~63% and fell to <strong style={{ color: C.dark }}>54%</strong> by Dec 2023, but this trend cannot be trusted: the metric is contaminated by CS Digital WAU</li>
+                <li><strong style={{ color: C.dark }}>Q4 UFR:</strong> $16.3M (47% of yearly renewal pipeline)</li>
+                <li><strong style={{ color: C.dark }}>At-risk in Q4:</strong> <strong style={{ color: C.dark }}>$7.2M</strong> (44% of Q4 UFR) flagged under the current metric, which misclassifies non-users as healthy. The true at-risk population may be larger.</li>
+                <li>Key anomaly: accounts with "Not started" or "Started" implementation score 67 to 71% healthy, higher than "Lived" accounts at 58%. The metric inverts the signal.</li>
+              </ul>
             </div>
           </div>
 
-          {/* Bottom: insight + verdict — matching P1/P2 structure */}
-          <div className="shrink-0 space-y-2 border-t pt-2" style={{ borderColor: C.grayBorder }}>
-            <p className="text-xs leading-snug" style={{ color: C.gray }}>
-              <strong style={{ color: C.dark }}>$7.2M of the Q4 renewal cliff</strong> (44% of $16.3M) sits with unhealthy accounts. Q4 represents <strong style={{ color: C.dark }}>47% of the full-year renewal pipeline</strong> — making it the highest-stakes quarter to defend.
-            </p>
+          {/* Bottom: P3 verdict */}
+          <div className="shrink-0 border-t pt-2" style={{ borderColor: C.grayBorder }}>
             <p className="text-xs font-bold leading-snug" style={{ color: C.dark }}>
-              P3 verdict: Retention is at risk, not yet lost. Health is declining, $7.2M of Q4 renewals sits with unhealthy accounts, and the health metric itself is unreliable — but none of this is irreversible if acted on now.
+              P3 verdict: The health metric cannot be used as evidence of deterioration. The real retention risk is not active churn. It is renewal refusal: 33 accounts renew $16.3M in Q4 with no CS Apps adoption to justify the contract. Fix implementation now, not after renewals fail.
             </p>
           </div>
         </div>
@@ -713,52 +699,54 @@
     const Slide5 = () => (
       <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
         <SlideTitle>Five actions close the delivery gap before the Q4 renewal cliff</SlideTitle>
-        <SlideSubtitle>Five actions close the delivery gap before Q4 2024* — with three data pipeline fixes that are prerequisites</SlideSubtitle>
+        <SlideSubtitle>Five actions close the delivery gap before Q4 2024*, with three data pipeline fixes that are prerequisites</SlideSubtitle>
 
         <div className="flex flex-col gap-2 flex-1 min-h-0">
-          <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>Action Plan by Pillar (OKR)</h2>
-          <div className="rounded-lg border bg-white overflow-hidden flex-shrink-0" style={{ borderColor: C.grayBorder }}>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b-2" style={{ borderColor: C.dark }}>
-                  {["Pillar", "Objective", "KPI", "Initiative"].map((h, i) => (
-                    <th key={h} className={`py-1 font-bold text-left ${i === 0 ? "pl-3" : ""} ${i === 3 ? "pr-3" : ""}`}
-                      style={{ color: C.dark }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {/* P2 Adoption: merged Pillar + Objective across 3 rows */}
-                <tr className="border-b border-slate-100">
-                  <td rowSpan={3} className="py-1 pl-3 font-medium align-top" style={{ color: C.dark }}>P2 Adoption</td>
-                  <td rowSpan={3} className="py-1 align-top" style={{ color: C.gray }}>Improve engagement and adoption of the platform</td>
-                  <td className="py-1" style={{ color: C.gray }}>&quot;Lived&quot; rate: 15% → 40%+</td>
-                  <td className="py-1 pr-3 font-medium" style={{ color: C.dark }}>Accelerate implementation</td>
-                </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-1" style={{ color: C.gray }}>0 → 3+ certified users/account</td>
-                  <td className="py-1 pr-3 font-medium" style={{ color: C.dark }}>Drive certification</td>
-                </tr>
-                <tr className="border-b border-slate-100">
-                  <td className="py-1" style={{ color: C.gray }}>Homepage share 26% → 15%</td>
-                  <td className="py-1 pr-3 font-medium" style={{ color: C.dark }}>In-product activation flows</td>
-                </tr>
-                {/* P1 Acquisition */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-1 pl-3 font-medium" style={{ color: C.dark }}>P1 Acquisition</td>
-                  <td className="py-1.5" style={{ color: C.gray }}>Sustain and accelerate revenue and account growth</td>
-                  <td className="py-1" style={{ color: C.gray }}>Benchmark Fashion 73% health</td>
-                  <td className="py-1 pr-3 font-medium" style={{ color: C.dark }}>Segment playbooks (Telco & Americas)</td>
-                </tr>
-                {/* P3 Retention */}
-                <tr className="border-b border-slate-100">
-                  <td className="py-1 pl-3 font-medium" style={{ color: C.dark }}>P3 Retention</td>
-                  <td className="py-1.5" style={{ color: C.gray }}>Improve retention, prevent churn, and secure UFR at renewal</td>
-                  <td className="py-1" style={{ color: C.gray }}>CS Apps-specific WAU formula</td>
-                  <td className="py-1 pr-3 font-medium" style={{ color: C.dark }}>Rebuild health metric</td>
-                </tr>
-              </tbody>
-            </table>
+          {/* OKR Pillar Rows */}
+          <div className="flex flex-col gap-1.5 flex-shrink-0">
+            {[
+              {
+                pillar: 'P2 Adoption',
+                objective: 'Improve engagement and adoption of the platform',
+                kpis: ['"Lived" rate: 15% → 40%+', '0 → 3+ certified users/account', 'Homepage share 26% → 15%'],
+                initiatives: ['Accelerate implementation', 'Drive certification', 'In-product activation flows'],
+              },
+              {
+                pillar: 'P1 Acquisition',
+                objective: 'Sustain and accelerate revenue and account growth',
+                kpis: ['Benchmark Fashion 73% health'],
+                initiatives: ['Segment playbooks (Telco & Americas)'],
+              },
+              {
+                pillar: 'P3 Retention',
+                objective: 'Triage Q4 renewal accounts before procurement conversations begin',
+                kpis: ['Rebuild health metric with CS Apps-specific WAU', 'Identify and review all 33 Q4 renewal accounts by implementation status'],
+                initiatives: ['Rebuild health metric (remove CS Digital WAU from CS Apps health score)', 'Q4 pre-renewal triage: assign implementation owners to all non-live accounts in the Q4 cohort'],
+              },
+            ].map(({ pillar, objective, kpis, initiatives }) => (
+              <div key={pillar} className="rounded-lg border border-slate-200 bg-white grid grid-cols-3 divide-x divide-slate-100" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+                <div className="px-3 py-2">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="text-xs font-bold" style={{ color: C.dark }}>{pillar}</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: C.gray }}>Objective</span>
+                  </div>
+                  <div className="text-xs leading-snug" style={{ color: C.gray }}>{objective}</div>
+                </div>
+                <div className="px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: C.gray }}>{kpis.length > 1 ? 'KPIs' : 'KPI'}</div>
+                  <ul className="list-disc list-inside flex flex-col gap-0.5 text-xs pl-0.5" style={{ color: C.dark }}>
+                    {kpis.map(k => <li key={k}>{k}</li>)}
+                  </ul>
+                </div>
+                <div className="px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: C.gray }}>{initiatives.length > 1 ? 'Initiatives' : 'Initiative'}</div>
+                  <ul className="list-disc list-inside flex flex-col gap-0.5 text-xs pl-0.5" style={{ color: C.dark }}>
+                    {initiatives.map(init => <li key={init}>{init}</li>)}
+                  </ul>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
@@ -767,9 +755,9 @@
               <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>Data Quality Audit</h2>
               <div className="flex flex-col gap-1 flex-1 min-h-0">
                 {[
-                  { title: "NULL Implementation Status", stat: "29% — 82 accounts", impact: "HIGH", desc: "518 rows untracked; systemic pipeline issue" },
+                  { title: "NULL Implementation Status", stat: "29% (82 accounts)", impact: "HIGH", desc: "518 rows untracked; systemic pipeline issue" },
                   { title: "NULL Contract Dates", stat: "29% start · 28% end", impact: "MEDIUM", desc: "Blocks cohort analysis and time-to-live calculations" },
-                  { title: "AVG_WAU_GLOBAL = 0", stat: "156 rows — 49 accounts", impact: "CRITICAL", desc: "Breaks health metric for ~27% of base" },
+                  { title: "AVG_WAU_GLOBAL = 0", stat: "156 rows (49 accounts)", impact: "CRITICAL", desc: "Breaks health metric for ~27% of base" },
                 ].map(({ title, stat, impact, desc }) => (
                   <div key={title} className="rounded-lg border p-1.5" style={{ borderColor: C.grayBorder }}>
                     <div className="flex items-center justify-between">
@@ -784,20 +772,20 @@
             </div>
 
             {/* Right column: What would deepen this analysis */}
-            <div className="flex flex-col gap-1 min-h-0">
-              <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>What Else Would Deepen This Analysis:</h2>
-              <div className="flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto">
+            <div className="flex flex-col gap-1.5 min-h-0">
+              <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>What Would Deepen This Analysis</h2>
+              <div className="grid grid-cols-2 gap-1.5 flex-1">
                 {[
-                  { cat: "SALES", item: "Win/loss data by competitor: are we losing to Glassbox or FullStory?" },
-                  { cat: "SALES", item: "Cross-sell attach rate: CS Apps penetration into the CS Digital base (growth ceiling)" },
-                  { cat: "CS TEAM", item: "Actual renewal outcomes for early cohorts: does unhealthy predict churn?" },
-                  { cat: "CS TEAM", item: "Time-to-go-live by segment: is the implementation bottleneck structural or improving?" },
-                  { cat: "MARKET", item: "TAM by vertical: is Telco a large market or a saturated niche?" },
-                  { cat: "CUSTOMER", item: "Exit interview verbatims from churned accounts: actual reason for leaving, to see if they are encountering any friction with the product" },
-                ].map(({ cat, item }, i) => (
-                  <div key={i} className="flex items-start gap-1.5 text-xs leading-snug">
-                    <span className="shrink-0 font-black uppercase" style={{ color: C.green, fontSize: 9 }}>{cat}</span>
-                    <span style={{ color: C.gray }}>{item}</span>
+                  { cat: 'Sales', items: ['Win/loss data vs. Glassbox / FullStory', 'Cross-sell attach rate into CS Digital base'] },
+                  { cat: 'CS Team', items: ['Renewal outcomes for early cohorts', 'Time-to-go-live by segment'] },
+                  { cat: 'Market', items: ['TAM by vertical — is Telco a ceiling or opportunity?'] },
+                  { cat: 'Customer', items: ['Exit verbatims from churned accounts'] },
+                ].map(({ cat, items }) => (
+                  <div key={cat} className="rounded-lg border border-slate-200 bg-white px-2.5 py-2" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+                    <div className="text-xs font-bold mb-1" style={{ color: C.dark }}>{cat}</div>
+                    <div className="flex flex-col gap-0.5">
+                      {items.map(item => <div key={item} className="text-xs leading-snug" style={{ color: C.gray }}>{item}</div>)}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -821,7 +809,7 @@
         </p>
         <div className="w-12 h-0.5 mb-5" style={{ background: C.green }}></div>
         <p className="text-xs font-bold mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
-          The current CSQ pricing model has the risk of &quot;Value Leakage&quot; — where the client gets massive ROI from AI-driven insights but we are not monetizing it as revenue stays flat.
+          The current CSQ pricing model has the risk of &quot;Value Leakage&quot;, where the client gets massive ROI from AI-driven insights but we are not monetizing it as revenue stays flat.
         </p>
         <ul className="text-xs leading-relaxed space-y-1.5 list-none pl-0" style={{ color: 'rgba(255,255,255,0.7)' }}>
           <li className="flex items-start gap-2"><span style={{ color: C.green }}>1.</span> Should Sense Analyst be priced as a flat-fee add-on, success-based tier, or credit-based model?</li>
@@ -843,31 +831,30 @@
           </p>
 
           <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>How the Market Is Pricing AI Today</h2>
-          <div className="rounded-lg border bg-white overflow-hidden flex-shrink-0" style={{ borderColor: C.grayBorder }}>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b-2" style={{ borderColor: C.dark }}>
-                  {["Model", "How It Works", "Companies", "Verdict for CS"].map((h, i) => (
-                    <th key={h} className={`py-1.5 font-bold text-left ${i === 0 ? "pl-3" : ""} ${i === 3 ? "pr-3" : ""}`} style={{ color: C.dark }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { m: "Flat-Fee Add-On",  how: "Fixed $/year for unlimited AI",           co: "Gainsight (Insight Agent add-on)",     v: "Simple but misaligned — leaves value on table" },
-                  { m: "Usage / Token-Based", how: "Pay per AI query or token",           co: "PostHog, Anthropic API (token-based)", v: "Transparent but volatile for budgets" },
-                  { m: "Outcome-Based",    how: "Pay per resolved outcome",                co: "Intercom Fin ($0.99/resolved ticket)", v: "Hard in analytics" },
-                  { m: "Quota + Tier",    how: "Daily/monthly cap per plan, upgrade for more", co: "Anthropic Claude Pro, Salesforce Agentforce", v: "Best fit — frequent friction drives upgrades" },
-                ].map((row, i) => (
-                  <tr key={row.m} className="border-b border-slate-100">
-                    <td className="py-1.5 pl-3 font-medium" style={{ color: C.dark }}>{row.m}</td>
-                    <td className="py-1.5" style={{ color: C.gray }}>{row.how}</td>
-                    <td className="py-1.5" style={{ color: C.gray }}>{row.co}</td>
-                    <td className="py-1.5 pr-3" style={{ color: C.gray }}>{row.v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-4 gap-2 flex-shrink-0">
+            {[
+              { title: "Flat-Fee Add-On", how: "Fixed $/year for unlimited AI", companies: ["Gainsight"], verdict: "Simple but misaligned; leaves value on table", recommended: false },
+              { title: "Usage / Token-Based", how: "Pay per AI query or token", companies: ["PostHog", "Anthropic API"], verdict: "Transparent but volatile for budgets", recommended: false },
+              { title: "Outcome-Based", how: "Pay per resolved outcome", companies: ["Intercom Fin ($0.99/ticket)"], verdict: "Hard to measure in analytics", recommended: false },
+              { title: "Quota + Tier", how: "Daily/monthly cap per tier, upgrade for more", companies: ["Anthropic Claude", "Salesforce Agentforce"], verdict: "Best fit: frequent friction drives upgrades", recommended: true },
+            ].map((card) => (
+              <div key={card.title} className="rounded-t-lg rounded-b-md overflow-hidden border border-slate-200 bg-white flex flex-col" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+                {card.recommended && (
+                  <div className="text-center py-0.5 text-[10px] font-bold rounded-t-lg" style={{ background: '#EDE9FE', color: C.purple }}>Recommended</div>
+                )}
+                <div className="p-2.5 flex-1 flex flex-col">
+                  <div className="text-sm font-bold" style={{ color: C.dark }}>{card.title}</div>
+                  <div className="text-xs mb-1.5" style={{ color: C.gray }}>How it works</div>
+                  <div className="text-xs font-medium mb-2 leading-snug" style={{ color: C.dark }}>{card.how}</div>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {card.companies.map((co) => (
+                      <span key={co} className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#F1F5F9', color: C.dark }}>{co}</span>
+                    ))}
+                  </div>
+                  <div className="text-xs leading-snug mt-auto pt-1.5 border-t border-slate-100" style={{ color: C.gray }}>{card.verdict}</div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>Key findings</h2>
@@ -941,7 +928,7 @@
 
           {/* Why 5/day — footnote directly under pricing cards */}
           <p className="text-xs leading-snug flex-shrink-0" style={{ color: C.gray }}>
-            <span className="font-bold" style={{ color: C.dark }}>* Why 5/day?</span> Customers average 3 sessions daily — 5 queries/day covers most workflows while creating a clear upgrade incentive. Cap resets daily.
+            <span className="font-bold" style={{ color: C.dark }}>* Why 5/day?</span> Customers average 3 sessions daily; 5 queries/day covers most workflows while creating a clear upgrade incentive. Cap resets daily.
           </p>
 
           {/* Why this model wins — four mini-cards */}
@@ -962,7 +949,7 @@
               {/* Step 1 */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0" style={{ background: C.navy, color: '#fff' }}>1</div>
-                <span className="text-xs leading-snug" style={{ color: C.gray }}>A Growth analyst runs <strong style={{ color: C.dark }}>5 Sense Analyst queries</strong> — full day's workflow covered.</span>
+                <span className="text-xs leading-snug" style={{ color: C.gray }}>A Growth analyst runs <strong style={{ color: C.dark }}>5 Sense Analyst queries</strong>; full day's workflow covered.</span>
               </div>
               {/* Arrow */}
               <div className="text-slate-300 font-bold shrink-0">→</div>
@@ -971,7 +958,7 @@
                 <span style={{ fontSize: 13 }}>🔒</span>
                 <div className="flex-1">
                   <div className="text-xs font-bold leading-snug" style={{ color: C.purple }}>Your team hit today's 5-query limit.</div>
-                  <div className="text-xs leading-snug mt-0.5" style={{ color: '#5B21B6' }}>Upgrade to Pro for 25/day — or cap resets tomorrow.</div>
+                  <div className="text-xs leading-snug mt-0.5" style={{ color: '#5B21B6' }}>Upgrade to Pro for 25/day, or cap resets tomorrow.</div>
                 </div>
                 <div className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: C.purple, color: '#fff' }}>Upgrade to Pro →</div>
               </div>
@@ -991,7 +978,7 @@
         return (
           <svg width="100%" height="100%" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet" className="w-full h-full min-h-0" aria-label="Distribution of daily sessions per account.">
             <text x={w/2} y={18} textAnchor="middle" className="text-[11px] font-bold" fill={darkBlue}>Distribution of Daily Usage per Account</text>
-            <text x={w/2} y={32} textAnchor="middle" className="text-[9px]" fill="#64748B">(Platform Sessions — Proxy for AI Query Demand)</text>
+            <text x={w/2} y={32} textAnchor="middle" className="text-[9px]" fill="#64748B">(Platform Sessions, proxy for AI Query Demand)</text>
             {bars.map((bar, i) => {
               const bw = Math.max(0.5, (bar.right - bar.left) * xScale), bh = (bar.count / yMax) * innerH;
               return <rect key={i} x={x(bar.left)} y={pad.t + innerH - bh} width={bw} height={bh} fill={bar.color} opacity={0.85} stroke="white" strokeWidth={0.5} />;
@@ -1001,7 +988,7 @@
             <line x1={x(5)} y1={pad.t} x2={x(5)} y2={pad.t + innerH} stroke={lineRed} strokeWidth={2} />
             <text x={x(p50)} y={pad.t - 6} textAnchor="middle" className="text-[8px]" fill={darkBlue}>P50 {Math.round(p50)}/day</text>
             <text x={x(p75)} y={pad.t - 6} textAnchor="middle" className="text-[8px]" fill={darkBlue}>P75 {Math.round(p75)}/day</text>
-            <text x={x(5)} y={pad.t + innerH * 0.72} textAnchor="middle" className="text-[8px] font-bold" fill={lineRed}>5/day cap (Growth) — Covers {Math.round(pct)}%</text>
+            <text x={x(5)} y={pad.t + innerH * 0.72} textAnchor="middle" className="text-[8px] font-bold" fill={lineRed}>5/day cap (Growth): Covers {Math.round(pct)}%</text>
             <rect x={w - pad.r - 130} y={pad.t + 4} width={10} height={8} fill="#14B8A6" opacity={0.85} /><text x={w - pad.r - 116} y={pad.t + 11} className="text-[8px]" fill={darkBlue}>≤ P75</text>
             <rect x={w - pad.r - 130} y={pad.t + 18} width={10} height={8} fill="#F59E0B" opacity={0.85} /><text x={w - pad.r - 116} y={pad.t + 25} className="text-[8px]" fill={darkBlue}>P75–P95</text>
             <rect x={w - pad.r - 130} y={pad.t + 32} width={10} height={8} fill="#EF4444" opacity={0.85} /><text x={w - pad.r - 116} y={pad.t + 39} className="text-[8px]" fill={darkBlue}>&gt; P95</text>
@@ -1056,7 +1043,7 @@
       <div className="flex flex-col h-full overflow-hidden" style={{ background: C.bg }}>
         {/* First part: 65% — title + charts + one-line text; minimal padding for chart space */}
         <div className="flex flex-col flex-[0_0_65%] min-h-0 pt-0 pr-0 pb-1 pl-0 gap-1">
-          <h1 className="text-lg font-bold shrink-0 leading-tight" style={{ color: C.dark }}>Usage is concentrated — top 20% drive 65% of sessions, validating tiered quotas</h1>
+          <h1 className="text-lg font-bold shrink-0 leading-tight" style={{ color: C.dark }}>Usage is concentrated: top 20% drive 65% of sessions, validating tiered quotas</h1>
           <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
             <div className="rounded-lg border overflow-hidden flex flex-col bg-white min-h-0" style={{ borderColor: C.grayBorder }}>
               <div className="flex-1 min-h-0 flex items-stretch justify-center"><DistributionChart /></div>
@@ -1081,18 +1068,18 @@
           <div className="flex flex-col gap-0.5 min-w-0 min-h-0">
             <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>Why did we discard all other models?</h2>
             <ul className="text-xs leading-snug list-none pl-0 space-y-1 flex-1 overflow-auto" style={{ color: C.gray }}>
-              <li><strong style={{ color: C.dark }}>Flat-Fee Add-On (discarded)</strong> — Usage is too concentrated (top 20% = 65%). Heavy users would be subsidized.</li>
-              <li><strong style={{ color: C.dark }}>Success-Based Tier (discarded)</strong> — Cannot prove usage drives outcomes with current data.</li>
-              <li><strong style={{ color: C.dark }}>Credit-Based (needs more data)</strong> — Cannot test; Sense query logs not available yet.</li>
-              <li><strong style={{ color: C.dark }}>Quota + Tier (confirmed)</strong> — Natural daily breakpoints exist (P50, P75, P90). 5/day creates friction without blocking work.</li>
+              <li><strong style={{ color: C.dark }}>Flat-Fee Add-On (discarded):</strong> Usage is too concentrated (top 20% = 65%). Heavy users would be subsidized.</li>
+              <li><strong style={{ color: C.dark }}>Success-Based Tier (discarded):</strong> Cannot prove usage drives outcomes with current data.</li>
+              <li><strong style={{ color: C.dark }}>Credit-Based (needs more data):</strong> Cannot test; Sense query logs not available yet.</li>
+              <li><strong style={{ color: C.dark }}>Quota + Tier (confirmed):</strong> Natural daily breakpoints exist (P50, P75, P90). 5/day creates friction without blocking work.</li>
             </ul>
           </div>
           <div className="flex flex-col gap-0.5 min-w-0 min-h-0">
             <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>Additional data that would sharpen this decision?</h2>
             <ul className="text-xs leading-snug list-none pl-0 space-y-1 overflow-auto flex-1" style={{ color: C.gray }}>
-              <li><strong style={{ color: C.dark }}>Sense query logs (type, cost, timestamp)</strong> — Whether different query types cost enough to justify credits.</li>
-              <li><strong style={{ color: C.dark }}>Query → action taken (export, share)</strong> — Whether usage correlates with outcomes; would revive Success-Based.</li>
-              <li><strong style={{ color: C.dark }}>Renewal outcomes by usage tier</strong> — Whether heavy users actually renew at higher rates.</li>
+              <li><strong style={{ color: C.dark }}>Sense query logs (type, cost, timestamp):</strong> whether different query types cost enough to justify credits.</li>
+              <li><strong style={{ color: C.dark }}>Query → action taken (export, share):</strong> whether usage correlates with outcomes; would revive Success-Based.</li>
+              <li><strong style={{ color: C.dark }}>Renewal outcomes by usage tier:</strong> whether heavy users actually renew at higher rates.</li>
             </ul>
           </div>
         </div>
@@ -1102,12 +1089,12 @@
 
     const Slide8 = () => (
       <div className="flex flex-col h-full gap-2 overflow-y-auto" style={{ background: C.bg }}>
-        <SlideTitle>The current health metric masks adoption failure — a three-pillar formula fixes it</SlideTitle>
+        <SlideTitle>The current health metric masks adoption failure. A three-pillar formula fixes it</SlideTitle>
 
         <div className="flex flex-col gap-2 flex-1 min-h-0 text-xs" style={{ color: C.dark }}>
           {/* Formula — two columns */}
           <section>
-            <h2 className="text-sm mb-1" style={{ color: C.dark }}><span className="font-bold">Formula</span> <span className="font-normal text-xs" style={{ color: C.gray }}>— The current health metric masks adoption failure — a new three-pillar formula accounts for AI engagement</span></h2>
+            <h2 className="text-sm mb-1" style={{ color: C.dark }}><span className="font-bold">Formula:</span> <span className="font-normal text-xs" style={{ color: C.gray }}>The current health metric masks adoption failure. A new three-pillar formula accounts for AI engagement</span></h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <p className="font-bold mb-0.5" style={{ color: C.dark }}>If Non-Live / Partially Live:</p>
@@ -1126,7 +1113,7 @@
             <h2 className="text-sm font-bold mb-1" style={{ color: C.dark }}>Pillars</h2>
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-lg border p-1.5 min-w-0" style={{ borderColor: C.grayBorder }}>
-                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P1 — Implementation Velocity</p>
+                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P1 | Implementation Velocity</p>
                 <p className="italic mb-0.5 text-xs" style={{ color: C.gray }}>Non-Live only. Dropped once Live.</p>
                 <ul className="list-disc pl-3 text-xs space-y-0" style={{ color: C.gray }}>
                   <li>100 if within implementation window</li>
@@ -1134,12 +1121,12 @@
                 </ul>
               </div>
               <div className="rounded-lg border p-1.5 min-w-0" style={{ borderColor: C.grayBorder }}>
-                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P2 — Adoption (ACV-Normalized)</p>
+                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P2 | Adoption (ACV-Normalized)</p>
                 <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>min(Cert/(ACV×α),1)×100</pre>
                 <p className="text-xs mt-0.5" style={{ color: C.gray }}>Normalizes adoption vs account size.</p>
               </div>
               <div className="rounded-lg border p-1.5 min-w-0" style={{ borderColor: C.grayBorder }}>
-                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P3 — Engagement Quality (AI-Aware)</p>
+                <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P3 | Engagement Quality (AI-Aware)</p>
                 <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>max(0, 100−ACV/(WAU+Sense Q/wk)×β)</pre>
                 <p className="text-xs mt-0.5" style={{ color: C.gray }}>WAU + Sense Queries/week to avoid penalizing AI migration.</p>
               </div>
@@ -1197,11 +1184,11 @@
                 </thead>
                 <tbody>
                   {[
-                    { input: "α — adoption rate per $ ACV", current: "1/100,000", need: "Distribution of (Cert Users / ACV) across live accounts" },
-                    { input: "β — engagement sensitivity", current: "1/500", need: "Distribution of ACV / (WAU + Sense Q) ratios; calibrate so P50 account scores ~50" },
+                    { input: "α: adoption rate per $ ACV", current: "1/100,000", need: "Distribution of (Cert Users / ACV) across live accounts" },
+                    { input: "β: engagement sensitivity", current: "1/500", need: "Distribution of ACV / (WAU + Sense Q) ratios; calibrate so P50 account scores ~50" },
                     { input: "Break-even ratio (P3 = 50)", current: "~$25K ACV per (WAU+Q)", need: "Recalibrate once Sense query telemetry is available" },
                     { input: "Expected implementation window", current: "TBD", need: "Historical time-to-go-live by account tier" },
-                    { input: "Sense Queries/week", current: "Not yet available", need: "Requires Sense query logs at account level — currently proxied by platform sessions" },
+                    { input: "Sense Queries/week", current: "Not yet available", need: "Requires Sense query logs at account level, currently proxied by platform sessions" },
                   ].map((r) => (
                     <tr key={r.input} className="border-b border-slate-100">
                       <td className="py-0.5 px-1 font-medium" style={{ color: C.dark }}>{r.input}</td>
@@ -1217,12 +1204,24 @@
       </div>
     );
 
-    const SLIDES = [SlideCover, Slide1, Slide2, Slide3, Slide4, Slide5, SlideDividerMonetization, Slide6, Slide7, SlideDataPricing, Slide8];
+    /* ─── Thank You (last slide) ────────────────────────────────────── */
+    const SlideThankYou = () => (
+      <div className="flex flex-col h-full justify-center items-start px-12" style={{ background: C.navy }}>
+        <h1 className="text-3xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
+          Q&amp;A
+        </h1>
+        <p className="text-base font-normal" style={{ color: '#FFFFFF' }}>
+          Juan Daniel Amézquita
+        </p>
+      </div>
+    );
+
+    const SLIDES = [SlideCover, Slide1, Slide2, Slide3, Slide4, Slide5, SlideDividerMonetization, Slide6, Slide7, SlideDataPricing, Slide8, SlideThankYou];
 
     /* ─── Navigation Bar ────────────────────────────────────────────── */
 
     const SlideNav = ({ current, total, onPrev, onNext, onChange }) => (
-      <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-slate-100">
+      <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-slate-100 shrink-0">
         <button
           onClick={onPrev}
           disabled={current === 0}
@@ -1266,6 +1265,24 @@
       </div>
     );
 
+    /* ─── Print view (all slides for PDF export) ─────────────────────── */
+
+    const PrintDeck = () => (
+      <div className="print-deck-root" style={{ background: '#e5e7eb', padding: 0 }}>
+        <div className="no-print" style={{ position: 'fixed', top: 12, right: 12, zIndex: 9999, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'Lato, sans-serif', fontSize: 11, color: '#333' }}>Choose <strong>Landscape</strong> in the print dialog</span>
+          <a href="?print=1" style={{ padding: '10px 20px', background: C.green, color: C.dark, borderRadius: 8, fontWeight: 'bold', textDecoration: 'none', fontFamily: 'Lato, sans-serif', fontSize: 12 }} onClick={(e) => { e.preventDefault(); window.print(); }}>Print to PDF</a>
+        </div>
+        {SLIDES.map((SlideComponent, i) => (
+          <div key={i} className={`slide-page ${i === 0 ? 'cover-slide' : ''} ${i === 6 || i === SLIDES.length - 1 ? 'dark-slide' : ''}`} style={{ display: 'flex', alignItems: 'stretch', background: '#fff', padding: 16 }}>
+            <div className="slide-page-inner" style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', height: 560, width: 1024, maxWidth: '100%' }}>
+              <SlideComponent />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
     /* ─── App ───────────────────────────────────────────────────────── */
 
     const App = () => {
@@ -1290,10 +1307,12 @@
       return (
         <div
           className="w-full flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-slate-200"
-          style={{ maxWidth: 1024, background: '#FFFFFF' }}
+          style={{ maxWidth: 1024, background: '#FFFFFF', position: 'relative' }}
         >
-          {/* Top tab bar */}
-          <div className="flex items-center overflow-x-auto no-scrollbar bg-white border-b border-slate-200 px-1">
+          {/* Export to PDF: opens this page with ?print=1 in a new tab; then use browser Print → Save as PDF */}
+          <a href="?print=1" target="_blank" rel="noopener noreferrer" className="no-print" style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, padding: '6px 12px', background: C.green, color: C.dark, borderRadius: 6, fontWeight: 'bold', textDecoration: 'none', fontSize: 11 }}>Export to PDF</a>
+          {/* Top tab bar — click a tab to jump to that slide */}
+          <div className="flex items-center overflow-x-auto no-scrollbar bg-white border-b border-slate-200 px-1 shrink-0" style={{ minHeight: 44 }}>
             {TABS.map((tab, i) => (
               <button
                 key={tab}
@@ -1338,11 +1357,12 @@
     };
 
     const rootEl = document.getElementById('root');
+    const isPrintMode = typeof window !== 'undefined' && window.location.search.includes('print=1');
     try {
       if (typeof ReactDOM.createRoot === 'function') {
-        ReactDOM.createRoot(rootEl).render(<App />);
+        ReactDOM.createRoot(rootEl).render(isPrintMode ? <PrintDeck /> : <App />);
       } else {
-        ReactDOM.render(<App />, rootEl);
+        ReactDOM.render(isPrintMode ? <PrintDeck /> : <App />, rootEl);
       }
     } catch (err) {
       rootEl.innerHTML = '<div style="padding:24px;font-family:system-ui;color:#b91c1c;max-width:600px"><strong>Render error</strong><pre style="white-space:pre-wrap;margin-top:8px;font-size:12px">' + (err && err.message ? err.message : String(err)) + '</pre></div>';

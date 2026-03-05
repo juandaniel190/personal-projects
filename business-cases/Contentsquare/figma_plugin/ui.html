@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      background: #fff;
+      color: #333;
+      padding: 16px;
+      width: 260px;
+    }
+    h2 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: #888; font-size: 11px; margin-bottom: 14px; }
+
+    .section { margin-bottom: 16px; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    p { color: #666; font-size: 12px; line-height: 1.5; margin-bottom: 8px; }
+
+    button {
+      width: 100%;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+    }
+    #btn-extract { background: #31d891; color: #0A0D4B; margin-bottom: 8px; }
+    #btn-import  { background: #0A0D4B; }
+    button:disabled { background: #ccc !important; color: #fff !important; cursor: not-allowed; }
+
+    .divider { border: none; border-top: 1px solid #eee; margin: 14px 0; }
+
+    #status {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #555;
+      min-height: 16px;
+    }
+    #bar-wrap {
+      margin-top: 6px;
+      background: #eee;
+      border-radius: 4px;
+      height: 5px;
+      display: none;
+    }
+    #bar {
+      height: 5px;
+      background: #31d891;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.2s;
+    }
+    .error { color: #b91c1c; margin-top: 8px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>CS Apps Importer</h2>
+  <p class="subtitle">Two ways to get slides onto your canvas</p>
+
+  <!-- Mode B: Extract from html.to.design import -->
+  <div class="section">
+    <div class="section-label">Step 1 — Extract from html.to.design</div>
+    <p>Finds the 12 nested slide frames in the current file and moves them to the canvas root, ready for Figma Slides.</p>
+    <button id="btn-extract">Extract slides to canvas</button>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Mode A: Import from PNG screenshots -->
+  <div class="section">
+    <div class="section-label">Alt — Import from screenshots</div>
+    <p>Fetches PNGs from <code>localhost:8787</code> and creates image frames (requires <code>python figma_export.py</code> running).</p>
+    <button id="btn-import">Import from screenshots</button>
+  </div>
+
+  <div id="bar-wrap"><div id="bar"></div></div>
+  <div id="status"></div>
+
+  <script>
+    const PORT   = 8787;
+    const TOTAL  = 12;
+    const LABELS = [
+      '01_Cover', '02_Exec_Summary', '03_P1_Acquisition', '04_P2_Adoption',
+      '05_P3_Retention', '06_Action_Plan', '07_Monetization_Divider',
+      '08_Monetization_Models', '09_Pricing_Tiers', '10_Usage_Data',
+      '11_Health_Formula', '12_QA',
+    ];
+
+    const btnExtract = document.getElementById('btn-extract');
+    const btnImport  = document.getElementById('btn-import');
+    const status     = document.getElementById('status');
+    const barWrap    = document.getElementById('bar-wrap');
+    const bar        = document.getElementById('bar');
+
+    function setStatus(msg, pct) {
+      status.textContent = msg;
+      if (pct !== undefined) {
+        barWrap.style.display = 'block';
+        bar.style.width = pct + '%';
+      }
+    }
+    function showError(msg) {
+      const d = document.createElement('div');
+      d.className = 'error';
+      d.textContent = msg;
+      document.body.appendChild(d);
+    }
+    function disableAll() {
+      btnExtract.disabled = true;
+      btnImport.disabled  = true;
+    }
+
+    // ── Mode B: Extract ──────────────────────────────────────────────────
+    btnExtract.addEventListener('click', () => {
+      disableAll();
+      setStatus('Searching for slide frames…', 0);
+      parent.postMessage({ pluginMessage: { type: 'extract' } }, '*');
+    });
+
+    // ── Mode A: Import from screenshots ─────────────────────────────────
+    btnImport.addEventListener('click', async () => {
+      disableAll();
+      setStatus('Starting…', 0);
+
+      for (let i = 0; i < TOTAL; i++) {
+        const filename = `slide_${String(i + 1).padStart(2, '0')}.png`;
+        setStatus(`Fetching ${filename} (${i + 1}/${TOTAL})…`, Math.round((i / TOTAL) * 100));
+
+        let bytes;
+        try {
+          const res = await fetch(`http://localhost:${PORT}/${filename}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          bytes = new Uint8Array(await res.arrayBuffer());
+        } catch (err) {
+          showError(`Failed to fetch ${filename}: ${err.message}`);
+          btnImport.disabled = false;
+          return;
+        }
+
+        parent.postMessage(
+          { pluginMessage: { type: 'add-slide', index: i, label: LABELS[i], bytes: Array.from(bytes) } },
+          '*'
+        );
+
+        await new Promise(resolve => {
+          const handler = (e) => {
+            if (e.data.pluginMessage?.type === 'slide-done') {
+              window.removeEventListener('message', handler);
+              resolve();
+            }
+          };
+          window.addEventListener('message', handler);
+        });
+      }
+
+      setStatus('All done!', 100);
+      parent.postMessage({ pluginMessage: { type: 'finish' } }, '*');
+    });
+
+    // ── Messages from code.js ────────────────────────────────────────────
+    window.addEventListener('message', (e) => {
+      const msg = e.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === 'extract-progress') {
+        setStatus(`Extracting ${msg.done}/${msg.total}…`, Math.round((msg.done / msg.total) * 100));
+      }
+      if (msg.type === 'extract-error') {
+        showError(msg.message);
+        btnExtract.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
