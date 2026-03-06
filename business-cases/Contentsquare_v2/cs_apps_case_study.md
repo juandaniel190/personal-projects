@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-CS Apps shows strong revenue traction (+37% ACV growth, +30% accounts in 12 months) but faces a structural disconnect between selling and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified CS Apps users, and the current health metric is unreliable — it uses total ACV and global WAU (including CS Digital activity), making non-Apps-users appear healthy. The real retention risk is not active churn from dissatisfied users but renewal refusal from non-adopters who will have no ROI evidence when contracts come up. $16.3M renews in Q4 FY2023 across 33 accounts.
+CS Apps shows strong revenue traction (+37% ACV growth, +30% accounts in 12 months) but faces a structural disconnect between selling and delivering value. Only 15% of accounts are currently live in production, 71% have zero certified CS Apps users, and the current health metric is unreliable — it uses total ACV and global WAU (including CS Digital activity), making non-Apps-users appear healthy. The real retention risk is not active churn from dissatisfied users but renewal refusal from non-adopters who will have no ROI evidence when contracts come up. $16.0M renews in Q4 FY2023 across 31 accounts.
 
 **Recommendation: Increase investment — conditionally.** The priority is not "grow faster" but "implement now, before renewal-exposed accounts reach procurement conversations with nothing to show for CS Apps."
 
@@ -39,7 +39,7 @@ The analysis is structured around three pillars that form a causal chain:
 |---|---|---|---|
 | **Value Creation** (Revenue & Growth) | Is CS Apps generating and growing revenue? | **Strong** | +37% Apps ACV, +30% accounts, penetration rising |
 | **Value Delivery** (Adoption & Engagement) | Are clients reaching time-to-value? | **Broken** | 85% not live, 71% zero certified users, shallow engagement |
-| **Value Protection** (Retention & Health) | Will this revenue survive renewal? | **At Risk** | Health metric unreliable; $16.3M renewing in Q4 with 33 accounts |
+| **Value Protection** (Retention & Health) | Will this revenue survive renewal? | **At Risk** | Health metric unreliable; $16.0M renewing in Q4 with 31 accounts |
 
 ### 1.3 Data Quality Audit
 
@@ -155,7 +155,9 @@ Note: 174 accounts appear in December 2023; the 185 total includes accounts that
 | Accounts with 0 certified users | **71.4%** (132/185) | — | — |
 | Avg sessions per user per month | **2.84** | — | Low |
 
-71% of accounts have zero certified CS Apps users. The same clients average 19 certified CS Digital users. Clients are buying CS Apps but not embedding it.
+* **Certification gap:** Avg 0.69 certified users per account — vs 18.1 on CS Digital (26× gap).
+* **Zero adoption:** 71% of accounts (132/185) have no certified CS Apps users.
+* **Declining engagement:** Users grew modestly (455 → 589 peak in Nov), but sessions per user fell from 14.5 to 9.9 in Dec. Engagement intensity is declining as the base expands.
 
 ![Certification Gap](./figures/fig_04_certification_gap.png)
 
@@ -203,7 +205,7 @@ Users are growing modestly (455 → 589 peak in Nov) but sessions per user trend
 
 | Period | % Healthy | Trend |
 |---|---|---|
-| Jan 2023 | 56.0% | — |
+| Jan 2023 | 56.0% | Baseline |
 | Jun 2023 (peak) | 63.4% | Improving |
 | Jul 2023 | 58.4% | Inflection point |
 | Dec 2023 | **54.0%** | −9pp from peak |
@@ -216,21 +218,19 @@ Health peaked in Q2 and declined through H2. The product is adding accounts fast
 
 ### H5 — Renewal Pipeline (UFR)
 
-TOTAL_UFR represents the value of all contracts up for renewal in a given fiscal quarter. The value is repeated across all months within the quarter — to avoid overcounting, only the last month per fiscal quarter is used.
+UFR is deduplicated to the last month of each fiscal quarter. Renewal Rate = % of renewing accounts active in the following quarter. ACV Retained is dollar-weighted against the original UFR cohort.
 
-| Fiscal Quarter | Total UFR | Renewing Accounts | % Accounts Healthy | % UFR Healthy |
-|---|---|---|---|---|
-| FQ 2022-11-01 | $5.0M | 20 | 60.0% | 57.4% |
-| FQ 2023-02-01 | $2.8M | 16 | 62.5% | 57.9% |
-| FQ 2023-05-01 | $5.1M | 23 | 87.0% | 87.6% |
-| FQ 2023-08-01 | $5.4M | 17 | 58.8% | 61.7% |
-| **FQ 2023-11-01** | **$16.3M** | **33** | **57.6%** | **56.5%** |
+| Fiscal Quarter | UFR | Accts | % Accts Healthy | % UFR Healthy | Renewal Rate | ACV Retained |
+|---|---|---|---|---|---|---|
+| FQ 2022-11-01 | $5.0M | 20 | 56.0% | 57.4% | 90.0% | 84.7% |
+| FQ 2023-02-01 | $2.7M | 15 | 62.8% | 55.3% | 86.7% | 83.1% |
+| FQ 2023-05-01 | $5.1M | 23 | 58.4% | 87.6% | 95.7% | 96.4% |
+| FQ 2023-08-01 | $5.4M | 17 | 57.1% | 61.7% | 94.1% | 96.7% |
+| **FQ 2023-11-01** | **$16.0M** | **31** | **54.0%** | **55.7%** | **n/a** | **Target ≥90%** |
 
-**Total UFR across all quarters: $34.5M.** Of that, $13.1M (37.9%) sits with unhealthy accounts. Q4 concentration ($16.3M = 47% of the full-year renewal pipeline) amplifies the risk.
+Overall portfolio health (% Accts Healthy) does not predict renewal outcomes — correlation with Renewal Rate is −0.58. The predictive signal is **% UFR Healthy** (health of the renewing dollar value specifically): correlation with Renewal Rate is +0.79. FQ 2023-02 illustrates the gap: highest overall health in the dataset (62.8%) yet lowest renewal rate (86.7%), because only 55.3% of the renewing UFR sat with healthy accounts. Q4 enters with 55.7% UFR Healthy — second-lowest on record — and $16.0M at stake (47% of the full-year pipeline).
 
-Note: TOTAL_UFR covers the full Contentsquare contract (CS Apps + CS Digital + add-ons), not only the Apps portion. The health classification derives from a metric that conflates Digital and Apps usage — it should not be the sole basis for risk segmentation. The health metric uses TOTAL_ACTIVE_ACV / AVG_WAU_GLOBAL, meaning accounts with strong CS Digital activity appear "healthy" even if they derive zero value from CS Apps.
-
-**Pillar 3 verdict:** Health is declining (56% → 54%), with the metric itself unreliable for CS Apps. The retention risk is latent: accounts likely renew today because CS Apps is bundled with CS Digital. The real cliff arrives when procurement asks "what did we get from CS Apps?" and 85% of accounts have no answer.
+**Pillar 3 verdict:** Health is declining (56% → 54%), the metric itself is unreliable for CS Apps, and Q4 concentrates nearly half the annual renewal pipeline at the lowest health rate on record. The retention risk is latent today — accounts renew because CS Apps is bundled with CS Digital. The real cliff arrives when procurement asks "what did we get from CS Apps?" and 85% of accounts have no answer.
 
 ---
 
