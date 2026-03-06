@@ -238,7 +238,7 @@
           subtitle: "Implementation, certification & usage",
           coreQuestion: "Are clients reaching time-to-value, adopting, and engaging?",
           status: "Broken / Ramping-up",
-          summary: "85% not live, 71% zero certified users, shallow engagement",
+          summary: "86% not live, 71% zero certified users, shallow engagement",
         },
         {
           id: "P3",
@@ -246,7 +246,7 @@
           subtitle: "Renewal pipeline & health",
           coreQuestion: "Will this revenue renew or churn?",
           status: "At Risk",
-          summary: "Health metric is unreliable. The real risk: 33 accounts renewing if CS Apps adoption to justify the spend",
+          summary: "Health metric is unreliable. The real risk: 31 accounts renewing if CS Apps adoption to justify the spend",
         },
       ];
       return (
@@ -259,7 +259,7 @@
               CS Apps shows strong revenue traction (+37% ACV, +30% accounts) but a clear gap between <strong style={{ color: C.dark }}>selling and delivering value</strong>.
               Only <strong style={{ color: C.dark }}>15% of accounts are live</strong>, <strong style={{ color: C.dark }}>71% have zero certified users</strong>, and the <strong style={{ color: C.dark }}>health metric is flawed</strong> because it blends CS Digital usage into CS Apps health, making non-users appear healthy.
               The real risk is <strong style={{ color: C.dark }}>renewal refusal from non-users with no ROI evidence</strong>, not active churn.
-              <strong style={{ color: C.dark }}>$16.3M renews in Q4 across 33 accounts</strong>, creating concentrated exposure.
+              <strong style={{ color: C.dark }}>$16.0M renews in Q4 across 31 accounts</strong>, creating concentrated exposure.
             </p>
 
             {/* Story flow boxes */}
@@ -319,7 +319,7 @@
                 <li>Focus on implementation and integration bottleneck</li>
               </ul>
               <ul className="text-xs leading-snug list-disc pl-3 space-y-0.5 min-w-0" style={{ color: C.gray }}>
-                <li>Triage the 33 Q4 accounts now: identify which are non-live, assign implementation owners, and build the ROI case before renewal conversations start</li>
+                <li>Triage the 31 Q4 accounts now: identify which are non-live, assign implementation owners, and build the ROI case before renewal conversations start</li>
               </ul>
           </div>
         </div>
@@ -534,7 +534,7 @@
 
       return (
       <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
-        <SlideTitle>P2: 85% of accounts are not live and 71% have zero certified users. Adoption is the broken link</SlideTitle>
+        <SlideTitle>P2: 86% of accounts are not live and 71% have zero certified users. Adoption is the broken link</SlideTitle>
         <SlideSubtitle>P2 Adoption &amp; Engagement: Are clients reaching time-to-value, adopting, and engaging?</SlideSubtitle>
 
         {/* Two columns */}
@@ -617,7 +617,7 @@
         {/* P2 verdict — matches P1/P3 style */}
         <div className="shrink-0 border-t pt-2" style={{ borderColor: C.grayBorder }}>
           <p className="text-xs font-bold leading-snug" style={{ color: C.dark }}>
-            P2 verdict: Adoption is the broken link. 85% of accounts are not live. Those that are live have 0.69 certified users on average and shallow module engagement.
+            P2 verdict: Adoption is the broken link. 86% of accounts are not live. Those that are live have 0.69 certified users on average and shallow module engagement.
           </p>
         </div>
       </div>
@@ -678,7 +678,7 @@
                 </tbody>
               </table>
             </div>
-            <div className="rounded-lg bg-white overflow-hidden flex flex-col p-3">
+            <div className="rounded-lg bg-white overflow-hidden flex flex-col p-3" style={{ width: '350px' }}>
               <p className="text-xs leading-snug" style={{ color: C.gray }}>
                 Overall health scores don&apos;t predict renewals. What matters is whether the cohort of renewing accounts are healthy, and that signal is flashing red.
               </p>
@@ -690,8 +690,8 @@
 
           {/* Bottom: P3 verdict */}
           <div className="shrink-0 border-t pt-2" style={{ borderColor: C.grayBorder }}>
-            <p className="text-xs font-bold leading-snug" style={{ color: C.dark }}>
-              P3 verdict: The health metric cannot be used as evidence of deterioration. The real retention risk is not active churn. It is renewal refusal: 33 accounts renew $16.3M in Q4 with no CS Apps adoption to justify the contract. Fix implementation now, not after renewals fail.
+            <p className="text-xs font-bold leading-snug" style={{ color: C.dark, width: '930px' }}>
+              P3 verdict: The health metric cannot be used as evidence of deterioration. The real retention risk is not active churn. It is renewal refusal: 31 accounts renew $16.0M in Q4 with no CS Apps adoption to justify the contract. Fix implementation now, not after renewals fail.
             </p>
           </div>
         </div>
@@ -712,15 +712,15 @@
                 pillar: 'P2 Adoption',
                 priority: 'High',
                 objective: 'Improve engagement and adoption of the platform',
-                kpis: ['"Lived" rate: 15% → 40%+', '0 → 3+ certified users/account', 'Homepage share 26% → 15%'],
+                kpis: ['"Lived" rate: 14% → 40%+', '0 → 3+ certified users/account', 'Homepage share 26% → 15%'],
                 initiatives: ['Accelerate implementation', 'Drive certification', 'In-product activation flows'],
               },
               {
                 pillar: 'P3 Retention',
                 priority: 'Medium',
                 objective: 'Secure the Q4 renewal cliff before procurement conversations start',
-                kpis: ['Renewal rate ≥90% on $16.3M Q4 UFR'],
-                initiatives: ['Triage 33 Q4 accounts by go-live status; assign owners to non-live'],
+                kpis: ['Renewal rate ≥90% on $16.0M Q4 UFR'],
+                initiatives: ['Triage 31 Q4 accounts by go-live status; assign owners to non-live'],
               },
               {
                 pillar: 'P1 Acquisition',
@@ -775,8 +775,11 @@
                       <div className="text-xs font-bold" style={{ color: C.dark }}>{title}</div>
                       <span className="text-[10px] font-bold uppercase" style={{ color: C.gray }}>{impact}</span>
                     </div>
-                    <div className="text-xs font-bold" style={{ color: C.dark }}>{stat}</div>
-                    <div className="text-xs leading-snug" style={{ color: C.grayLight }}>{desc}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold" style={{ color: C.dark }}>{stat}</span>
+                      <span className="text-slate-300 shrink-0">|</span>
+                      <span className="text-xs leading-snug" style={{ color: C.grayLight }}>{desc}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -809,24 +812,38 @@
     /* ─── Part 2: Monetization divider ───────────────────────────────── */
     const SlideDividerMonetization = () => (
       <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy }}>
-        <div className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: C.green }}>
-          ADDITIONAL QUESTION
+        <div className="flex flex-row items-stretch gap-8 flex-1 min-h-0">
+          <div className="flex flex-col justify-center flex-shrink-0 flex-1 min-w-0">
+            <div className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: C.green }}>
+              ADDITIONAL QUESTION
+            </div>
+            <h1 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
+              Part 2: AI-Era Pricing &amp; Health
+            </h1>
+            <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              Monetization &amp; Account Health Redefinition
+            </p>
+            <div className="w-12 h-0.5 mb-5" style={{ background: C.green }}></div>
+            <p className="text-xs font-bold mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
+              The current CSQ pricing model has the risk of &quot;Value Leakage&quot;, where the client gets massive ROI from AI-driven insights but we are not monetizing it as revenue stays flat.
+            </p>
+            <ul className="text-xs leading-relaxed space-y-1.5 list-none pl-0" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              <li className="flex items-start gap-2"><span style={{ color: C.green }}>1.</span> Should Sense Analyst be priced as a flat-fee add-on, success-based tier, or credit-based model?</li>
+              <li className="flex items-start gap-2"><span style={{ color: C.green }}>2.</span> What analysis determines the right pricing model?</li>
+              <li className="flex items-start gap-2"><span style={{ color: C.green }}>3.</span> How do we redefine account health when AI reduces human time-in-tool?</li>
+            </ul>
+          </div>
+          {/* Right div: Sense AI at bottom with 15px padding */}
+          <div className="flex flex-col justify-end flex-shrink-0" style={{ padding: '15px' }}>
+            <div className="rounded-xl overflow-hidden border border-white/10 shadow-xl w-full max-w-[242px] h-[140px] bg-slate-900/30">
+              <img
+                src="figures/Sense AI.png"
+                alt="Sense analyst UI — Hello Stella, I'm your analyst"
+                className="w-full h-full object-cover object-[center_38%]"
+              />
+            </div>
+          </div>
         </div>
-        <h1 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
-          Part 2: AI-Era Pricing &amp; Health
-        </h1>
-        <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
-          Monetization &amp; Account Health Redefinition
-        </p>
-        <div className="w-12 h-0.5 mb-5" style={{ background: C.green }}></div>
-        <p className="text-xs font-bold mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
-          The current CSQ pricing model has the risk of &quot;Value Leakage&quot;, where the client gets massive ROI from AI-driven insights but we are not monetizing it as revenue stays flat.
-        </p>
-        <ul className="text-xs leading-relaxed space-y-1.5 list-none pl-0" style={{ color: 'rgba(255,255,255,0.7)' }}>
-          <li className="flex items-start gap-2"><span style={{ color: C.green }}>1.</span> Should Sense Analyst be priced as a flat-fee add-on, success-based tier, or credit-based model?</li>
-          <li className="flex items-start gap-2"><span style={{ color: C.green }}>2.</span> What analysis determines the right pricing model?</li>
-          <li className="flex items-start gap-2"><span style={{ color: C.green }}>3.</span> How do we redefine account health when AI reduces human time-in-tool?</li>
-        </ul>
       </div>
     );
 
@@ -880,7 +897,7 @@
     const Slide7 = () => {
       const pricingCards = [
         { tier: "Free", tagline: "A simple way to get started", price: "€0", priceSub: "/ forever", fromTier: null, features: ["Up to 200K monthly sessions", "Session Replay & heatmaps", "Sense Chat included", "Sense Analyst not included"] },
-        { tier: "Growth", tagline: "Optimize experiences to boost engagement", price: "From €39", priceSub: "/ month", fromTier: "Free", popular: true, features: ["Starting at 7K monthly sessions", "Sense Chat unlimited", "Sense Analyst 5 queries/day*", "Covers typical workflow; cap resets daily"] },
+        { tier: "Growth", tagline: "Optimize experiences to boost engagement", price: "From €39", priceSub: "/ month", fromTier: "Free", popular: true, features: ["Starting at 7K monthly sessions", "Sense Chat unlimited", "Sense Analyst 5 queries/day*", "Cap resets daily"] },
         { tier: "Pro", tagline: "Surface optimizations faster, prioritize by impact", price: "Let's talk", priceSub: "", fromTier: "Growth", features: ["Starting at 1M monthly sessions", "Sense Analyst 25 queries/day", "Multi-session replay summaries", "Precision filtering, retroactive"] },
         { tier: "Enterprise", tagline: "Scale optimization across the enterprise", price: "Let's talk", priceSub: "", fromTier: "Pro", features: ["Custom sessions", "Sense Analyst unlimited", "Error summaries & data feeds", "Unlimited projects"] },
       ];
@@ -897,7 +914,7 @@
       };
       return (
       <div className="flex flex-col h-full gap-3 overflow-y-auto" style={{ background: C.bg }}>
-        <SlideTitle>A 5-query daily cap covers 85% of users and creates natural upgrade friction</SlideTitle>
+        <SlideTitle>A 5-query daily cap covers ~96% of users and creates natural upgrade friction</SlideTitle>
         <SlideSubtitle>Daily Sense Analyst caps by plan; Sense Chat included free on all tiers</SlideSubtitle>
 
         <div className="flex flex-col gap-3 flex-1 min-h-0">

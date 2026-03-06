@@ -37,13 +37,18 @@ from matplotlib.patches import Patch
 import os, warnings, json, re
 warnings.filterwarnings('ignore')
 
-# --- Paths ---
+# --- Paths (run from repo root, Contentsquare/, or script/) ---
 _base = os.path.join(os.getcwd(), "business-cases", "Contentsquare")
 if not os.path.isdir(_base):
     _base = os.getcwd()
+# If cwd is script/, BASE is parent (Contentsquare)
+if not os.path.isdir(os.path.join(_base, "data")):
+    _parent = os.path.dirname(_base)
+    if os.path.isdir(os.path.join(_parent, "data")):
+        _base = _parent
 BASE = _base
-ACC_PATH = os.path.join(BASE, "Account Data Case Study Result 1.csv")
-USR_PATH = os.path.join(BASE, "User Data Case Study Result 1.csv")
+ACC_PATH = os.path.join(BASE, "data", "Account Data Case Study Result 1.csv")
+USR_PATH = os.path.join(BASE, "data", "User Data Case Study Result 1.csv")
 FIG_DIR  = os.path.join(BASE, "figures")
 os.makedirs(FIG_DIR, exist_ok=True)
 
