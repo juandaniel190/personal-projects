@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+.eggs/
+
+# Local / OS
+.DS_Store
+.claude/settings.local.json
+
+# Jupyter
+.ipynb_checkpoints/

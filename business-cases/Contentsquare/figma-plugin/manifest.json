@@ -1,0 +1,7 @@
+{
+  "name": "CSQ Investment Case Slides",
+  "id": "csq-investment-case-slides",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"]
+}
