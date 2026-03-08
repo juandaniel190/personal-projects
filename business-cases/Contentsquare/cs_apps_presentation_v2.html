@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CS Apps | Investment Decision Analysis | Contentsquare</title>
+  <title>CS Apps | Investment Decision Analysis | Contentsquare V2</title>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -62,8 +62,7 @@
       .slide-page { page-break-after: always; page-break-inside: avoid; height: 167mm; width: 297mm; box-sizing: border-box; padding: 0 !important; margin: 0 !important; display: flex !important; align-items: stretch; justify-content: stretch; overflow: hidden; }
       .slide-page:last-child { page-break-after: auto; }
       .slide-page-inner { width: 1024px !important; height: 560px !important; max-width: none !important; padding: 15px !important; margin: 0 !important; flex: none !important; background: #fff !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; overflow: hidden; transform: scale(1.096, 1.125); transform-origin: 0 0; box-sizing: border-box; }
-      .slide-page.cover-slide .slide-page-inner,
-      .slide-page.dark-slide .slide-page-inner { background: #0A0D4B !important; }
+
       .no-print { display: none !important; }
       .print-deck-root { background: #fff !important; padding: 0 !important; }
     }
@@ -98,8 +97,8 @@
       // MAU_DATA_END
 
     const TABS = [
-      "Part 1", "Exec Summary", "P1 Acquisition", "P2 Adoption",
-      "P3 Retention", "Action Plan", "Part 2", "Monetization", "Pricing Model", "Data Behind Pricing", "Health KPI", "Thank you"
+      "Exec Summary", "P1 Acquisition", "P2 Adoption",
+      "P3 Retention", "Action Plan", "Monetization", "Pricing Model", "Data Behind Pricing", "Health KPI"
     ];
 
     /* ─── Micro-components ─────────────────────────────────────────── */
@@ -174,7 +173,7 @@
     /* ─── Typography Components ────────────────────────────────────── */
 
     const SlideTitle = ({ children, style = {} }) => (
-      <h1 className="text-lg font-bold" style={{ color: C.dark, fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)', ...style }}>{children}</h1>
+      <h1 className="text-lg font-bold leading-snug" style={{ color: C.dark, ...style }}>{children}</h1>
     );
 
     const SlideSubtitle = ({ children, style = {} }) => (
@@ -196,11 +195,11 @@
     /* ─── Cover Slide ──────────────────────────────────────────────── */
 
     const SlideCover = () => (
-      <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy, fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
+      <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy }}>
         <div className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: C.green }}>
           Case Study: Senior Manager, Product Data Analyst | Contentsquare
         </div>
-        <h1 className="text-2xl font-bold mb-2" style={{ color: '#FFFFFF', fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
+        <h1 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
           Part 1: Investment Decision
         </h1>
         <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -811,13 +810,13 @@
 
     /* ─── Part 2: Monetization divider ───────────────────────────────── */
     const SlideDividerMonetization = () => (
-      <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy, fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
+      <div className="flex flex-col h-full justify-center px-12" style={{ background: C.navy }}>
         <div className="flex flex-row items-stretch gap-8 flex-1 min-h-0">
           <div className="flex flex-col justify-center flex-shrink-0 flex-1 min-w-0">
             <div className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: C.green }}>
               ADDITIONAL QUESTION
             </div>
-            <h1 className="text-2xl font-bold mb-2" style={{ color: '#FFFFFF', fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
+            <h1 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
               Part 2: AI-Era Pricing &amp; Health
             </h1>
             <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -1072,7 +1071,7 @@
       <div className="flex flex-col h-full overflow-hidden" style={{ background: C.bg }}>
         {/* First part: 65% — title + charts + one-line text; minimal padding for chart space */}
         <div className="flex flex-col flex-[0_0_65%] min-h-0 pt-0 pr-0 pb-1 pl-0 gap-1">
-          <h1 className="text-lg font-bold shrink-0" style={{ color: C.dark, fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>Usage is concentrated: top 20% drive 65% of sessions, validating tiered quotas</h1>
+          <h1 className="text-lg font-bold shrink-0 leading-tight" style={{ color: C.dark }}>Usage is concentrated: top 20% drive 65% of sessions, validating tiered quotas</h1>
           <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
             <div className="rounded-lg border overflow-hidden flex flex-col bg-white min-h-0" style={{ borderColor: C.grayBorder }}>
               <div className="flex-1 min-h-0 flex items-stretch justify-center"><DistributionChart /></div>
@@ -1235,8 +1234,8 @@
 
     /* ─── Thank You (last slide) ────────────────────────────────────── */
     const SlideThankYou = () => (
-      <div className="flex flex-col h-full justify-center items-start px-12" style={{ background: C.navy, fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
-        <h1 className="text-3xl font-bold mb-2" style={{ color: '#FFFFFF', fontFamily: 'var(--ff-sans-display)', letterSpacing: 'var(--lts-headline-500)', lineHeight: 'var(--lh-headline-500)' }}>
+      <div className="flex flex-col h-full justify-center items-start px-12" style={{ background: C.navy }}>
+        <h1 className="text-3xl font-bold leading-tight mb-2" style={{ color: '#FFFFFF' }}>
           Q&amp;A
         </h1>
         <p className="text-base font-normal" style={{ color: '#FFFFFF' }}>
@@ -1245,7 +1244,7 @@
       </div>
     );
 
-    const SLIDES = [SlideCover, Slide1, Slide2, Slide3, Slide4, Slide5, SlideDividerMonetization, Slide6, Slide7, SlideDataPricing, Slide8, SlideThankYou];
+    const SLIDES = [Slide1, Slide2, Slide3, Slide4, Slide5, Slide6, Slide7, SlideDataPricing, Slide8];
 
     /* ─── Navigation Bar ────────────────────────────────────────────── */
 
@@ -1303,7 +1302,7 @@
           <a href="?print=1" style={{ padding: '10px 20px', background: C.green, color: C.dark, borderRadius: 8, fontWeight: 'bold', textDecoration: 'none', fontFamily: 'Lato, sans-serif', fontSize: 12 }} onClick={(e) => { e.preventDefault(); window.print(); }}>Print to PDF</a>
         </div>
         {SLIDES.map((SlideComponent, i) => (
-          <div key={i} className={`slide-page ${i === 0 ? 'cover-slide' : ''} ${i === 6 || i === SLIDES.length - 1 ? 'dark-slide' : ''}`} style={{ display: 'flex', alignItems: 'stretch', background: '#fff', padding: 16 }}>
+          <div key={i} className="slide-page" style={{ display: 'flex', alignItems: 'stretch', background: '#fff', padding: 16 }}>
             <div className="slide-page-inner" style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', height: 560, width: 1024, maxWidth: '100%' }}>
               <SlideComponent />
             </div>
@@ -1338,10 +1337,8 @@
           className="w-full flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-slate-200"
           style={{ maxWidth: 1024, background: '#FFFFFF', position: 'relative' }}
         >
-          {/* Export to PDF */}
-          <a href="?print=1" target="_blank" rel="noopener noreferrer" className="no-print" title="Export to PDF" style={{ position: 'absolute', top: 10, right: 10, zIndex: 10, width: 20, height: 20, borderRadius: '50%', background: C.green, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }}>
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 1v9M8 10l-3-3M8 10l3-3" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12h12" stroke="#000" strokeWidth="1.8" strokeLinecap="round"/></svg>
-          </a>
+          {/* Export to PDF: opens this page with ?print=1 in a new tab; then use browser Print → Save as PDF */}
+          <a href="?print=1" target="_blank" rel="noopener noreferrer" className="no-print" style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, padding: '6px 12px', background: C.green, color: C.dark, borderRadius: 6, fontWeight: 'bold', textDecoration: 'none', fontSize: 11 }}>Export to PDF</a>
           {/* Top tab bar — click a tab to jump to that slide */}
           <div className="flex items-center overflow-x-auto no-scrollbar bg-white border-b border-slate-200 px-1 shrink-0" style={{ minHeight: 44 }}>
             {TABS.map((tab, i) => (
@@ -1375,6 +1372,14 @@
             </div>
           </div>
 
+          {/* Bottom nav */}
+          <SlideNav
+            current={slide}
+            total={total}
+            onPrev={() => goTo(slide - 1)}
+            onNext={() => goTo(slide + 1)}
+            onChange={goTo}
+          />
         </div>
       );
     };
