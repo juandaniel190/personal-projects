@@ -270,7 +270,7 @@
                 "creating a latent renewal risk: non-adopters face procurement conversations with no ROI evidence.",
               ].map((text, i) => (
                 <React.Fragment key={i}>
-                  <div className="flex-1 rounded-lg border px-2 py-1.5 text-[11px] leading-snug" style={{ background: '#F8FAFC', borderColor: C.grayBorder, color: C.gray }}>{text}</div>
+                  <div className="flex-1 rounded-lg border px-2 py-0.5 text-[11px] leading-snug" style={{ background: '#F8FAFC', borderColor: C.grayBorder, color: C.gray }}>{text}</div>
                   {i < 2 && (
                     <div className="px-1.5 shrink-0 font-bold text-base" style={{ color: C.green }}>→</div>
                   )}
@@ -362,42 +362,42 @@
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b-2" style={{ borderColor: C.dark }}>
-                    <th className="py-1.5 font-bold text-left pl-3" style={{ color: C.dark }}>Metric</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Jan 2023</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Dec 2023</th>
-                    <th className="py-1.5 font-bold text-right pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>Change</th>
+                    <th className="py-0.5 font-bold text-left pl-3" style={{ color: C.dark }}>Metric</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Jan 2023</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Dec 2023</th>
+                    <th className="py-0.5 font-bold text-right pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>Change</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 font-medium pl-3" style={{ color: C.gray }}>CS Apps ACV</td>
-                    <td className="py-1.5 text-right text-slate-600">${Math.round(h1.total_acv_jan_m)}M</td>
-                    <td className="py-1.5 text-right text-slate-600">${Math.round(h1.total_acv_dec_m)}M</td>
-                    <td className="py-1.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.acv_change_pct)}%</td>
+                    <td className="py-0.5 font-medium pl-3" style={{ color: C.gray }}>CS Apps ACV</td>
+                    <td className="py-0.5 text-right text-slate-600">${Math.round(h1.total_acv_jan_m)}M</td>
+                    <td className="py-0.5 text-right text-slate-600">${Math.round(h1.total_acv_dec_m)}M</td>
+                    <td className="py-0.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.acv_change_pct)}%</td>
                   </tr>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 font-medium pl-3" style={{ color: C.gray }}>Total relationship ACV</td>
-                    <td className="py-1.5 text-right text-slate-600">${Math.round(h1.total_relationship_jan_m)}M</td>
-                    <td className="py-1.5 text-right text-slate-600">${Math.round(h1.total_relationship_dec_m)}M</td>
-                    <td className="py-1.5 text-right pr-3" style={{ background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.total_relationship_change_pct)}%</td>
+                    <td className="py-0.5 font-medium pl-3" style={{ color: C.gray }}>Total relationship ACV</td>
+                    <td className="py-0.5 text-right text-slate-600">${Math.round(h1.total_relationship_jan_m)}M</td>
+                    <td className="py-0.5 text-right text-slate-600">${Math.round(h1.total_relationship_dec_m)}M</td>
+                    <td className="py-0.5 text-right pr-3" style={{ background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.total_relationship_change_pct)}%</td>
                   </tr>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 font-medium pl-3" style={{ color: C.gray }}>Number of accounts</td>
-                    <td className="py-1.5 text-right text-slate-600">{h1.accounts_jan}</td>
-                    <td className="py-1.5 text-right text-slate-600">{h1.accounts_dec}</td>
-                    <td className="py-1.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.accounts_change_pct)}%</td>
+                    <td className="py-0.5 font-medium pl-3" style={{ color: C.gray }}>Number of accounts</td>
+                    <td className="py-0.5 text-right text-slate-600">{h1.accounts_jan}</td>
+                    <td className="py-0.5 text-right text-slate-600">{h1.accounts_dec}</td>
+                    <td className="py-0.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.accounts_change_pct)}%</td>
                   </tr>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 font-medium pl-3" style={{ color: C.gray }}>Mean CS Apps ACV per account</td>
-                    <td className="py-1.5 text-right text-slate-600">${(h1.mean_acv_jan != null ? (h1.mean_acv_jan / 1000).toFixed(1) : Number(h1.mean_acv_jan_k).toFixed(1))}K</td>
-                    <td className="py-1.5 text-right text-slate-600">${(h1.mean_acv_dec != null ? (h1.mean_acv_dec / 1000).toFixed(1) : Number(h1.mean_acv_dec_k).toFixed(1))}K</td>
-                    <td className="py-1.5 text-right pr-3" style={{ background: 'rgba(0,0,0,0.04)' }}>+6%</td>
+                    <td className="py-0.5 font-medium pl-3" style={{ color: C.gray }}>Mean CS Apps ACV per account (ARPU)</td>
+                    <td className="py-0.5 text-right text-slate-600">${(h1.mean_acv_jan != null ? (h1.mean_acv_jan / 1000).toFixed(0) : Number(h1.mean_acv_jan_k).toFixed(1))}K</td>
+                    <td className="py-0.5 text-right text-slate-600">${(h1.mean_acv_dec != null ? (h1.mean_acv_dec / 1000).toFixed(0) : Number(h1.mean_acv_dec_k).toFixed(1))}K</td>
+                    <td className="py-0.5 text-right pr-3" style={{ background: 'rgba(0,0,0,0.04)' }}>+6%</td>
                   </tr>
                   <tr>
-                    <td className="py-1.5 font-medium pl-3" style={{ color: C.dark }}><strong>CS Apps penetration (Apps / Total ACV)</strong></td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>{Math.round(h1.penetration_jan_pct)}%</td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>{Math.round(h1.penetration_dec_pct)}%</td>
-                    <td className="py-1.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.penetration_change_pp)}pp</td>
+                    <td className="py-0.5 font-medium pl-3" style={{ color: C.dark }}><strong>CS Apps penetration (Apps / Total ACV)</strong></td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>{Math.round(h1.penetration_jan_pct)}%</td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>{Math.round(h1.penetration_dec_pct)}%</td>
+                    <td className="py-0.5 text-right font-bold pr-3" style={{ color: C.dark, background: 'rgba(0,0,0,0.04)' }}>+{Math.round(h1.penetration_change_pp)}pp</td>
                   </tr>
                 </tbody>
               </table>
@@ -438,9 +438,10 @@
                 <text x={x0 + 215} y={h - 9} fontSize="8" fill={C.gray}>Accounts</text>
               </svg>
             </div>
-            <p className="text-xs leading-snug shrink-0" style={{ color: C.gray }}>
-              CS Apps ACV is growing faster than total relationship ACV (+{Math.round(h1.acv_change_pct)}% vs. +{Math.round(h1.total_relationship_change_pct)}%), meaning CS Apps is increasing its share of the Contentsquare wallet.
-            </p>
+            <ul className="text-xs leading-snug shrink-0 list-disc pl-4 space-y-1" style={{ color: C.gray }}>
+              <li>CS Apps ACV is growing faster than total relationship ACV (+{Math.round(h1.acv_change_pct)}% vs. +{Math.round(h1.total_relationship_change_pct)}%).</li>
+              <li>While 96% of Apps ACV is cross-sell from CS Digital, <strong>7 net-new accounts contributed $1.2M</strong>. However, they <strong>churn at 14%</strong> (3× portfolio average), indicating CS Apps cannot sustain independent relationships without a Digital anchor.</li>
+            </ul>
           </div>
 
           {/* Column 2: H7 — GEO table + insights */}
@@ -450,46 +451,46 @@
               <table className="w-full text-xs" style={{ tableLayout: 'fixed' }}>
                 <thead>
                   <tr className="border-b-2" style={{ borderColor: C.dark }}>
-                    <th className="py-1.5 font-bold text-left pl-3" style={{ color: C.dark }}>GEO</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Accounts</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>TOTAL_ACV</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>APPS_ACV</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
-                    <th className="py-1.5 font-bold text-right pr-3" style={{ color: C.dark }}>PEN %</th>
+                    <th className="py-0.5 font-bold text-left pl-3" style={{ color: C.dark }}>GEO</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Accounts</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>TOTAL_ACV</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>APPS_ACV</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
+                    <th className="py-0.5 font-bold text-right pr-3" style={{ color: C.dark }}>PEN %</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 pl-3 font-medium" style={{ color: C.dark }}>EMEA</td>
-                    <td className="py-1.5 text-right text-slate-600">121</td>
-                    <td className="py-1.5 text-right text-slate-600">38.6M</td>
-                    <td className="py-1.5 text-right text-slate-600">9.2M</td>
-                    <td className="py-1.5 text-right text-slate-600">1.4M</td>
-                    <td className="py-1.5 text-right text-slate-600 pr-3">24%</td>
+                    <td className="py-0.5 pl-3 font-medium" style={{ color: C.dark }}>EMEA</td>
+                    <td className="py-0.5 text-right text-slate-600">121</td>
+                    <td className="py-0.5 text-right text-slate-600">38.6M</td>
+                    <td className="py-0.5 text-right text-slate-600">9.2M</td>
+                    <td className="py-0.5 text-right text-slate-600">1.4M</td>
+                    <td className="py-0.5 text-right text-slate-600 pr-3">24%</td>
                   </tr>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 pl-3 font-medium" style={{ color: C.dark }}>AMERICAS</td>
-                    <td className="py-1.5 text-right text-slate-600">42</td>
-                    <td className="py-1.5 text-right text-slate-600">22.3M</td>
-                    <td className="py-1.5 text-right text-slate-600">4.8M</td>
-                    <td className="py-1.5 text-right text-slate-600">6.5M</td>
-                    <td className="py-1.5 text-right text-slate-600 pr-3">22%</td>
+                    <td className="py-0.5 pl-3 font-medium" style={{ color: C.dark }}>AMERICAS</td>
+                    <td className="py-0.5 text-right text-slate-600">42</td>
+                    <td className="py-0.5 text-right text-slate-600">22.3M</td>
+                    <td className="py-0.5 text-right text-slate-600">4.8M</td>
+                    <td className="py-0.5 text-right text-slate-600">6.5M</td>
+                    <td className="py-0.5 text-right text-slate-600 pr-3">22%</td>
                   </tr>
                   <tr className="border-b border-slate-100">
-                    <td className="py-1.5 pl-3 font-medium" style={{ color: C.dark }}>APJ</td>
-                    <td className="py-1.5 text-right text-slate-600">11</td>
-                    <td className="py-1.5 text-right text-slate-600">2.3M</td>
-                    <td className="py-1.5 text-right text-slate-600">1.4M</td>
-                    <td className="py-1.5 text-right text-slate-600">338k</td>
-                    <td className="py-1.5 text-right text-slate-600 pr-3">63%</td>
+                    <td className="py-0.5 pl-3 font-medium" style={{ color: C.dark }}>APJ</td>
+                    <td className="py-0.5 text-right text-slate-600">11</td>
+                    <td className="py-0.5 text-right text-slate-600">2.3M</td>
+                    <td className="py-0.5 text-right text-slate-600">1.4M</td>
+                    <td className="py-0.5 text-right text-slate-600">338k</td>
+                    <td className="py-0.5 text-right text-slate-600 pr-3">63%</td>
                   </tr>
                   <tr>
-                    <td className="py-1.5 pl-3 font-bold" style={{ color: C.dark }}>Grand Total</td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>174</td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>63.1M</td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>15.5M</td>
-                    <td className="py-1.5 text-right font-bold" style={{ color: C.dark }}>8.2M</td>
-                    <td className="py-1.5 text-right font-bold pr-3" style={{ color: C.dark }}>25%</td>
+                    <td className="py-0.5 pl-3 font-bold" style={{ color: C.dark }}>Grand Total</td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>174</td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>63.1M</td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>15.5M</td>
+                    <td className="py-0.5 text-right font-bold" style={{ color: C.dark }}>8.2M</td>
+                    <td className="py-0.5 text-right font-bold pr-3" style={{ color: C.dark }}>25%</td>
                   </tr>
                 </tbody>
               </table>
@@ -589,19 +590,19 @@
               <table className="w-full text-xs">
                 <thead>
                   <tr style={{ borderBottom: `2px solid ${C.dark}` }}>
-                    <th className="py-1.5 font-bold text-left pl-3" style={{ color: C.dark }}>Module</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>% Sessions</th>
-                    <th className="py-1.5 font-bold text-right pr-2" style={{ color: C.dark }}>Avg Sess/User</th>
-                    <th className="py-1.5 font-bold text-left pl-2 pr-3" style={{ color: C.dark }}>Note</th>
+                    <th className="py-0.5 font-bold text-left pl-3" style={{ color: C.dark }}>Module</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>% Sessions</th>
+                    <th className="py-0.5 font-bold text-right pr-2" style={{ color: C.dark }}>Avg Sess/User</th>
+                    <th className="py-0.5 font-bold text-left pl-2 pr-3" style={{ color: C.dark }}>Note</th>
                   </tr>
                 </thead>
                 <tbody>
                   {modRows.map((r, i) => (
                     <tr key={r.module} className={i < modRows.length - 1 ? 'border-b border-slate-100' : ''} style={r.highStickiness ? { background: lightGreen } : {}}>
-                      <td className="py-1.5 font-medium pl-3" style={{ color: C.dark }}>{r.module}</td>
-                      <td className="py-1.5 text-right text-slate-600">{r.pctSessions}</td>
-                      <td className="py-1.5 text-right font-bold pr-2" style={{ color: C.dark }}>{r.avgSessions.toFixed(1)}</td>
-                      <td className="py-1.5 text-left pl-2 pr-3" style={{ color: C.gray }}>{r.note}</td>
+                      <td className="py-0.5 font-medium pl-3" style={{ color: C.dark }}>{r.module}</td>
+                      <td className="py-0.5 text-right text-slate-600">{r.pctSessions}</td>
+                      <td className="py-0.5 text-right font-bold pr-2" style={{ color: C.dark }}>{r.avgSessions.toFixed(1)}</td>
+                      <td className="py-0.5 text-left pl-2 pr-3" style={{ color: C.gray }}>{r.note}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -641,55 +642,131 @@
         <div className="flex flex-col gap-3 flex-1 min-h-0">
           <h2 className="text-sm font-bold shrink-0" style={{ color: C.dark }}>H5 | Renewal Pipeline at Risk</h2>
 
-          {/* Table (60%) + Bullet points (40%) */}
-          <div className="grid gap-3 shrink-0 flex-1 min-h-0" style={{ gridTemplateColumns: '60% 40%' }}>
-            <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder, height: 'fit-content' }}>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr style={{ borderBottom: `2px solid ${C.dark}` }}>
-                    <th className="py-1.5 font-bold text-left pl-3" style={{ color: C.dark }}>Fiscal Quarter</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Accts</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>% Accts Healthy</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>% UFR Healthy</th>
-                    <th className="py-1.5 font-bold text-right" style={{ color: C.dark }}>Renewal Rate</th>
-                    <th className="py-1.5 font-bold text-right pr-3" style={{ color: C.dark }}>ACV Retained</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ufrData.map((d, i) => {
-                    const isLast = i === ufrData.length - 1;
-                    return (
-                      <tr key={d.q} className={!isLast ? 'border-b border-slate-100' : ''} style={isLast ? { fontWeight: 700, background: '#F8FAFC' } : {}}>
-                        <td className="py-1.5 pl-3" style={{ color: C.dark }}>{d.q}</td>
-                        <td className="py-1.5 text-right" style={{ color: C.dark }}>${d.ufrM}M</td>
-                        <td className="py-1.5 text-right" style={{ color: C.gray }}>{d.accts}</td>
-                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{Math.round(d.pctAccts)}%</td>
-                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{Math.round(d.pctUfr)}%</td>
-                        <td className="py-1.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>
-                          {d.renewalRate != null ? `${Math.round(d.renewalRate)}%` : 'n/a'}
-                        </td>
-                        <td className="py-1.5 text-right pr-3" style={{ color: isLast ? C.dark : C.gray }}>
-                          {d.acvRetained != null ? `${Math.round(d.acvRetained)}%` : 'Target ≥90%'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          {/* Two-column: table LEFT, text RIGHT */}
+          <div className="flex flex-row gap-4 shrink-0">
+            {/* LEFT — UFR table */}
+            <div style={{ flex: '0 0 58%' }}>
+              <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder }}>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ borderBottom: `2px solid ${C.dark}` }}>
+                      <th className="py-0.5 font-bold text-left pl-3" style={{ color: C.dark }}>Fiscal Quarter</th>
+                      <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
+                      <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Accts</th>
+                      <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>% Accts Healthy</th>
+                      <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>% UFR Healthy</th>
+                      <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Renewal Rate</th>
+                      <th className="py-0.5 font-bold text-right pr-3" style={{ color: C.dark }}>ACV Retained</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ufrData.map((d, i) => {
+                      const isLast = i === ufrData.length - 1;
+                      return (
+                        <tr key={d.q} className={!isLast ? 'border-b border-slate-100' : ''} style={isLast ? { fontWeight: 700, background: '#F8FAFC' } : {}}>
+                          <td className="py-0.5 pl-3" style={{ color: C.dark }}>{d.q}</td>
+                          <td className="py-0.5 text-right" style={{ color: C.dark }}>${d.ufrM}M</td>
+                          <td className="py-0.5 text-right" style={{ color: C.gray }}>{d.accts}</td>
+                          <td className="py-0.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{Math.round(d.pctAccts)}%</td>
+                          <td className="py-0.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>{Math.round(d.pctUfr)}%</td>
+                          <td className="py-0.5 text-right" style={{ color: isLast ? C.dark : C.gray }}>
+                            {d.renewalRate != null ? `${Math.round(d.renewalRate)}%` : 'n/a'}
+                          </td>
+                          <td className="py-0.5 text-right pr-3" style={{ color: isLast ? C.dark : C.gray }}>
+                            {d.acvRetained != null ? `${Math.round(d.acvRetained)}%` : 'Target ≥90%'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="rounded-lg bg-white overflow-hidden flex flex-col p-3" style={{ width: '350px' }}>
+
+            {/* RIGHT — explanation text */}
+            <div style={{ flex: '1' }}>
               <p className="text-xs leading-snug" style={{ color: C.gray }}>
-                Overall health scores don&apos;t predict renewals. What matters is whether the cohort of renewing accounts are healthy, and that signal is flashing red.
-              </p>
-              <p className="text-xs leading-snug mt-2" style={{ color: C.gray }}>
-                Q4 enters with only 55.7% of renewing ACV held by healthy accounts with $16.0M at stake (47% of the full-year pipeline).
+                <strong style={{ color: C.dark }}>The current health metric cannot reliably identify Q4 renewal risk.</strong>
+                <br />
+                With $7.2M of the $16M Q4 pipeline sitting in unhealthy accounts, the metric signals exposure, but <strong style={{ color: C.dark }}>cannot pinpoint where to act</strong>. Without a reliable signal, 31 renewals worth $16M enter the quarter without a defensible prioritization framework.
               </p>
             </div>
           </div>
 
+          <hr className="shrink-0" style={{ borderColor: C.grayBorder }} />
+
+          {/* Q4-2023 Account Health Breakdown */}
+          <div className="shrink-0">
+            <h2 className="text-sm font-bold mb-1" style={{ color: C.dark }}>Scneario using the the new Health Score: Q4-2023 Account Health Breakdown</h2>
+            <div className="flex flex-row gap-4">
+            <div className="rounded-lg border bg-white overflow-hidden" style={{ borderColor: C.grayBorder, width: '60%' }}>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr style={{ borderBottom: `2px solid ${C.dark}` }}>
+                    <th className="py-0.5 font-bold text-left pl-3" style={{ color: C.dark }}>Category</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>Accounts</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>% Accts</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>UFR</th>
+                    <th className="py-0.5 font-bold text-right" style={{ color: C.dark }}>% UFR</th>
+                    <th className="py-0.5 font-bold text-right pr-3" style={{ color: C.dark }}>Root Cause</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-slate-100" style={{ background: '#F0FDF4' }}>
+                    <td className="py-0.5 pl-3" style={{ color: C.dark }}>Healthy</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>21</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>68%</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>$12.4M</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>78%</td>
+                    <td className="py-0.5 text-right pr-3" style={{ color: C.gray, fontStyle: 'italic' }}>—</td>
+                  </tr>
+                  <tr className="border-b border-slate-100" style={{ background: '#FFF7F7' }}>
+                    <td className="py-0.5 pl-3" style={{ color: C.dark }}>P1 — Not Implemented</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>4</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>13%</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>$1.3M</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>8%</td>
+                    <td className="py-0.5 text-right pr-3" style={{ color: C.gray, fontStyle: 'italic' }}>Long implementation times</td>
+                  </tr>
+                  <tr className="border-b border-slate-100" style={{ background: '#FFF7F7' }}>
+                    <td className="py-0.5 pl-3" style={{ color: C.dark }}>P2 — No Certified Users</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>6</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>19%</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>$2.3M</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>14%</td>
+                    <td className="py-0.5 text-right pr-3" style={{ color: C.gray, fontStyle: 'italic' }}>Implemented but low certified users ratio</td>
+                  </tr>
+                  <tr className="border-b border-slate-100" style={{ background: '#FFF7F7' }}>
+                    <td className="py-0.5 pl-3" style={{ color: C.dark }}>P3 — Engagement</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>0</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>0%</td>
+                    <td className="py-0.5 text-right" style={{ color: C.gray }}>—</td>
+                    <td className="py-0.5 text-right" style={{ color: C.gray }}>—</td>
+                    <td className="py-0.5 text-right pr-3" style={{ color: C.gray, fontStyle: 'italic' }}>—</td>
+                  </tr>
+                  <tr style={{ fontWeight: 700, background: '#F8FAFC', borderTop: `1px solid ${C.grayBorder}` }}>
+                    <td className="py-0.5 pl-3" style={{ color: C.dark }}>Total</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>31</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>100%</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>$16.0M</td>
+                    <td className="py-0.5 text-right" style={{ color: C.dark }}>100%</td>
+                    <td className="py-0.5 text-right pr-3" style={{ color: C.gray, fontStyle: 'italic' }}>—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* RIGHT — disclaimer */}
+            <div style={{ flex: '1' }} className="flex items-start pt-1">
+              <p className="text-xs leading-snug italic" style={{ color: C.gray }}>
+                <strong style={{ color: C.dark, fontStyle: 'normal' }}>Disclaimer:</strong> This health score breakdown is a scenario analysis based on a proposed segmentation model. The calculation methodology and scoring criteria are detailed in the following  <strong style={{ color: C.dark, fontStyle: 'normal' }}> Health KPI</strong> slide.
+              </p>
+            </div>
+            </div>
+          </div>
+
           {/* Bottom: P3 verdict */}
-          <div className="shrink-0 border-t pt-2" style={{ borderColor: C.grayBorder }}>
+          <div className="shrink-0 border-t pt-2 mt-auto" style={{ borderColor: C.grayBorder }}>
             <p className="text-xs font-bold leading-snug" style={{ color: C.dark, width: '930px' }}>
               P3 verdict: The health metric cannot be used as evidence of deterioration. The real retention risk is not active churn. It is renewal refusal: 31 accounts renew $16.0M in Q4 with no CS Apps adoption to justify the contract. Fix implementation now, not after renewals fail.
             </p>
@@ -833,13 +910,22 @@
               <li className="flex items-start gap-2"><span style={{ color: C.green }}>3.</span> How do we redefine account health when AI reduces human time-in-tool?</li>
             </ul>
           </div>
-          {/* Right div: Sense AI at bottom with 15px padding */}
+          {/* Right: Sense UI screens — no frames, different sizes, not aligned */}
           <div className="flex flex-col justify-end flex-shrink-0" style={{ padding: '15px' }}>
-            <div className="rounded-xl overflow-hidden border border-white/10 shadow-xl w-full max-w-[242px] h-[140px] bg-slate-900/30">
+            <div className="rounded-xl overflow-hidden inline-block">
               <img
                 src="figures/Sense AI.png"
                 alt="Sense analyst UI — Hello Stella, I'm your analyst"
-                className="w-full h-full object-cover object-[center_38%]"
+                className="object-cover object-[center_38%] block"
+                style={{ maxWidth: 242, height: 140 }}
+              />
+            </div>
+            <div className="rounded-xl overflow-hidden inline-block mt-3">
+              <img
+                src="figures/Sense AI analysis.png"
+                alt="Sense AI analysis — PDP insights and recommendations"
+                className="object-contain block"
+                style={{ maxWidth: 260 }}
               />
             </div>
           </div>
@@ -983,7 +1069,7 @@
               {/* Arrow */}
               <div className="text-slate-300 font-bold shrink-0">→</div>
               {/* Step 2 — purple quota warning */}
-              <div className="flex-1 rounded-lg border px-2.5 py-1.5 flex items-start gap-2" style={{ background: '#EDE9FE', borderColor: '#C4B5FD' }}>
+              <div className="flex-1 rounded-lg border px-2.5 py-0.5 flex items-start gap-2" style={{ background: '#EDE9FE', borderColor: '#C4B5FD' }}>
                 <span style={{ fontSize: 13 }}>🔒</span>
                 <div className="flex-1">
                   <div className="text-xs font-bold leading-snug" style={{ color: C.purple }}>Your team hit today's 5-query limit.</div>
@@ -1085,7 +1171,7 @@
             Is usage heavily spread across accounts or concentrated among a few? The data shows concentration: top 20% = 65% of sessions, P90 vs. median = 6×.
           </p>
           {/* Key implication callout */}
-          <div className="shrink-0 rounded-lg px-3 py-1.5" style={{ background: '#F1F5F9' }}>
+          <div className="shrink-0 rounded-lg px-3 py-0.5" style={{ background: '#F1F5F9' }}>
             <p className="text-xs leading-snug" style={{ color: C.dark }}>
               <strong>The subsidization problem:</strong> Under a flat-fee model, light users would subsidize heavy users; quota + tier aligns price with usage.
             </p>
@@ -1135,12 +1221,12 @@
               </div>
               <div className="rounded-lg border p-1.5 min-w-0" style={{ borderColor: C.grayBorder }}>
                 <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P2 | Adoption (ACV-Normalized)</p>
-                <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>min(Cert/(ACV×α),1)×100</pre>
+                <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>Cert/(ACV×α)</pre>
                 <p className="text-xs mt-0.5" style={{ color: C.gray }}>Normalizes adoption vs account size.</p>
               </div>
               <div className="rounded-lg border p-1.5 min-w-0" style={{ borderColor: C.grayBorder }}>
                 <p className="font-bold mb-0.5 text-xs" style={{ color: C.dark }}>P3 | Engagement Quality (AI-Aware)</p>
-                <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>max(0, 100−ACV/(WAU+Sense Q/wk)×β)</pre>
+                <pre className="my-0.5 p-1 rounded bg-slate-100 font-mono text-[10px] overflow-x-auto" style={{ color: C.dark }}>ACV/(WAU+Sense Q/wk)×β</pre>
                 <p className="text-xs mt-0.5" style={{ color: C.gray }}>WAU + Sense Queries/week to avoid penalizing AI migration.</p>
               </div>
             </div>
@@ -1254,7 +1340,7 @@
         <button
           onClick={onPrev}
           disabled={current === 0}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+          className="flex items-center gap-1 px-3 py-0.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1284,7 +1370,7 @@
         <button
           onClick={onNext}
           disabled={current === total - 1}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+          className="flex items-center gap-1 px-3 py-0.5 text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
         >
           Next
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
