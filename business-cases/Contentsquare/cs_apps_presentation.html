@@ -844,7 +844,7 @@
               <div className="flex flex-col gap-1 flex-1 min-h-0">
                 {[
                   { title: "NULL Implementation Status", stat: "29% (82 accounts)", impact: "HIGH", desc: "518 rows untracked; systemic pipeline issue" },
-                  { title: "NULL Contract Dates", stat: "29% start · 28% end", impact: "MEDIUM", desc: "Blocks cohort analysis and time-to-live calculations" },
+                  { title: "Contract Dates — Multi-value Array", stat: "more start than end dates", impact: "MEDIUM", desc: "Blocks cohort analysis" },
                   { title: "AVG_WAU_GLOBAL = 0", stat: "156 rows (49 accounts)", impact: "CRITICAL", desc: "Breaks health metric for ~27% of base" },
                 ].map(({ title, stat, impact, desc }) => (
                   <div key={title} className="rounded-lg border p-1.5" style={{ borderColor: C.grayBorder }}>
