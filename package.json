@@ -1,0 +1,15 @@
+{
+  "name": "personal-projects",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Personal portfolio and business case studies",
+  "scripts": {
+    "sweep": "bun run scripts/sweep.ts",
+    "lifecycle-comment": "bun run scripts/lifecycle-comment.ts",
+    "auto-close-duplicates": "bun run scripts/auto-close-duplicates.ts",
+    "backfill-duplicate-comments": "bun run scripts/backfill-duplicate-comments.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
