@@ -11,3 +11,5 @@ deel_dbt/logs/
 deel_dbt/.user.yml
 deel_dbt/.vscode/
 logs/
+deel.duckdb
+deel.duckdb.wal
