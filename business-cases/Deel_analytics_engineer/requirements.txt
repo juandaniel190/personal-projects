@@ -1,5 +1,8 @@
 dbt-core>=1.7
+dbt-duckdb>=1.7
 dbt-postgres>=1.7
+duckdb
+duckdb-engine
 psycopg2-binary
 pandas
 matplotlib

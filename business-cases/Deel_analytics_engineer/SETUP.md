@@ -3,7 +3,6 @@
 ## Prerequisites
 
 - Python 3.10+
-- A Supabase project (PostgreSQL) with the connection pooler enabled (port 6543)
 
 ## 1. Install dependencies
 
@@ -11,14 +10,30 @@
 pip install -r requirements.txt
 ```
 
-## 2. Configure credentials
+## 2. Run the pipeline
+
+### Option A — DuckDB (default, zero setup)
+
+No credentials needed. Everything runs locally.
+
+```bash
+cd deel_dbt
+dbt deps
+dbt build
+```
+
+That's it. A `deel.duckdb` file is created in the project root with all tables ready to query.
+
+### Option B — Supabase (hosted PostgreSQL)
+
+To run against a real cloud database, configure your credentials first:
 
 ```bash
 cp .env.example .env
-# Edit .env with your Supabase pooler host, user, password, and database name
+# Fill in your Supabase pooler host, user, password, and database
 ```
 
-The `.env.example` shows the expected format:
+`.env.example` shows the expected format:
 
 ```
 DBT_SUPABASE_HOST=aws-0-<region>.pooler.supabase.com
@@ -28,34 +43,27 @@ DBT_SUPABASE_PASSWORD=<your-password>
 DBT_SUPABASE_DBNAME=postgres
 ```
 
-> **Note:** Use the connection pooler host and port (6543), not the direct connection (port 5432), to avoid firewall timeouts on restricted networks.
+> Use the **connection pooler** host and port 6543 (not the direct connection on 5432) to avoid firewall timeouts on restricted networks.
 
-## 3. Run the pipeline
+Then run:
 
 ```bash
 cd deel_dbt
-
-dbt deps          # install dbt_utils package
-dbt debug         # verify Supabase connection
-dbt seed          # load raw CSVs (5,430 rows × 2 tables)
-dbt run           # build staging views + mart tables
-dbt test          # run all 24 data tests
+dbt deps
+dbt build --target supabase
 ```
 
-Or all at once:
+## 3. Run the notebook
 
-```bash
-dbt build
-```
-
-## 4. Run the notebook
+The notebook auto-detects which backend to use based on whether `.env` is present.
 
 ```bash
 jupyter notebook notebooks/deel_analysis.ipynb
 ```
 
-## 5. Generate docs
+## 4. Generate docs
 
 ```bash
+cd deel_dbt
 dbt docs generate && dbt docs serve
 ```
