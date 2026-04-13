@@ -4,6 +4,6 @@ with source as (
 
 select
     external_ref,
-    status::boolean        as is_active,
-    (chargeback = 'TRUE')  as has_chargeback
+    status::boolean as is_active,
+    (chargeback = 'TRUE') as has_chargeback
 from source

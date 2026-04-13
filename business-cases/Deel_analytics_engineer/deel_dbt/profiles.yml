@@ -1,0 +1,20 @@
+deel_dbt:
+  target: duckdb
+  outputs:
+
+    # Default: DuckDB — zero setup, no credentials needed
+    duckdb:
+      type: duckdb
+      path: ../deel.duckdb
+      schema: main
+
+    # Optional: Supabase (PostgreSQL) — requires .env credentials
+    supabase:
+      type: postgres
+      host: "{{ env_var('DBT_SUPABASE_HOST') }}"
+      user: "{{ env_var('DBT_SUPABASE_USER') }}"
+      password: "{{ env_var('DBT_SUPABASE_PASSWORD') }}"
+      port: "{{ env_var('DBT_SUPABASE_PORT', '5432') | int }}"
+      dbname: "{{ env_var('DBT_SUPABASE_DBNAME') }}"
+      schema: deel
+      sslmode: require
