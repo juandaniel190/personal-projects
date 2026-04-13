@@ -1,0 +1,3 @@
+is_cvv_provided,total_transactions,accepted_transactions,acceptance_rate_pct,total_volume_usd
+True,40,25,62.50,6756874.12
+False,5390,3752,69.61,423514637.01
