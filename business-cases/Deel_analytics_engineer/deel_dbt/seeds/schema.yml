@@ -1,0 +1,55 @@
+version: 2
+
+seeds:
+  - name: globepay_acceptance_report
+    description: >
+      Raw acceptance events from the Globepay API. One row per transaction attempt.
+      Amount is in minor units (cents) — divide by 100 before any monetary calculation.
+      Rates is a JSON string mapping ISO currency codes to units-per-1-USD.
+    config:
+      column_types:
+        date_time: varchar
+        cvv_provided: varchar
+        rates: varchar
+        amount: float
+    columns:
+      - name: external_ref
+        description: Unique transaction identifier from Globepay.
+      - name: status
+        description: Whether the record is active (boolean as string).
+      - name: source
+        description: Payment source / instrument type.
+      - name: ref
+        description: Internal reference.
+      - name: date_time
+        description: Timestamp of the transaction (ISO 8601 string).
+      - name: state
+        description: ACCEPTED or DECLINED.
+      - name: cvv_provided
+        description: Whether the CVC/CVV code was supplied (TRUE/FALSE string).
+      - name: amount
+        description: Transaction amount in minor units (cents).
+      - name: country
+        description: ISO country code of the transaction.
+      - name: currency
+        description: ISO currency code of the transaction.
+      - name: rates
+        description: JSON string — ISO currency code to units-per-1-USD exchange rates.
+
+  - name: globepay_chargeback_report
+    description: >
+      Raw chargeback flags from the Globepay API. Delivered asynchronously from
+      acceptance events — a LEFT JOIN against the acceptance report reveals any
+      missing coverage.
+    config:
+      column_types:
+        chargeback: varchar
+    columns:
+      - name: external_ref
+        description: Unique transaction identifier — joins to acceptance_report.external_ref.
+      - name: status
+        description: Whether the record is active (boolean as string).
+      - name: source
+        description: Payment source / instrument type.
+      - name: chargeback
+        description: Whether a chargeback was filed (TRUE/FALSE string).

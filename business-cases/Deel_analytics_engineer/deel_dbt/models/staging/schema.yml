@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: stg_globepay__acceptance
+    description: >
+      Staged acceptance events from Globepay. One row per transaction attempt.
+      Amount is converted from minor units (cents) to USD using the embedded
+      exchange rates JSON. All type casting happens here; downstream models
+      reference clean, typed columns only.
+    columns:
+      - name: external_ref
+        description: Unique transaction identifier (primary key).
+        tests:
+          - unique
+          - not_null
+      - name: transaction_at
+        description: Timestamp of the transaction (UTC).
+        tests:
+          - not_null
+      - name: transaction_month
+        description: First day of the calendar month (for monthly aggregations).
+      - name: transaction_week
+        description: First day of the ISO week (for weekly aggregations).
+      - name: transaction_date
+        description: Calendar date of the transaction.
+      - name: source
+        description: Payment source / instrument type.
+      - name: country
+        description: ISO country code of the transaction.
+        tests:
+          - not_null
+      - name: currency
+        description: ISO currency code of the transaction.
+        tests:
+          - not_null
+      - name: is_accepted
+        description: True if the transaction was ACCEPTED, false if DECLINED.
+        tests:
+          - not_null
+      - name: is_cvv_provided
+        description: True if the CVC/CVV code was supplied by the cardholder.
+      - name: is_active
+        description: Whether the record is marked active in Globepay.
+      - name: rates
+        description: Exchange rates at transaction time (JSONB). Maps ISO currency → units per 1 USD.
+      - name: amount_usd
+        description: >
+          Transaction amount in USD, converted from minor units using the embedded
+          rates JSON: (amount / 100) / rates[currency].
+        tests:
+          - not_null
+
+  - name: stg_globepay__chargeback
+    description: >
+      Staged chargeback flags from Globepay. Delivered asynchronously from
+      acceptance events via a separate API response. Joins to
+      stg_globepay__acceptance on external_ref.
+    columns:
+      - name: external_ref
+        description: Unique transaction identifier (primary key).
+        tests:
+          - unique
+          - not_null
+      - name: is_active
+        description: Whether the record is marked active in Globepay.
+      - name: has_chargeback
+        description: True if a chargeback was filed for this transaction.
+        tests:
+          - not_null

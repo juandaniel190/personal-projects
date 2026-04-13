@@ -1,0 +1,21 @@
+name: deel_dbt
+version: "1.0.0"
+config-version: 2
+profile: deel_dbt
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+
+seeds:
+  deel_dbt:
+    +schema: raw
+
+models:
+  deel_dbt:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
