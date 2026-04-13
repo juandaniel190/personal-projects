@@ -1,0 +1,195 @@
+<style>
+h1 {
+  font-family: verdana;
+}
+h3 {
+  font-family: verdana;
+}
+p  {
+  font-family: verdana;
+}
+li  {
+  font-family: verdana;
+}
+code  {
+  color: white;
+  background-color: black
+}
+body {
+  background-color:#f8fafc;
+}
+</style>
+</head>
+<body>
+
+<h1>Globepay API Specification</h1>
+<section><img src="https://www.letsdeel.com/flags.b00fa0d9.svg" width="500px" />
+<p>Globepay is single and secure payment platform that lets you collect payments quickly from around the world in different currencies. It works across devices and is designed to increase your conversion.</p>
+<ul>
+</ul>
+</section>
+<p>Globepay makes it easy to build a first-class global payments experience:</p>
+<ul>
+<li><strong>Designed to remove friction</strong>&mdash;Real-time card validation with built-in error messaging</li>
+<li><strong>Mobile-ready</strong>&mdash;Fully responsive design</li>
+<li><strong>International</strong>&mdash;Supports 15 languages and multiple payment currencies</li>
+<li><strong>Customization and branding</strong>&mdash;Customizable buttons and background color</li>
+<li><strong>Fraud and compliance</strong>&mdash;Simplified PCI compliance and SCA-ready</li>
+<li><strong>Additional features</strong>&mdash;Collect addresses, send email receipts, and more</li>
+</ul>
+
+<h3>API Reference</h3>
+
+<p>
+	Send payment parameters (like amount, country, and currency) together with the input details collected from the customer to Globepay. 
+</p>
+
+<h3>
+Payment Request parameters
+</h3>
+
+<li><b>amount</b>
+The amount information for the transaction (in minor units).</li>
+
+<li><b>currency</b>
+The three-character ISO currency code.</li>
+
+<li><b>amount</b>
+The amount that will be charged to the card.</li>
+
+<li><b>paymentMethod</b>
+The payment method used in the transaction.</li>
+
+<li><b>type</b>
+The type of payment method used in the transaction, e.g Visa</li>
+
+<li><b>number</b>
+The payment card number of payment method used in the transaction</li>
+
+<li><b>expiryMonth</b>
+The card expiry month. Format: 2 digits, zero-padded for single digits. For example: 03 = March, 11 = November
+</li>
+
+<li><b>expiryYear</b>
+The card expiry year. Format: 4 digits. For example: 2020
+</li>
+
+<li><b>cardHolderName</b>
+The cardholder name passed in the payment request.
+</li>
+
+<li><b>CVC</b>
+Card verification value. <i>optional but recommended</i>
+</li>
+<br>
+<code>
+{
+	<br>
+  "amount": {
+  	<br>
+    "currency": "USD",
+    	<br>
+    "value": 1000
+    <br>
+  },
+  <br>
+  "paymentMethod": {
+  <br>
+    "type": "scheme",
+    <br>
+    "number": "4111111111111111",
+    <br>
+    "expiryMonth": "03",
+    <br>
+    "expiryYear": "2030",
+    <br>
+    "holderName": "John Smith",
+    <br>
+    "cvc": "737"
+    <br>
+  },
+  <br>
+  "returnUrl": "https://your-company.com/...",
+  <br>
+  "merchantAccount": "YOUR_MERCHANT_ACCOUNT"
+  <br>
+}
+</code>
+
+<h3>
+Payment Response parameters
+</h3>
+
+<p>
+	The response returns the result of the payment request:
+</p>
+
+<li><b>external_ref</b>
+The card expiry year. Format: 4 digits. For example: 2020
+</li>
+
+<li><b>date_time</b>
+The timestamp of the transaction.
+</li>
+
+
+<li><b>state</b>
+The binary state of the transaction. For example: Accepted or Declined.
+</li>
+
+<li><b>chargeback</b>
+If the transaction has been chargedback. For example: True or False
+</li>
+
+<li><b>amount</b>
+The amount that has been charged from the card.</li>
+</li>
+
+<li><b>currency</b>
+The three-character ISO currency code.</li>
+</li>
+
+<li><b>country</b>
+The two-character ISO country code of the card.</li>
+</li>
+
+<li><b>rates</b>
+The exchange rate used. Funds are settled to you in USD.</li>
+</li>
+
+<li><b>merchantReference</b>
+Your order number</li>
+</li>
+<br>
+
+<code>
+Response code: 200. Success.
+<br>
+{
+  <br>
+  "external_ref": "evt_1ESgcCOV7fY1ChY1MkZizZt",
+  <br>
+  "date_time": "2019-01-01T00:00:00.000Z",
+  <br>
+  "state": "ACCEPTED",
+  <br>
+  "chargeback": "FALSE",
+  <br>
+    "amount": 1000
+  <br>
+      "currency": "USD",
+    <br>
+    "country": "US"
+    <br>
+   "rates": "{"CAD":1.415,"EUR":0.926,"MXN":25.103,"USD":1,"SGD":1.434,"AUD":1.648,"GBP":0.813}"
+    <br>
+  },
+  <br>
+  "merchantReference": "Your order number"
+  <br>
+}
+<br>
+</code>
+
+<p>...</p>
+<p>Globepay Inc. 2020</p>
