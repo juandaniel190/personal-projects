@@ -17,6 +17,7 @@ pip install -r requirements.txt
 No credentials needed. Everything runs locally.
 
 ```bash
+# source /Users/damezquita/Documents/GitHub/personal-projects/business-cases/Deel_analytics_engineer/.venv/bin/activate   
 cd deel_dbt
 dbt deps
 dbt build

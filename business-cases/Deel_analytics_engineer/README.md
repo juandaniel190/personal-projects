@@ -4,6 +4,8 @@ Payment processing analytics over Globepay data (Jan–Jun 2019, 5,430 transacti
 
 ## Data Model
 
+![dbt lineage graph](figures/dbt_lineage.png)
+
 ```
 seeds (raw schema)
   globepay_acceptance_report
