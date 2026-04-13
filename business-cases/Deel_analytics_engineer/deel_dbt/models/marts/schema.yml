@@ -34,7 +34,7 @@ models:
     description: >
       Countries whose total declined transaction volume exceeds $25M USD.
       Answers Q2: Which countries had declined transactions exceeding $25M?
-      Expected: FR, UK, AE, US. Amount uses minor-unit correction (÷100) + FX conversion.
+      Expected: FR, UK, AE, US. Amount uses FX conversion via embedded rates JSON.
     columns:
       - name: country
         description: ISO country code.

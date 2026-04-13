@@ -1,5 +1,5 @@
 -- Q2: Which countries had declined transactions exceeding $25M?
--- Expected answer: FR, UK, AE, US (after minor-unit → USD conversion).
+-- Expected answer: FR, UK, AE, US.
 -- CTE used to aggregate first; the WHERE on total_declined_usd
 -- avoids an illegal alias reference in the same SELECT.
 
