@@ -1,0 +1,10 @@
+dbt-core>=1.7
+dbt-postgres>=1.7
+psycopg2-binary
+pandas
+matplotlib
+seaborn
+sqlalchemy
+python-dotenv
+jupyter
+ipykernel

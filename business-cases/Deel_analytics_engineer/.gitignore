@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+deel_dbt/profiles.yml
+deel_dbt/target/
+deel_dbt/dbt_packages/
+deel_dbt/logs/
+deel_dbt/.user.yml
+deel_dbt/.vscode/
+logs/

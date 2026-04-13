@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: fct_acceptance_rate_over_time
+    description: >
+      Weekly and monthly acceptance rate metrics. Grain: one row per ISO week.
+      Answers Q1: What is the acceptance rate over time?
+    columns:
+      - name: transaction_month
+        description: First day of the calendar month (for monthly roll-up).
+        tests:
+          - not_null
+      - name: transaction_week
+        description: First day of the ISO week (primary time grain).
+        tests:
+          - not_null
+          - unique
+      - name: total_transactions
+        description: Total transaction attempts in the week.
+        tests:
+          - not_null
+      - name: accepted_transactions
+        description: Number of ACCEPTED transactions in the week.
+        tests:
+          - not_null
+      - name: acceptance_rate_pct
+        description: Accepted / total * 100, rounded to 2 decimal places.
+        tests:
+          - not_null
+      - name: total_volume_usd
+        description: Total USD value of all transactions (accepted + declined) in the week.
+
+  - name: fct_declined_by_country
+    description: >
+      Countries whose total declined transaction volume exceeds $25M USD.
+      Answers Q2: Which countries had declined transactions exceeding $25M?
+      Expected: FR, UK, AE, US. Amount uses FX conversion via embedded rates JSON.
+    columns:
+      - name: country
+        description: ISO country code.
+        tests:
+          - unique
+          - not_null
+      - name: total_declined_usd
+        description: Sum of declined transaction amounts in USD.
+        tests:
+          - not_null
+      - name: exceeds_25m_threshold
+        description: Always true in this model (filter applied in WHERE clause).
+
+  - name: fct_missing_chargeback
+    description: >
+      Transactions in the acceptance report with no corresponding chargeback record.
+      Answers Q3: Which transactions are missing chargeback data?
+      Expected: 0 rows — 100% chargeback coverage in this dataset.
+      Model remains in place to surface gaps as new data arrives.
+    columns:
+      - name: external_ref
+        description: Transaction identifier with no matching chargeback record.
+      - name: transaction_at
+        description: Timestamp of the transaction.
+      - name: country
+        description: ISO country code.
+      - name: currency
+        description: ISO currency code.
+      - name: amount_usd
+        description: Transaction amount in USD.
+      - name: is_accepted
+        description: Whether the transaction was accepted.
+
+  - name: fct_cvv_acceptance_impact
+    description: >
+      Acceptance rate broken down by CVV provision. Grain: one row per CVV flag (2 rows).
+      The Globepay API marks CVV as optional-but-recommended — this model quantifies
+      the impact of providing it on acceptance outcomes.
+    columns:
+      - name: is_cvv_provided
+        description: Whether the CVC/CVV code was supplied (primary key — 2 values).
+        tests:
+          - unique
+          - not_null
+      - name: total_transactions
+        description: Total transactions in this CVV segment.
+        tests:
+          - not_null
+      - name: accepted_transactions
+        description: Accepted transactions in this CVV segment.
+        tests:
+          - not_null
+      - name: acceptance_rate_pct
+        description: Accepted / total * 100, rounded to 2 decimal places.
+        tests:
+          - not_null
+      - name: total_volume_usd
+        description: Total USD volume in this CVV segment.
