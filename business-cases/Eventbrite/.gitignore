@@ -1,0 +1,16 @@
+*.env
+*.log
+*.map
+*.ts
+*.js
+*.mjs
+*.p8
+node_modules/*
+.cubestore/*
+.DS_Store
+package-lock.json
+package.json
+generate_jwt.py
+*/vectorstore.pkl
+*__pycache__
+agentic_analytics/test*

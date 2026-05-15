@@ -1,0 +1,36 @@
+example_queries:
+  - question: "Paid publishing creators by week Year to date"
+    query: |
+      SELECT
+          DATE_TRUNC('week', event_publish_date) as week,
+          MEASURE(paid_publishing_creators) as paid_publishing_creators
+      FROM events
+      WHERE event_publish_date BETWEEN dateadd(year, -1, CURRENT_DATE) AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "Monthly hosting creators vs last year"
+    query: |
+      SELECT
+          DATE_TRUNC('month', event_start_date) as date,
+          MEASURE(hosting_creators) as hosting_creators
+      FROM events
+      WHERE event_start_date BETWEEN dateadd(year, -1, date_trunc('year', CURRENT_DATE))
+          AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "How many events were created last month?"
+    query: |
+      SELECT
+          DATE_TRUNC('month', event_create_date) as date,
+          MEASURE(created_events) as created_events
+      FROM events
+      WHERE event_create_date BETWEEN dateadd(month, -1, date_trunc('month', CURRENT_DATE)) AND date_trunc('month', CURRENT_DATE) - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "Free published capacity year to date by day, excluding events created by API and events with +10k capacity?"
+    query: |
+      SELECT
+          DATE_TRUNC('day', event_publish_date) as day,
+          MEASURE(free_published_capacity) as free_published_capacity
+      FROM events
+      WHERE event_publish_date BETWEEN date_trunc('year', CURRENT_DATE) AND CURRENT_DATE - INTERVAL '1 day'
+      AND event_creation_source != 'API'
+      AND capacity_bucket != '10k+'
+      GROUP BY 1

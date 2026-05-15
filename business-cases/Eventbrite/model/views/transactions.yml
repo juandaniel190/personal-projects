@@ -1,0 +1,104 @@
+views:
+  - name: transactions
+    cubes:
+      - join_path: f_order_purchase
+        includes: "*"
+        excludes:
+          - item_id
+          - order_id
+          - event_id
+          - creator_id
+          - buyer_id
+          - parent_event_date_id
+          - creator_age_days
+          - first_valid_order_date
+          - first_valid_paid_order_date
+    folders:
+      - name: Items
+        includes:
+          # Items measures
+          - transacted_tickets
+          - paid_item_qty
+          - free_item_qty
+
+      - name: Events
+        includes:
+          # Events measures
+          - transacted_events
+          - transacted_parent_events
+          - paid_events
+          - free_events
+          # Events Dimensions
+          - event_paid_type
+          - is_timed_entry
+          - is_repeating_event
+          - is_repeating_parent
+          - marketplace_name
+          - seasonal_moment
+          - event_status
+          - event_category
+          - online_flag
+          - is_private_event
+          - event_format
+          - is_strategic_inventory
+          - location
+
+      - name: Creators
+        includes:
+          # Creators measures
+          - transacting_creators
+          - transacting_paid_creators
+          - transacting_free_creators
+          # Creators dimensions
+          - creator_tld_current
+          - creator_tld_group
+          - is_suspicious
+          - top_transacted_category
+          - acquisition_channel
+          - new_in_week_trx_creator
+          - new_in_week_paid_trx_creator
+          - new_in_month_trx_creator
+          - new_in_month_paid_trx_creator
+          - new_in_year_trx_creator
+          - new_in_year_paid_trx_creator
+          - creator_age
+
+      - name: Orders
+        includes:
+          # Orders measures
+          - orders
+          - paid_orders
+          - free_orders
+          # Orders dimensions
+          - payment_facilitator
+          - affiliate_code
+          - affiliate_group_1
+          - affiliate_group_2
+          - affiliate_group_3
+          - sales_flag
+
+      - name: Buyers
+        includes:
+          # Buyers measures
+          - buyers
+          - paid_buyers
+          - free_buyers
+          # Buyers dimensions
+          - user_agent_group
+          - new_in_month_trx_buyer
+          - new_in_month_paid_trx_buyer
+
+      - name: Finance
+        includes:
+          # Finance measures
+          - GTS
+          - GTF
+          - GTV
+          - ATV
+
+      - name: Tools
+        includes:
+          # Tools measures
+          - is_current_week
+          - is_current_month
+          - iso_year

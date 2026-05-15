@@ -1,0 +1,78 @@
+example_queries:
+  - question: "GTV, GTF, and GTS in USD in Q3 & Q4 2024 with event payout country is 'US' grouped by attendee state"
+    query: |
+      SELECT
+          attendee_state,
+          MEASURE(gtf_usd) as gtf_usd,
+          MEASURE(gtv_usd) as gtv_usd,
+          MEASURE(gts_usd) as gts_usd
+      FROM tax
+      WHERE trx_date BETWEEN '2024-07-01' AND '2024-12-31'
+      AND event_payout_country = 'US'
+      GROUP BY 1
+  - question: "EB tax in USD in Q3 2025 where event country is 'US'"
+    query: |
+      SELECT
+          MEASURE(total_tax_usd) as total_tax_usd
+      FROM tax
+      WHERE trx_date BETWEEN '2025-07-01' AND '2025-09-30'
+      AND event_venue_country = 'US'
+  - question: "Creators with taxable GTV > 0 with event published in 2024"
+    query: |
+      SELECT
+          creator_id,
+          MEASURE(taxable_gtv) as taxable_gtv
+      FROM tax
+      WHERE event_publish_date BETWEEN '2024-01-01' AND '2024-12-31'
+      GROUP BY 1
+      HAVING (MEASURE(taxable_gtv) > '0')
+  - question: "Give me an order level report of GTV in Q3 2024 where creator state does not match attendee state"
+    query: |
+      WITH tab AS (
+          SELECT
+              order_id,
+              attendee_state,
+              creator_state,
+              MEASURE(gtv) as gtv
+          FROM tax
+          WHERE trx_date BETWEEN '2024-07-01' AND '2024-12-31'
+          GROUP BY 1,2,3)
+
+          SELECT
+              order_id,
+              attendee_state,
+              creator_state,
+              gtv
+          FROM tab
+          WHERE attendee_state <> creator_state
+  - question: "Monthly GTV in USD per event in Q2 2025 where event payout country is 'US' and event venue state is 'TX'"
+    query: |
+      SELECT
+          event_id,
+          DATE_TRUNC('month', trx_date) as date,
+          MEASURE(gtv_usd) as gtv_usd
+      FROM tax
+      WHERE trx_date BETWEEN '2025-04-01' AND '2025-06-30'
+      AND event_payout_country = 'US'
+      AND event_venue_state = 'TX'
+      GROUP BY 1,2
+  - question: "Order level report with GTV in local currency where event state is 'NY' and event country is 'US' in April 2025"
+    query: |
+      SELECT
+          order_id,
+          MEASURE(gtv) as gtv
+      FROM tax
+      WHERE event_venue_state = 'NY'
+      AND event_venue_country = 'US'
+      AND trx_date BETWEEN '2025-04-01' AND '2025-04-30'
+      GROUP BY 1
+  - question: "Order level report with tax_exempt and GTV where event country is 'US' from January to March 2025"
+    query: |
+      SELECT
+          order_id,
+          tax_exempt,
+          MEASURE(gtv) as gtv
+      FROM tax
+      WHERE trx_date BETWEEN '2025-01-01' AND '2025-03-31'
+      AND event_venue_country = 'US'
+      GROUP BY 1, 2

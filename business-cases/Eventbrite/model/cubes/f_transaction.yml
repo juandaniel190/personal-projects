@@ -1,0 +1,329 @@
+{%- set database = env_var('DEFAULT_DATABASE', 'prod_analytics') -%}
+
+cubes:
+  - name: f_transaction
+    sql: SELECT * FROM {{database | safe}}.tax_datamart.f_transaction
+    public: false
+    data_source: default
+    refresh_key:
+      every: 1 day
+
+    joins: []
+
+    dimensions:
+
+      # Transaction info
+      - name: transaction_id
+        sql: transaction_id
+        type: string
+        primary_key: true
+
+      - name: order_id
+        sql: order_id
+        type: string
+
+      - name: trx_date
+        sql: trx_date
+        type: time
+
+      - name: event_id
+        sql: event_id
+        type: string
+
+      - name: creator_id
+        sql: creator_id
+        type: string
+
+      - name: transaction_currency
+        sql: transaction_currency
+        description: Currency of the transaction. Also called 'currency'.
+        type: string
+
+      # Attendee info
+      - name: attendee_zip
+        sql: attendee_zip
+        type: string
+
+      - name: attendee_state
+        sql: attendee_state
+        type: string
+
+      - name: attendee_country
+        sql: attendee_country
+        type: string
+
+      # Creator info
+      - name: creator_name
+        sql: creator_name
+        type: string
+
+      - name: creator_email
+        sql: creator_email
+        type: string
+
+      # Latest creator location info
+      - name: business_type
+        sql: business_type
+        type: string
+
+      - name: first_name
+        sql: first_name
+        type: string
+
+      - name: last_name
+        sql: last_name
+        type: string
+
+      - name: dob
+        sql: dob
+        type: time
+
+      - name: company_name
+        sql: company_name
+        type: string
+
+      - name: company_tax_id
+        sql: company_tax_id
+        type: string
+
+      - name: creator_country
+        sql: creator_country
+        type: string
+
+      - name: creator_state
+        sql: creator_state
+        type: string
+
+      - name: creator_zip
+        sql: creator_zip
+        type: string
+
+      - name: creator_address_line_1
+        sql: creator_address_line_1
+        type: string
+
+      - name: creator_address_line_2
+        sql: creator_address_line_2
+        type: string
+
+      - name: creator_city
+        sql: creator_city
+        type: string
+
+      # Event info
+      - name: event_publish_date
+        sql: event_publish_date
+        type: time
+
+      - name: event_venue_postal_code
+        sql: event_venue_postal_code
+        type: string
+
+      - name: event_venue_city
+        sql: event_venue_city
+        description: City in which the event takes place. Also called "venue city" or "event city".
+        type: string
+
+      - name: event_venue_state
+        sql: event_venue_state
+        description: State in which the event takes place. Also called "venue state" or "event state".
+        type: string
+
+      - name: event_venue_country
+        sql: event_venue_country
+        description: Country in which the event takes place. Also called "venue country" or "event country".
+        type: string
+
+      - name: event_payout_country
+        sql: event_payout_country
+        type: string
+
+      - name: online_flag
+        sql: online_flag
+        type: boolean
+
+      # Tax status
+      - name: tax_logic_is_correct
+        sql: tax_logic_is_correct
+        type: boolean
+
+      - name: tax_info_page
+        sql: tax_info_page
+        type: string
+
+      - name: tax_exempt
+        sql: tax_exempt
+        type: boolean
+
+      - name: absorb_tax
+        sql: absorb_tax
+        type: boolean
+
+      - name: questions
+        sql: questions
+        type: string
+
+      - name: answers
+        sql: answers
+        type: string
+
+      - name: tax_reg_id
+        sql: tax_reg_id
+        type: string
+
+    measures:
+      - name: epp
+        description: Transaction amount via Eventbrite Payment Processing
+        sql: epp
+        type: sum
+        format: currency
+
+      - name: epp_usd
+        description: Transaction amount via Eventbrite Payment Processing in USD
+        sql: epp_usd
+        type: sum
+        format: currency
+
+      - name: esf
+        description: Eventbrite Service Fee
+        sql: esf
+        type: sum
+        format: currency
+
+      - name: esf_usd
+        description: Eventbrite Service Fee in USD
+        sql: esf_usd
+        type: sum
+        format: currency
+
+      - name: gtf
+        description: Gross Ticketing Sales
+        sql: gtf
+        type: sum
+        format: currency
+
+      - name: gtf_usd
+        description: Gross Ticketing Sales in USD
+        sql: gtf_usd
+        type: sum
+        format: currency
+
+      - name: epp_gts
+        description: Eventbrite Payment Processing fee
+        sql: epp_gts
+        type: sum
+        format: currency
+
+      - name: epp_gts_usd
+        description: Eventbrite Payment Processing fee in USD
+        sql: epp_gts_usd
+        type: sum
+        format: currency
+
+      - name: fpp_gts
+        description: Gross Ticketing Sales through Facilitated Payment Processing
+        sql: fpp_gts
+        type: sum
+        format: currency
+
+      - name: fpp_gts_usd
+        description: Gross Ticketing Sales through Facilitated Payment Processing in USD
+        sql: fpp_gts_usd
+        type: sum
+        format: currency
+
+      - name: offline_gts
+        description: Gross Ticketing Sales through Offline Payment
+        sql: offline_gts
+        type: sum
+        format: currency
+
+      - name: offline_gts_usd
+        description: Gross Ticketing Sales through Offline Payment in USD
+        sql: offline_gts_usd
+        type: sum
+        format: currency
+
+      - name: gts
+        description: Gross Ticketing Sales
+        sql: gts
+        type: sum
+        format: currency
+
+      - name: gts_usd
+        description: Gross Ticketing Sales in USD
+        sql: gts_usd
+        type: sum
+        format: currency
+
+      - name: gtv
+        description: Gross Ticketing Value
+        sql: gtv
+        type: sum
+        format: currency
+
+      - name: gtv_usd
+        description: Gross Ticketing Value in USD
+        sql: gtv_usd
+        type: sum
+        format: currency
+
+      - name: total_tax
+        description: Tax amount
+        sql: total_tax
+        type: sum
+        format: currency
+
+      - name: total_tax_usd
+        description: Tax amount in USD
+        sql: total_tax_usd
+        type: sum
+        format: currency
+
+      - name: eb_tax
+        description: Tax amount collected by eventbrite
+        sql: eb_tax
+        type: sum
+        format: currency
+
+      - name: eb_tax_usd
+        description: Tax amount collected by eventbrite in USD
+        sql: eb_tax_usd
+        type: sum
+        format: currency
+
+      - name: org_tax
+        description: Tax amount collected by the organizer
+        sql: org_tax
+        type: sum
+        format: currency
+
+      - name: org_tax_usd
+        description: Tax amount collected by the organizer in USD
+        sql: org_tax_usd
+        type: sum
+        format: currency
+
+      - name: gtv_less_tax
+        description: Gross Ticketing Value less tax
+        sql: gtv_less_tax
+        type: sum
+        format: currency
+
+      - name: gtv_less_tax_usd
+        description: Gross Ticketing Value less tax in USD
+        sql: gtv_less_tax_usd
+        type: sum
+        format: currency
+
+      - name: non_taxable_gtv
+        description: Gross Ticketing Value that is non-taxable
+        sql: non_taxable_gtv
+        type: sum
+        format: currency
+
+      - name: taxable_gtv
+        description: Gross Ticketing Value that is taxable
+        sql: taxable_gtv
+        type: sum
+        format: currency

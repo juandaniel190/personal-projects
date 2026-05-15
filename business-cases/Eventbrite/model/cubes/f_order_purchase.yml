@@ -1,0 +1,416 @@
+{%- set database = env_var('DEFAULT_DATABASE', 'prod_analytics') -%}
+
+cubes:
+  - name: f_order_purchase
+    sql: SELECT * FROM {{database | safe}}.dw.f_order_purchase WHERE boost_with_3y_only
+    public: false
+    data_source: default
+    refresh_key:
+      every: 1 hour
+
+    joins: []
+
+    dimensions:
+
+      - name: order_id
+        sql: order_id
+        type: number
+        primary_key: true
+
+      - name: event_id
+        sql: event_id
+        type: number
+
+      - name: creator_id
+        sql: creator_id
+        type: number
+
+      - name: buyer_id
+        sql: buyer_id
+        type: number
+
+      - name: trx_date
+        sql: trx_date
+        type: time
+
+      - name: is_current_month
+        sql: trx_date >= date_trunc(month, current_date)
+        type: boolean
+        public: false
+
+      - name: is_current_week
+        sql: trx_date >= date_trunc(week, current_date)
+        type: boolean
+        public: false
+
+      - name: iso_year
+        sql: yearofweekiso(trx_date)
+        type: number
+
+      - name: payment_facilitator
+        sql: payment_facilitator
+        type: string
+
+      - name: user_agent_group
+        sql: user_agent_group
+        type: string
+
+      - name: affiliate_code
+        sql: affiliate_code
+        type: string
+
+      - name: affiliate_group_1
+        sql: affiliate_group_1
+        type: string
+
+      - name: affiliate_group_2
+        sql: affiliate_group_2
+        type: string
+
+      - name: affiliate_group_3
+        sql: affiliate_group_3
+        type: string
+
+      - name: sales_flag
+        sql: sales_flag
+        type: string
+
+      - name: is_suspicious
+        sql: is_suspicious
+        type: string
+
+      - name: creator_tld_current
+        sql: creator_tld_current
+        type: string
+
+      - name: creator_tld_group
+        sql: creator_tld_group
+        type: string
+
+      - name: top_transacted_category
+        sql: top_transacted_category
+        type: string
+
+      - name: acquisition_channel
+        sql: acquisition_channel
+        type: string
+
+      - name: new_in_week_trx_creator
+        sql: iff(date_trunc('week',trx_date) <= date_trunc('week', first_valid_order_date), 'New', 'Returning')
+        type: string
+
+      - name: new_in_week_paid_trx_creator
+        sql: iff(date_trunc('week',trx_date) <= date_trunc('week', first_valid_paid_order_date), 'New', 'Returning')
+        type: string
+
+      - name: new_in_month_trx_creator
+        sql: new_in_month_trx_creator
+        type: string
+
+      - name: new_in_month_paid_trx_creator
+        sql: new_in_month_paid_trx_creator
+        type: string
+
+      - name: new_in_year_trx_creator
+        sql: new_in_year_trx_creator
+        type: string
+
+      - name: new_in_year_paid_trx_creator
+        sql: new_in_year_paid_trx_creator
+        type: string
+
+      - name: first_valid_order_date
+        sql: first_valid_order_date
+        type: time
+        public: false
+
+      - name: creator_age_days
+        sql: datediff('day', date_trunc('month', first_valid_order_date), date_trunc('month', trx_date))
+        type: number
+        public: false
+
+      - name: creator_age
+        type: string
+        case:
+          when:
+            - sql: "{creator_age_days} < 365"
+              label: <1 Year
+            - sql: "{creator_age_days} < 730"
+              label: 1-2 Years
+            - sql: "{creator_age_days} < 1095"
+              label: 2-3 Years
+            - sql: "{creator_age_days} < 1460"
+              label: 3-4 Years
+            - sql: "{creator_age_days} < 1825"
+              label: 4-5 Years
+            - sql: "{creator_age_days} >= 1825"
+              label: 5+ Years
+          else:
+            label: Unknown
+
+      - name: new_in_month_trx_buyer
+        sql: new_in_month_trx_buyer
+        type: string
+
+      - name: new_in_month_paid_trx_buyer
+        sql: new_in_month_paid_trx_buyer
+        type: string
+
+      - name: parent_event_date_id
+        sql: parent_event_date_id
+        type: string
+
+      - name: event_paid_type
+        sql: event_paid_type
+        type: string
+
+      - name: event_status
+        sql: event_status
+        type: string
+
+      - name: event_category
+        sql: event_category
+        type: string
+
+      - name: online_flag
+        sql: online_flag
+        type: string
+
+      - name: is_private_event
+        sql: is_private_event
+        type: string
+
+      - name: event_format
+        sql: event_format
+        type: string
+
+      # Set to string to use in Tableau's calculated fields with other dimensions
+      - name: is_strategic_inventory
+        sql: is_strategic_inventory
+        type: string
+
+      # Set to string to use in Tableau's calculated fields with other dimensions
+      - name: is_timed_entry
+        sql: is_timed_entry
+        type: string
+
+      - name: is_repeating_event
+        sql: is_repeating_event
+        type: string
+
+      - name: is_repeating_parent
+        sql: is_repeating_parent
+        type: boolean
+
+      - name: marketplace_name
+        sql: marketplace_name
+        type: string
+
+      - name: country_name
+        sql: country_name
+        type: string
+
+      - name: seasonal_moment
+        sql: seasonal_moment
+        type: string
+
+      - name: marketplace_group
+        sql: marketplace_group
+        type: string
+
+      - name: event_country_group
+        sql: event_country_group
+        type: string
+
+    hierarchies:
+      - name: location
+        title: Event Location
+        levels:
+          - event_country_group
+          - country_name
+          - marketplace_group
+
+    measures:
+
+      # Item measures
+      - name: transacted_tickets
+        description: Number of items transacted
+        sql: item_qty
+        type: sum
+
+      - name: paid_item_qty
+        description: Number of paid tickets or paid items transacted
+        sql: paid_item_qty
+        type: sum
+
+      - name: free_item_qty
+        description: Number of free tickets or free items transacted
+        sql: free_item_qty
+        type: sum
+
+      # Order measures
+      - name: orders
+        description: Number of orders
+        type: count
+        sql: order_id
+
+      - name: paid_orders
+        description: Number of paid orders
+        type: count
+        sql: order_id
+        filters:
+          - sql: paid_item_qty > 0
+
+      - name: free_orders
+        description: Number of free orders
+        type: count
+        sql: order_id
+        filters:
+          - sql: free_item_qty > 0
+
+      # Event measures
+      - name: transacted_events
+        description: Number of events transacted
+        sql: event_id
+        type: count_distinct
+
+      - name: transacted_parent_events
+        description: Number of parent events transacted based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+
+      - name: paid_events
+        description: Number of paid events transacted
+        sql: event_id
+        type: count_distinct
+        filters:
+          - sql: paid_item_qty > 0
+
+      - name: free_events
+        description: Number of free events transacted
+        sql: event_id
+        type: count_distinct
+        filters:
+          - sql: free_item_qty > 0
+
+      # Creator measures
+      - name: transacting_creators
+        description: Number of creators transacting
+        type: count_distinct
+        sql: creator_id
+
+      - name: transacting_paid_creators
+        description: Number of paid creators transacting
+        type: count_distinct
+        sql: creator_id
+        filters:
+          - sql: paid_item_qty > 0
+
+      - name: transacting_free_creators
+        description: Number of free creators transacting
+        type: count_distinct
+        sql: creator_id
+        filters:
+          - sql: free_item_qty > 0
+
+      # Buyer measures
+      - name: buyers
+        description: Number of buyers
+        type: count_distinct
+        sql: buyer_id
+
+      - name: paid_buyers
+        description: Number of paid buyers
+        type: count_distinct
+        sql: buyer_id
+        filters:
+          - sql: paid_item_qty > 0
+
+      - name: free_buyers
+        description: Number of free buyers
+        type: count_distinct
+        sql: buyer_id
+        filters:
+          - sql: free_item_qty > 0
+
+      # Financial measures
+      - name: GTS
+        description: Gross Transaction Sales
+        sql: gts_usd
+        type: sum
+        format: currency
+
+      - name: GTF
+        description: Gross Transaction Fees
+        sql: gtf_usd
+        type: sum
+        format: currency
+
+      - name: GTV
+        description: Gross Transaction Value
+        sql: gtv_usd
+        type: sum
+        format: currency
+
+      - name: ATV
+        description: Average Ticket Value
+        type: number
+        sql: "{GTV} / NULLIF({paid_item_qty}, 0)"
+        format: currency
+
+    {% if env_var('PRE_AGGREGATIONS_ENABLED', 'false') | lower == 'true' %}
+    pre_aggregations:
+      - name: purchase_daily
+        measures:
+
+          # Item measures
+          - CUBE.paid_item_qty
+          - CUBE.free_item_qty
+          - CUBE.transacted_tickets
+
+          # Order measures
+          - CUBE.orders
+          - CUBE.paid_orders
+          - CUBE.free_orders
+
+          # Financial measures
+          - CUBE.GTS
+          - CUBE.GTF
+          - CUBE.GTV
+
+        dimensions:
+
+          # Time dimensions
+          - CUBE.is_current_month
+          - CUBE.is_current_week
+          - CUBE.iso_year
+
+          # Order dimensions
+          - CUBE.payment_facilitator
+          - CUBE.user_agent_group
+          - CUBE.sales_flag
+
+          # Creator dimension
+          - CUBE.new_in_month_trx_creator
+          - CUBE.new_in_month_paid_trx_creator
+          - CUBE.new_in_year_trx_creator
+          - CUBE.new_in_year_paid_trx_creator
+          - CUBE.is_suspicious
+          - CUBE.creator_tld_group
+
+          # Event dimension
+          - CUBE.event_paid_type
+          - CUBE.event_category
+          - CUBE.online_flag
+          - CUBE.event_format
+          - CUBE.is_strategic_inventory
+          - CUBE.is_timed_entry
+          - CUBE.is_repeating_event
+
+        time_dimension: CUBE.trx_date
+        granularity: day
+        refresh_key:
+          every: 1 hour
+          sql: "select last_altered from {{database | safe}}.information_schema.tables where lower(table_name) = 'f_order_purchase'"
+        allow_non_strict_date_range_match: true # Can be remove when we run on Cube 1.3
+    {% endif %}

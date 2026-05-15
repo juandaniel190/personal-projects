@@ -1,0 +1,196 @@
+{%- set database = env_var('DEFAULT_DATABASE', 'prod_analytics') -%}
+
+cubes:
+  - name: agg_trx_events
+    sql: >
+      SELECT *, 'week' as date_part FROM {{database | safe}}.bi_assets.agg_trx_events_weekly
+      UNION ALL
+      SELECT *, 'month' as date_part FROM {{database | safe}}.bi_assets.agg_trx_events_monthly
+    data_source: default
+    refresh_key:
+      every: 1 hour
+    joins: []
+
+    dimensions:
+
+     # Time dimensions
+      - name: trx_date_part
+        sql: CONCAT(trx_date, ' ', date_part)
+        type: string
+        primary_key: true
+        public: false
+
+      - name: trx_date
+        sql: trx_date
+        type: time
+
+      - name: date_part
+        sql: date_part
+        type: string
+
+      - name: is_current_month
+        sql: trx_date >= date_trunc(month, current_date)
+        type: boolean
+        public: false
+
+      - name: is_current_week
+        sql: trx_date >= date_trunc(week, current_date)
+        type: boolean
+        public: false
+
+      - name: iso_year
+        sql: yearofweekiso(trx_date)
+        type: number
+
+      # Creator dimensions
+      - name: is_suspicious
+        sql: is_suspicious
+        type: string
+
+      - name: creator_tld_group
+        sql: creator_tld_group
+        type: string
+
+      - name: top_transacted_category
+        sql: top_transacted_category
+        type: string
+
+      - name: acquisition_channel
+        sql: acquisition_channel
+        type: string
+
+      # Event dimensions
+      - name: sales_flag
+        sql: sales_flag
+        type: string
+
+      - name: event_category
+        sql: event_category
+        type: string
+
+      # Set to string to use in Tableau's calculated fields with other dimensions
+      - name: online_flag
+        sql: online_flag
+        type: string
+
+      - name: event_format
+        sql: event_format
+        type: string
+
+      # Set to string to use in Tableau's calculated fields with other dimensions
+      - name: is_timed_entry
+        sql: is_timed_entry
+        type: string
+
+      - name: is_private_event
+        sql: is_private_event
+        type: boolean
+
+      - name: is_repeating_event
+        sql: is_repeating_event
+        type: string
+
+      - name: is_strategic_inventory
+        sql: is_strategic_inventory
+        type: string
+
+      - name: marketplace_group
+        sql: marketplace_group
+        type: string
+
+      - name: event_country_group
+        sql: event_country_group
+        type: string
+
+    measures:
+
+      # Event measures
+      - name: transacted_events
+        sql: transacted_events
+        description: Number of events transacted
+        type: sum
+
+      - name: paid_events
+        sql: paid_events
+        description: Number of paid events transacted
+        type: sum
+
+      - name: free_events
+        sql: free_events
+        description: Number of free events transacted
+        type: sum
+
+      # Ticket measures
+      - name: paid_item_qty
+        sql: paid_item_qty
+        description: Number of paid tickets transacted
+        type: sum
+
+      - name: free_item_qty
+        sql: free_item_qty
+        description: Number of free tickets transacted
+        type: sum
+
+      - name: transacted_tickets
+        sql: item_qty
+        description: Number of tickets transacted
+        type: sum
+
+      - name: paid_tickets_per_event
+        sql: "{paid_item_qty} / NULLIF({paid_events}, 0)"
+        description: Number of paid tickets per paid event
+        type: number
+
+      - name: free_tickets_per_event
+        sql: "{free_item_qty} / NULLIF({free_events}, 0)"
+        description: Number of free tickets per free event
+        type: number
+
+      - name: tickets_per_event
+        sql: "{transacted_tickets} / NULLIF({transacted_events}, 0)"
+        description: Number of tickets per event
+        type: number
+
+    {% if env_var('PRE_AGGREGATIONS_ENABLED', 'false') | lower == 'true' %}
+    pre_aggregations:
+      - name: agg_trx_events
+        measures:
+
+          # Event measures
+          - CUBE.transacted_events
+          - CUBE.paid_events
+          - CUBE.free_events
+
+          # Ticket measures
+          - CUBE.paid_item_qty
+          - CUBE.free_item_qty
+          - CUBE.transacted_tickets
+
+        dimensions:
+
+          # Time dimensions
+          - CUBE.date_part
+          - CUBE.is_current_month
+          - CUBE.is_current_week
+          - CUBE.iso_year
+
+          # Event dimension
+          - CUBE.is_strategic_inventory
+          - CUBE.is_timed_entry
+          - CUBE.is_repeating_event
+          - CUBE.event_category
+          - CUBE.online_flag
+
+          # Creator dimension
+          - CUBE.sales_flag
+          - CUBE.is_suspicious
+          - CUBE.creator_tld_group
+
+        time_dimension: CUBE.trx_date
+        granularity: day
+        refresh_key:
+          every: 1 hour
+          sql: "select last_altered from {{database | safe}}.information_schema.tables where lower(table_name) in ('agg_trx_events_weekly', 'agg_trx_events_monthly')"
+        allow_non_strict_date_range_match: true # Can be remove when we run on Cube 1.3
+
+    {% endif %}

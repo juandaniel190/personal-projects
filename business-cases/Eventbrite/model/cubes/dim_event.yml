@@ -1,0 +1,343 @@
+{%- set database = env_var('DEFAULT_DATABASE', 'prod_analytics') -%}
+
+cubes:
+  - name: dim_event
+    sql: >
+      SELECT *
+      FROM {{database | safe}}.bi_assets.dim_event_host_and_publish
+      WHERE {FILTER_GROUP(
+        FILTER_PARAMS.dim_event.event_create_date.filter('event_create_date'),
+        FILTER_PARAMS.dim_event.event_publish_date.filter('event_publish_date'),
+        FILTER_PARAMS.dim_event.event_start_date.filter('event_start_date'),
+      )}
+    public: false
+    data_source: default
+    refresh_key:
+      every: 1 hour
+
+    joins: []
+
+    dimensions:
+
+      - name: event_id
+        sql: event_id
+        type: number
+        primary_key: true
+
+      - name: event_create_date
+        sql: event_create_date
+        type: time
+
+      - name: event_publish_date
+        sql: event_publish_date
+        type: time
+
+      - name: is_published_current_month
+        sql: event_publish_date >= date_trunc(month, current_date)
+        type: boolean
+        public: false
+
+      - name: is_published_current_week
+        sql: event_publish_date >= date_trunc(week, current_date)
+        type: boolean
+        public: false
+
+      - name: event_publish_iso_year
+        sql: yearofweekiso(event_publish_date)
+        type: number
+
+      - name: event_start_date
+        sql: event_start_date
+        type: time
+
+      - name: parent_event_id
+        sql: parent_event_id
+        type: number
+
+      - name: parent_event_date_id
+        sql: parent_event_date_id
+        type: string
+
+      - name: is_published
+        sql: is_published
+        type: number
+
+      - name: is_hosted
+        sql: is_hosted
+        type: number
+
+      - name: is_repeating_event
+        sql: is_repeating_event
+        type: string
+
+      - name: is_repeating_parent
+        sql: is_repeating_parent
+        type: boolean
+
+      - name: paid_flag
+        sql: paid_flag
+        type: string
+
+      - name: online_flag
+        sql: online_flag
+        type: string
+
+      - name: is_suspicious
+        sql: is_suspicious
+        type: string
+
+      - name: country_name
+        sql: country_name
+        type: string
+
+      - name: is_timed_entry
+        sql: is_timed_entry
+        type: string
+
+      - name: is_private_event
+        sql: is_private_event
+        type: string
+
+      - name: seasonal_moment
+        sql: seasonal_moment
+        type: string
+
+      - name: event_format
+        sql: event_format
+        type: string
+
+      - name: is_strategic_inventory
+        sql: is_strategic_inventory
+        type: string
+
+      - name: event_category
+        sql: event_category
+        type: string
+
+      - name: event_status
+        sql: event_status
+        type: string
+
+      - name: marketplace_name
+        sql: marketplace_name
+        type: string
+
+      - name: event_paid_type
+        sql: event_paid_type
+        type: string
+
+      - name: sales_flag
+        sql: sales_flag
+        type: string
+
+      - name: event_creation_source
+        case:
+          when:
+            - sql: event_creation_source in ('api','apiv3_android')
+              label: API
+            - sql: event_creation_source = 'auto_create'
+              label: AI Auto-Create
+            - sql: event_creation_source in ('copy_and_migrate','coyote','create_2.0')
+              label: Standard Event Create
+          else:
+            label: Unknown
+        type: string
+
+      - name: marketplace_group
+        type: string
+        sql: "case when {marketplace_name} in ('New_York_NY', 'London_GB', 'Los_Angeles_CA', 'District_of_Colombia', 'Chicago_IL','Miami_FL', 'Atlanta_GA', 'Toronto_CA', 'San_Francisco_CA', 'Melbourne_AU') then {marketplace_name} else 'Other' end"
+
+      - name: event_country_group
+        type: string
+        sql: "case when {country_name} in ('United States', 'Canada', 'United Kingdom', 'Ireland', 'Australia', 'New Zealand') then {country_name} else 'Other' end"
+
+      - name: capacity_bucket
+        type: string
+        case:
+          when:
+            - sql: capacity >= 10000
+              label: 10k+ capacity
+            - sql: capacity >= 1000
+              label: 1k - 10k capacity
+            - sql: capacity >= 251
+              label: 251 - 1k capacity
+            - sql: capacity >= 101
+              label: 101 - 251 capacity
+            - sql: capacity >= 26
+              label: 26 - 100 capacity
+            - sql: capacity > 0
+              label: <= 25 capacity
+
+    measures:
+
+      # Event creation
+      - name: creating_creators
+        description: Number of creators creating events
+        sql: creator_id
+        type: count_distinct
+
+      - name: created_events
+        description: Number of events created based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+
+      - name: created_parent_events
+        description: Number of parent events created based on parent_event_id
+        sql: parent_event_id
+        type: count_distinct
+
+      # Event publication
+      - name: publishing_creators
+        description: Number of creators publishing events
+        sql: creator_id
+        type: count_distinct
+
+      - name: publishing_creators_7d
+        description: Number of creators publishing events within 7 days of creation
+        sql: creator_id
+        type: count_distinct
+        filters:
+          - sql: datediff(day, event_create_date, event_publish_date) <= 7
+
+      - name: paid_publishing_creators
+        description: Number of creators publishing paid events
+        sql: creator_id
+        type: count_distinct
+        filters:
+          - sql: paid_flag
+
+      - name: free_publishing_creators
+        description: Number of creators publishing free events
+        sql: creator_id
+        type: count_distinct
+        filters:
+          - sql: NOT paid_flag
+
+      - name: published_events
+        description: Number of events published based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+
+      - name: paid_published_events
+        description: Number of paid events published based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+        filters:
+          - sql: paid_flag
+
+      - name: free_published_events
+        description: Number of free events published based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+        filters:
+          - sql: NOT paid_flag
+
+      - name: published_parent_events
+        description: Number of parent events published based on parent_event_id
+        sql: parent_event_id
+        type: count_distinct
+
+      - name: paid_published_parent_events
+        description: Number of paid parent events published based on parent_event_id
+        sql: parent_event_id
+        type: count_distinct
+        filters:
+          - sql: paid_flag
+
+      - name: free_published_parent_events
+        description: Number of free parent events published based on parent_event_id
+        sql: parent_event_id
+        type: count_distinct
+        filters:
+          - sql: NOT paid_flag
+
+      - name: published_capacity
+        description: Total capacity of published events
+        sql: capacity
+        type: sum
+
+      - name: paid_published_capacity
+        description: Total capacity of published paid events
+        sql: capacity
+        type: sum
+        filters:
+          - sql: paid_flag
+
+      - name: free_published_capacity
+        description: Total capacity of published free events
+        sql: capacity
+        type: sum
+        filters:
+          - sql: NOT paid_flag
+
+      # Event hosting
+      - name: hosting_creators
+        description: Number of creators hosting events
+        sql: creator_id
+        type: count_distinct
+        filters:
+          - sql: is_hosted = 1 AND event_start_date < current_date
+
+      - name: hosted_events
+        description: Number of events hosted based on parent_event_date_id
+        sql: parent_event_date_id
+        type: count_distinct
+        filters:
+          - sql: is_hosted = 1 AND event_start_date < current_date
+
+      - name: hosted_parent_events
+        description: Number of parent events hosted based on parent_event_id
+        sql: parent_event_id
+        type: count_distinct
+        filters:
+          - sql: is_hosted = 1 AND event_start_date < current_date
+
+      - name: publish_rate
+        description: Percentage of created events that are published
+        sql: "{publishing_creators} / {creating_creators} * 100.0"
+        type: number
+        format: percent
+
+      - name: publish_rate_7d
+        description: Percentage of created events that are published within 7 days
+        sql: "{publishing_creators_7d} / {creating_creators} * 100.0"
+        type: number
+        format: percent
+
+    {% if env_var('PRE_AGGREGATIONS_ENABLED', 'false') | lower == 'true' %}
+    pre_aggregations:
+      - name: publishing_daily
+        measures:
+
+          # Publishing measures
+          - CUBE.published_capacity
+          - CUBE.paid_published_capacity
+          - CUBE.free_published_capacity
+
+        dimensions:
+
+          # Time dimensions
+          - CUBE.is_published_current_month
+          - CUBE.is_published_current_week
+          - CUBE.event_publish_iso_year
+
+          # Event dimensions
+          - CUBE.event_paid_type
+          - CUBE.event_category
+          - CUBE.online_flag
+          - CUBE.event_format
+          - CUBE.is_strategic_inventory
+          - CUBE.is_timed_entry
+          - CUBE.is_repeating_event
+          - CUBE.sales_flag
+          - CUBE.capacity_bucket
+          - CUBE.is_suspicious
+          - CUBE.event_creation_source
+
+        time_dimension: CUBE.event_publish_date
+        granularity: day
+        refresh_key:
+          every: 10 minute
+          sql: "select last_altered from {{database | safe}}.information_schema.tables where lower(table_name) = 'dim_event_host_and_publish'"
+        allow_non_strict_date_range_match: true # Can be remove when we run on Cube 1.3
+    {% endif %}

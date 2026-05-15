@@ -1,0 +1,95 @@
+example_queries:
+  - question: "Monthly paid tickets vs last quarter"
+    query: |
+      SELECT
+          DATE_TRUNC('month', trx_date) as date,
+          MEASURE(paid_item_qty) as paid_tickets
+      FROM transactions
+      WHERE trx_date BETWEEN dateadd(month, -3, date_trunc('quarter', CURRENT_DATE)) AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "How many weekly paid orders were transacted since 2024-01-01?"
+    query: |
+      SELECT
+          DATE_TRUNC('week', trx_date) as date,
+          MEASURE(paid_orders) as paid_orders
+      FROM transactions
+      WHERE trx_date BETWEEN '2024-01-01' AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "Weekly free vs paid tickets in Q2 2025"
+    query: |
+      SELECT
+          DATE_TRUNC('week', trx_date) as date,
+          MEASURE(free_item_qty) as free_tickets,
+          MEASURE(paid_item_qty) as paid_tickets
+      FROM transactions
+      WHERE trx_date BETWEEN '2025-04-01' AND '2025-06-30'
+      GROUP BY 1
+  - question: "Weekly free vs paid tickets in 2024"
+    query: |
+      SELECT
+          DATE_TRUNC('week', trx_date) as date,
+          MEASURE(free_item_qty) as free_tickets,
+          MEASURE(paid_item_qty) as paid_tickets
+      FROM transactions
+      WHERE trx_date BETWEEN '2024-01-01' AND '2024-12-31'
+      GROUP BY 1
+  - question: "How many daily orders in the last 3 months?"
+    query: |
+      SELECT
+          DATE_TRUNC('day', trx_date) as date,
+          MEASURE(orders) as orders
+      FROM transactions
+      WHERE trx_date BETWEEN CURRENT_DATE - INTERVAL '4 months' AND CURRENT_DATE - INTERVAL '1 month'
+      GROUP BY 1
+  - question: "Show me daily gtf by online flag for the last 30 days"
+    query: |
+      SELECT
+          DATE_TRUNC('day', trx_date) as date,
+          online_flag,
+          MEASURE(gtf) as daily_gtf
+      FROM transactions
+      WHERE trx_date BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1, 2
+  - question: "What's the monthly trend of paid vs free tickets since 2023?"
+    query: |
+      SELECT
+          DATE_TRUNC('month', trx_date) as date,
+          MEASURE(free_item_qty) as free_tickets,
+          MEASURE(paid_item_qty) as paid_tickets
+      FROM transactions
+      WHERE trx_date BETWEEN '2023-01-01' AND CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "Top 5 countries by total gtf in 2024"
+    query: |
+      SELECT
+          country_name,
+          MEASURE(gtf) as total_gtf
+      FROM transactions
+      WHERE trx_date BETWEEN '2024-01-01' AND '2024-12-31'
+      GROUP BY 1
+      LIMIT 5
+  - question: "Average ticket price by month for 2025"
+    query: |
+      SELECT
+          DATE_TRUNC('month', trx_date) as date,
+          MEASURE(ATV) as atv
+      FROM transactions
+      WHERE trx_date BETWEEN '2025-01-01' AND '2025-12-31'
+          AND trx_date < CURRENT_DATE - INTERVAL '1 day'
+      GROUP BY 1
+  - question: "Monthly GTV for Q1 2024"
+    query: |
+      SELECT
+          DATE_TRUNC('month', trx_date) as date,
+          MEASURE(GTV) as gtv
+      FROM transactions
+      WHERE trx_date BETWEEN '2024-01-01' AND '2024-03-31'
+      GROUP BY 1
+  - question: "Daily GTV for Q1 2025"
+    query: |
+      SELECT
+          DATE_TRUNC('day', trx_date) as date,
+          MEASURE(GTV) as gtv
+      FROM transactions
+      WHERE trx_date BETWEEN '2025-01-01' AND '2025-03-31'
+      GROUP BY 1
