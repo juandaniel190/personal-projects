@@ -1,0 +1,73 @@
+ views:
+  - name: events
+    cubes:
+      - join_path: dim_event
+        includes: "*"
+    folders:
+      - name: Creation
+        includes:
+          - event_create_date
+          - creating_creators
+          - created_events
+          - created_parent_events
+
+      - name: Publication
+        includes:
+          - event_publish_date
+          - publishing_creators
+          - publishing_creators_7d
+          - paid_publishing_creators
+          - free_publishing_creators
+          - published_events
+          - paid_published_events
+          - free_published_events
+          - published_parent_events
+          - paid_published_parent_events
+          - free_published_parent_events
+          - is_published
+          - publish_rate
+          - publish_rate_7d
+          - published_capacity
+          - paid_published_capacity
+          - free_published_capacity
+
+      - name: Hosting
+        includes:
+          - event_start_date
+          - hosting_creators
+          - hosted_events
+          - hosted_parent_events
+          - is_hosted
+
+      - name: Dimensions
+        includes:
+          - event_id
+          - parent_event_id
+          - parent_event_date_id
+          - is_repeating_event
+          - is_repeating_parent
+          - is_timed_entry
+          - online_flag
+          - paid_flag
+          - event_category
+          - country_name
+          - event_country_group
+          - event_format
+          - event_paid_type
+          - event_status
+          - is_private_event
+          - is_strategic_inventory
+          - marketplace_group
+          - marketplace_name
+          - seasonal_moment
+          - capacity_bucket
+          - is_suspicious
+          - sales_flag
+          - event_creation_source
+
+      - name: Tools
+        includes:
+          # Tools measures
+          - is_published_current_month
+          - is_published_current_week
+          - event_publish_iso_year

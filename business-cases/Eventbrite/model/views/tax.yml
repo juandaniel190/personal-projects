@@ -1,0 +1,86 @@
+ views:
+  - name: tax
+    cubes:
+      - join_path: f_transaction
+        includes: "*"
+    folders:
+      - name: Transaction
+        includes:
+          - transaction_id
+          - order_id
+          - trx_date
+
+      - name: Attendee info
+        includes:
+          - attendee_zip
+          - attendee_state
+          - attendee_country
+
+      - name: Creator info
+        includes:
+          - creator_id
+          - creator_name
+          - creator_email
+          - business_type
+          - first_name
+          - last_name
+          - dob
+          - company_name
+          - company_tax_id
+          - creator_country
+          - creator_state
+          - creator_zip
+          - creator_address_line_1
+          - creator_address_line_2
+          - creator_city
+
+      - name: Event info
+        includes:
+          - event_id
+          - event_publish_date
+          - event_venue_postal_code
+          - event_venue_city
+          - event_venue_state
+          - event_venue_country
+          - event_payout_country
+          - online_flag
+
+      - name: Tax status
+        includes:
+          - transaction_currency
+          - tax_logic_is_correct
+          - tax_info_page
+          - tax_exempt
+          - absorb_tax
+          - questions
+          - answers
+          - tax_reg_id
+
+      - name: Financials
+        includes:
+          - epp
+          - epp_usd
+          - esf
+          - esf_usd
+          - gtf
+          - gtf_usd
+          - epp_gts
+          - epp_gts_usd
+          - fpp_gts
+          - fpp_gts_usd
+          - offline_gts
+          - offline_gts_usd
+          - gts
+          - gts_usd
+          - gtv
+          - gtv_usd
+          - total_tax
+          - total_tax_usd
+          - eb_tax
+          - eb_tax_usd
+          - org_tax
+          - org_tax_usd
+          - gtv_less_tax
+          - gtv_less_tax_usd
+          - non_taxable_gtv
+          - taxable_gtv

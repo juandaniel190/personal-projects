@@ -1,0 +1,236 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.10.1
+  aws-cli: circleci/aws-cli@3.1.3
+
+parameters:
+  slack-channel:
+    type: string
+    default: df-releases
+
+#These 'commands' are used by the Slack orb later
+commands:
+  notify-success:
+    parameters:
+      env:
+        type: string
+    steps:
+      - slack/notify:
+          channel: << pipeline.parameters.slack-channel >>
+          event: pass
+          custom: |
+            {
+              "text": "Cube CircleCI job succeeded!",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "<< parameters.env >> Deploy Successful. :tada:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                      "type": "mrkdwn",
+                      "text": "*Commit Message*: $COMMIT_MSG"
+                    }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author*: $CIRCLE_USERNAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project*: $CIRCLE_PROJECT_REPONAME"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "$CIRCLE_BUILD_URL"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Commit"
+                      },
+                      "url": "$COMMIT_URL"
+                    }
+                  ]
+                }
+              ]
+            }
+  notify-failure:
+    parameters:
+      env:
+        type: string
+    steps:
+      - slack/notify:
+          channel: << pipeline.parameters.slack-channel >>
+          event: fail
+          custom: |
+            {
+              "text": "Cube CircleCI job Failed!",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "<< parameters.env >> Deploy Failed. :sadpanda:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author*: $CIRCLE_USERNAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project*: $CIRCLE_PROJECT_REPONAME"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "$CIRCLE_BUILD_URL"
+                    }
+                  ]
+                }
+              ]
+            }
+
+jobs:
+  deploy:
+    parameters:
+      env:
+        type: string
+      notify-success:
+        type: boolean
+        default: true
+      notify-failure:
+        type: boolean
+        default: true
+    docker:
+      - image: cimg/python:3.10.6
+    steps:
+      - run:
+          name: Install Git LFS
+          command: |
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get install git-lfs
+            git lfs install
+      - checkout
+      - aws-cli/setup:
+          profile-name: df
+          aws-access-key-id: DF_AWS_ACCESS_KEY_ID
+          aws-secret-access-key: DF_AWS_SECRET_ACCESS_KEY
+          aws-region: DF_AWS_REGION
+          disable-aws-pager: true
+      - run:
+          name: Get Environment Name
+          command: |
+            echo "export AIRFLOW_ENVIRONMENT=$(echo << parameters.env >> | tr '[:upper:]' '[:lower:]')" >> $BASH_ENV
+      - run:
+          name: Set Git Env Vars
+          command: |
+              cd ~/project
+              echo "export COMMIT_URL=<< pipeline.project.git_url >>/commit/$CIRCLE_SHA1" >> $BASH_ENV
+              #Get the commit message from git, but remove any single quote characters to avoid shell interpretation problems.
+              COMMIT_MSG=$(git log --format=%s -n 1 $CIRCLE_SHA1 | sed "s/[\"']//g")
+              #Grab the first JIRA_ID out of the Commit Message, if there is one.
+              JIRA_ID=$(echo $COMMIT_MSG | (egrep -o EB-[0-9]* | head -1 || echo))
+              if [[ -n $JIRA_ID ]]; then
+                JIRA_URL="\<https:\/\/eventbrite\.atlassian\.net\/browse\/$JIRA_ID\|$JIRA_ID>"
+                COMMIT_MSG=$(echo $COMMIT_MSG | sed "s/$JIRA_ID/$JIRA_URL/")
+              fi
+              echo "export COMMIT_MSG='$COMMIT_MSG'" >> $BASH_ENV
+              echo "export SLACK_CHANNEL=<< pipeline.parameters.slack-channel >>" >> $BASH_ENV
+      - run:
+           name: Display resolved values
+           command: |
+              echo "Circle Tag: $CIRCLE_TAG"
+              echo "Circle Branch: $CIRCLE_BRANCH"
+              echo "Airflow Env: $AIRFLOW_ENVIRONMENT"
+              echo "Airflow Tenant: $AIRFLOW_TENANT_NAME"
+              echo "Shared ECR Repo: $SHARED_ECR_REPO"
+              echo "DF EMR Base Image Tag: $DF_EMR_BASE_IMAGE_TAG"
+              echo "Commit URL: $COMMIT_URL"
+              echo "Commit Msg: $COMMIT_MSG"
+      - run:
+          name: Copy Model files to S3 bucket
+          command: |
+            aws --profile=df s3 sync ~/project/model/ s3://eb-dp-${AIRFLOW_ENVIRONMENT}-cube-models/ --delete
+      - when:
+          condition: <<parameters.notify-success>>
+          steps:
+            - notify-success:
+                env: <<parameters.env>>
+      - when:
+          condition: <<parameters.notify-failure>>
+          steps:
+            - notify-failure:
+                env: <<parameters.env>>
+
+workflows:
+  version: 2
+  deploy-development:
+    jobs:
+    - deploy:
+        env: DEV
+        notify-success: false
+        notify-failure: false
+        context:
+            - 'DevTools ECR'
+            - 'DataFoundryDevContext'
+
+  deploy-qa:
+    jobs:
+    - deploy:
+        env: QA
+        notify-success: true
+        notify-failure: true
+        context:
+            - 'DevTools ECR'
+            - 'DataFoundryDevContext'
+        filters:
+          branches:
+            only: main
+
+  deploy-prod:
+    jobs:
+    - deploy:
+        env: PROD
+        notify-success: true
+        notify-failure: true
+        context:
+            - 'DevTools ECR'
+            - 'DataFoundryProdContext'
+        filters:
+          tags:
+            only: /^prod.*/
+          branches:
+            ignore: /.*/
