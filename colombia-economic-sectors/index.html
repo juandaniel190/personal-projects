@@ -259,14 +259,17 @@ function initPeriodChart(){
       const realYears = p.name==='Petro' ? [2023,2024,2025] : p.years;
       return compound(realYears.map(yr=>getRate(s,yr)));
     }),
-    backgroundColor: s.color+'bb',
     borderColor: s.color,
-    borderWidth: 1,
-    borderRadius: 3,
+    backgroundColor: s.color+'15',
+    borderWidth: 2,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    tension: .35,
+    fill: false,
   }));
 
   periodChartInstance = new Chart(document.getElementById('periodChart').getContext('2d'),{
-    type:'bar',
+    type:'line',
     data:{ labels:periodLabels, datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
