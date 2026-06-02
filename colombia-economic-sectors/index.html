@@ -18,7 +18,7 @@
   h1{font-size:clamp(20px,2.8vw,28px);font-weight:700;line-height:1.2;margin-bottom:8px;}
   .subtitle{font-size:13px;color:var(--muted);max-width:680px;line-height:1.6;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:1200px;margin:0 auto 24px;overflow-x:auto;}
-  .card-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+  .card-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
   .chart-wrap{position:relative;height:420px;}
   .legend-grid{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px;}
   .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
@@ -26,6 +26,15 @@
   .gov-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
   .gov-item{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);}
   .gov-stripe{width:18px;height:3px;border-radius:2px;}
+
+  /* tabs */
+  .tab-bar{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+  .tab-btn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;outline:none;}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab-btn:hover:not(.active){color:var(--text);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .period-note{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);line-height:1.7;}
 
   table{width:100%;border-collapse:collapse;}
   th{background:#16191f;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -67,13 +76,32 @@
 
 <!-- CHART -->
 <div class="card">
-  <div class="card-title">Gráfico — Crecimiento anual por sector (%)</div>
-  <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
-  <div class="legend-grid" id="legendGrid"></div>
-  <div class="gov-legend">
-    <div class="gov-item"><div class="gov-stripe" style="background:#f5c542"></div><span>Santos II (ago 2014)</span></div>
-    <div class="gov-item"><div class="gov-stripe" style="background:#64a0ff"></div><span>Duque (ago 2018)</span></div>
-    <div class="gov-item"><div class="gov-stripe" style="background:#c86464"></div><span>Petro (ago 2022)</span></div>
+  <div class="card-title">Gráfico — Crecimiento por sector (%)</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-yearly" onclick="switchTab('yearly')">Anual</button>
+    <button class="tab-btn" id="tab-period" onclick="switchTab('period')">Período presidencial</button>
+  </div>
+
+  <!-- PANEL: YEARLY -->
+  <div class="tab-panel active" id="panel-yearly">
+    <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    <div class="legend-grid" id="legendGrid"></div>
+    <div class="gov-legend">
+      <div class="gov-item"><div class="gov-stripe" style="background:#f5c542"></div><span>Santos II (ago 2014)</span></div>
+      <div class="gov-item"><div class="gov-stripe" style="background:#64a0ff"></div><span>Duque (ago 2018)</span></div>
+      <div class="gov-item"><div class="gov-stripe" style="background:#c86464"></div><span>Petro (ago 2022)</span></div>
+    </div>
+  </div>
+
+  <!-- PANEL: PRESIDENTIAL PERIOD -->
+  <div class="tab-panel" id="panel-period">
+    <div class="chart-wrap"><canvas id="periodChart"></canvas></div>
+    <div class="legend-grid" id="periodLegendGrid"></div>
+    <p class="period-note">
+      Acumulado compuesto del período completo de cada mandato.
+      ★ Santos I cubre solo 2012–2014 (inicio de serie disponible).
+      &nbsp;·&nbsp; Petro: datos reales 2023–2025 (sin proyección 2026).
+    </p>
   </div>
 </div>
 
@@ -164,7 +192,7 @@ function getRate(s, yr){
 }
 function getPIB(yr){ return pibTotal[yr]; }
 
-// ── CHART ─────────────────────────────────────────────────────────────
+// ── CHART 1: YEARLY LINE ───────────────────────────────────────────────
 Chart.register({
   id:'govLines',
   beforeDraw(chart){
@@ -215,6 +243,69 @@ sectors.forEach(s=>{
   document.getElementById('legendGrid').innerHTML+=
     `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div><span>${s.name}</span></div>`;
 });
+
+// ── CHART 2: PRESIDENTIAL PERIOD BAR ──────────────────────────────────
+let periodChartInstance = null;
+
+function initPeriodChart(){
+  const periodLabels = periods.map(p=>{
+    const endYear = p.name==='Petro' ? 2025 : p.years[p.years.length-1];
+    return `${p.name} (${p.years[0]}–${endYear})`;
+  });
+
+  const datasets = sectors.map(s=>({
+    label: s.name,
+    data: periods.map(p=>{
+      const realYears = p.name==='Petro' ? [2023,2024,2025] : p.years;
+      return compound(realYears.map(yr=>getRate(s,yr)));
+    }),
+    backgroundColor: s.color+'bb',
+    borderColor: s.color,
+    borderWidth: 1,
+    borderRadius: 3,
+  }));
+
+  periodChartInstance = new Chart(document.getElementById('periodChart').getContext('2d'),{
+    type:'bar',
+    data:{ labels:periodLabels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1a1e28',borderColor:'#2a2e3c',borderWidth:1,
+          titleColor:'#e8eaf0',bodyColor:'#adb5c8',
+          titleFont:{family:'Space Mono',size:11},bodyFont:{family:'Sora',size:12},
+          callbacks:{
+            label:c=>` ${c.dataset.label.split(',')[0]}: ${c.parsed.y>0?'+':''}${c.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},maxRotation:0}},
+        y:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},callback:v=>(v>0?'+':'')+v.toFixed(0)+'%'}}
+      },
+      layout:{padding:{top:10}}
+    }
+  });
+
+  sectors.forEach(s=>{
+    document.getElementById('periodLegendGrid').innerHTML+=
+      `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div><span>${s.name}</span></div>`;
+  });
+}
+
+function switchTab(tab){
+  document.getElementById('tab-yearly').classList.toggle('active', tab==='yearly');
+  document.getElementById('tab-period').classList.toggle('active', tab==='period');
+  document.getElementById('panel-yearly').classList.toggle('active', tab==='yearly');
+  document.getElementById('panel-period').classList.toggle('active', tab==='period');
+  if(tab==='period'){
+    if(!periodChartInstance) initPeriodChart();
+    else periodChartInstance.resize();
+  }
+}
 
 // ── TABLE 1: TRANSPOSED (sector × year, no 2026) ──────────────────────
 let h='<thead><tr><th>Sector</th>';
