@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colombia — PIB por Sector 2012–2025</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0c10; --surface:#111318; --border:#1e222c;
+    --text:#e8eaf0; --muted:#7a7f91; --accent:#f5c542;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;padding:32px 24px 48px;}
+  .header{max-width:1200px;margin:0 auto 28px;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+  h1{font-size:clamp(20px,2.8vw,28px);font-weight:700;line-height:1.2;margin-bottom:8px;}
+  .subtitle{font-size:13px;color:var(--muted);max-width:680px;line-height:1.6;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:1200px;margin:0 auto 24px;overflow-x:auto;}
+  .card-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+  .chart-wrap{position:relative;height:420px;}
+  .legend-grid{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+  .legend-dot{width:11px;height:11px;border-radius:2px;flex-shrink:0;}
+  .gov-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+  .gov-item{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);}
+  .gov-stripe{width:18px;height:3px;border-radius:2px;}
+
+  table{width:100%;border-collapse:collapse;}
+  th{background:#16191f;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+  th:first-child{text-align:left;}
+  td{padding:7px 12px;text-align:right;border-bottom:1px solid #161a22;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap;}
+  td:first-child{text-align:left;font-family:'Sora',sans-serif;font-size:12px;color:var(--text);white-space:nowrap;}
+  tr:nth-child(even) td{background:#13161c;}
+  .pos{color:#5dbc7a;} .neg{color:#e05c5c;} .na{color:var(--muted);}
+  /* projected cells */
+  .proj{color:#a89a50;font-style:italic;}
+  .proj-pos{color:#8fbf7a;font-style:italic;}
+  .proj-neg{color:#c07070;font-style:italic;}
+
+  /* period table */
+  .pres-th{text-align:center!important;padding:11px 12px!important;font-size:11px!important;letter-spacing:.08em!important;}
+  .avg-row td{background:#17191f!important;border-top:1px solid #252930;}
+  .avg-row td:first-child{color:#adb5c8!important;font-style:italic;font-size:11px;}
+  .cum-row td{background:#1c1f28!important;border-top:1px solid #2a2e3c;font-weight:700;}
+  .cum-row td:first-child{color:var(--text)!important;}
+  .cum-proj-row td{background:#1a1c24!important;border-top:1px dashed #2a2e3c;font-weight:700;}
+  .cum-proj-row td:first-child{color:var(--muted)!important;font-style:italic;}
+  .sep-row td{background:#0e1014!important;height:6px;border:none;padding:0;}
+
+  /* disclaimer box */
+  .disclaimer{background:#16140a;border:1px solid #3a3010;border-radius:8px;padding:14px 16px;margin-top:12px;font-size:11px;color:#b0a060;line-height:1.7;}
+  .disclaimer strong{color:#d4b840;}
+
+  .footnote{max-width:1200px;margin:0 auto;font-size:11px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:16px;}
+  .footnote strong{color:#adb5c8;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Cuentas Nacionales · Colombia</div>
+  <h1>Crecimiento del PIB por Sector · 2012–2025</h1>
+  <p class="subtitle">Tasas de crecimiento anual en volumen (series encadenadas, año base 2015). Los 6 sectores de mayor participación en el PIB.</p>
+</div>
+
+<!-- CHART -->
+<div class="card">
+  <div class="card-title">Gráfico — Crecimiento anual por sector (%)</div>
+  <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+  <div class="legend-grid" id="legendGrid"></div>
+  <div class="gov-legend">
+    <div class="gov-item"><div class="gov-stripe" style="background:#f5c542"></div><span>Santos II (ago 2014)</span></div>
+    <div class="gov-item"><div class="gov-stripe" style="background:#64a0ff"></div><span>Duque (ago 2018)</span></div>
+    <div class="gov-item"><div class="gov-stripe" style="background:#c86464"></div><span>Petro (ago 2022)</span></div>
+  </div>
+</div>
+
+<!-- TABLE 1: TRANSPOSED -->
+<div class="card">
+  <div class="card-title">Tabla 1 — Crecimiento anual (%) · Sector × Año</div>
+  <table id="transpTable"></table>
+</div>
+
+<!-- TABLE 2: PRESIDENTIAL PERIODS TRANSPOSED -->
+<div class="card">
+  <div class="card-title">Tabla 2 — Resumen por período presidencial · Acumulado compuesto (%)</div>
+  <div class="disclaimer">
+    <strong>⚠ Disclaimer — columna Petro (2026 proj.):</strong>
+    El acumulado "con proyección" incluye una estimación para 2026 construida a partir del consenso de analistas
+    (Bancolombia: PIB +2.9%; Banco Mundial: +2.6%; Fedesarrollo: +2.9%; BanRep: ~+2.0% revisado).
+    Las cifras sectoriales para 2026 son <em>estimaciones propias</em> derivadas de señales cualitativas
+    publicadas — no son proyecciones oficiales del DANE ni del Banco de la República.
+    Se presentan únicamente para hacer la comparación de mandatos de 4 años más equitativa.
+    <strong>No deben usarse como referencia independiente.</strong>
+  </div>
+  <br>
+  <table id="presTable"></table>
+</div>
+
+<div class="footnote" id="footnote"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const years    = [2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+const allYears = [...years, 2026]; // 2026 = projected
+
+// 2026 projected sector values (derived from analyst consensus + qualitative signals)
+// Bancolombia: comercio/ctac motor principal; manufactura recuperación moderada;
+// minería sigue negativa; agro normalization post-2024 surge; inmobiliaria estable;
+// admPública sostenida por cláusula escape regla fiscal
+// [Proyección — estimación propia basada en consenso analistas, NO cifra oficial]
+const proj2026 = {
+  comercio:    3.2,   // Bancolombia: CTAC motor; Banco Mundial: recuperación consumo
+  admPublica:  4.0,   // cláusula escape regla fiscal → gasto público sostenido
+  manufactura: 2.2,   // señales recuperación industria (BanRep, Banco Mundial)
+  inmobiliaria:1.8,   // estable, sin catalizadores fuertes
+  profesional: 1.8,   // leve recuperación junto a manufactura y servicios
+  agricultura: 2.0,   // normalización tras pico 2024 (+8.1%)
+  pibTotal:    2.7    // consenso Bancolombia 2.9 / BM 2.6 / Fedesarrollo 2.9 / BanRep ~2.0 → media ~2.7
+};
+
+const sectors = [
+  { name:'Comercio, Transp. y Alojamiento', short:'Comercio',     color:'#4e9af1', key:'comercio',
+    data:[5.2,4.9,5.1,3.8,1.6,1.7,3.8,3.6,-14.2,17.2,10.7,-2.8,1.4,4.6] },
+  { name:'Adm. Pública, Educ. y Salud',    short:'Adm. Pública', color:'#e05c5c', key:'admPublica',
+    data:[4.2,5.1,4.6,3.6,3.9,4.2,4.4,3.5,4.5,8.7,4.9,3.9,3.3,4.5] },
+  { name:'Industrias Manufactureras',       short:'Manufactura',  color:'#5dbc7a', key:'manufactura',
+    data:[0.2,0.5,0.9,1.2,2.7,-1.3,1.8,1.3,-8.3,14.7,9.8,-3.5,-2.0,1.9] },
+  { name:'Actividades Inmobiliarias',       short:'Inmobiliaria', color:'#f0a040', key:'inmobiliaria',
+    data:[3.8,3.2,3.2,2.7,2.4,2.3,2.4,2.3,1.4,2.8,2.0,1.9,1.9,2.0] },
+  { name:'Act. Profesionales y Científicas',short:'Profesionales',color:'#b06edf', key:'profesional',
+    data:[6.3,5.1,6.4,5.0,4.2,3.4,4.0,3.9,-6.5,9.4,8.3,0.2,0.2,1.3] },
+  { name:'Agricultura, Ganadería y Pesca',  short:'Agricultura',  color:'#42c8c8', key:'agricultura',
+    data:[2.9,6.6,2.3,3.3,0.5,4.9,1.9,1.8,2.8,3.1,-1.9,1.8,8.1,3.1] }
+];
+
+const pibTotal = {
+  2012:4.0,2013:4.9,2014:4.5,2015:3.1,2016:2.1,2017:1.4,2018:2.6,
+  2019:3.2,2020:-7.2,2021:10.8,2022:7.3,2023:0.6,2024:1.7,2025:2.6,
+  2026:proj2026.pibTotal // projected
+};
+
+const govChanges = [
+  {year:2014,label:'Santos II',color:'#f5c542'},
+  {year:2018,label:'Duque',    color:'#64a0ff'},
+  {year:2022,label:'Petro',    color:'#c86464'}
+];
+
+// Periods — 4 calendar years each, except Santos I (partial from 2012)
+const periods = [
+  {name:'Santos I',  years:[2012,2013,2014],         color:'#a0c8a0', partial:true,  projYears:[]},
+  {name:'Santos II', years:[2015,2016,2017,2018],     color:'#f5c542', partial:false, projYears:[]},
+  {name:'Duque',     years:[2019,2020,2021,2022],     color:'#64a0ff', partial:false, projYears:[]},
+  {name:'Petro',     years:[2023,2024,2025],           color:'#c86464', partial:true,  projYears:[2026]},
+];
+
+function compound(rates){ return (rates.reduce((a,r)=>a*(1+r/100),1)-1)*100; }
+
+function getRate(s, yr){
+  if(yr===2026) return proj2026[s.key];
+  return s.data[years.indexOf(yr)];
+}
+function getPIB(yr){ return pibTotal[yr]; }
+
+// ── CHART ─────────────────────────────────────────────────────────────
+Chart.register({
+  id:'govLines',
+  beforeDraw(chart){
+    const{ctx,scales,chartArea}=chart; if(!scales.x) return;
+    ctx.save();
+    govChanges.forEach(g=>{
+      const idx=years.indexOf(g.year); if(idx<0) return;
+      const x=scales.x.getPixelForValue(idx);
+      ctx.strokeStyle=g.color; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.75;
+      ctx.beginPath(); ctx.moveTo(x,chartArea.top); ctx.lineTo(x,chartArea.bottom); ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha=1;
+      ctx.fillStyle=g.color; ctx.font='700 9px Space Mono,monospace'; ctx.textAlign='center';
+      ctx.fillText(g.label,x,chartArea.top-7);
+    });
+    ctx.restore();
+  }
+});
+
+new Chart(document.getElementById('mainChart').getContext('2d'),{
+  type:'line',
+  data:{
+    labels:years.map(String),
+    datasets:sectors.map(s=>({
+      label:s.name, data:s.data, borderColor:s.color, backgroundColor:s.color+'15',
+      borderWidth:2, pointRadius:3, pointHoverRadius:6, tension:.35, fill:false
+    }))
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#1a1e28',borderColor:'#2a2e3c',borderWidth:1,
+        titleColor:'#e8eaf0',bodyColor:'#adb5c8',
+        titleFont:{family:'Space Mono',size:11},bodyFont:{family:'Sora',size:12},
+        callbacks:{label:c=>` ${c.dataset.label.split(',')[0]}: ${c.parsed.y>0?'+':''}${c.parsed.y.toFixed(1)}%`}
+      }
+    },
+    scales:{
+      x:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},maxRotation:0}},
+      y:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},callback:v=>(v>0?'+':'')+v+'%'}}
+    },
+    layout:{padding:{top:28}}
+  }
+});
+sectors.forEach(s=>{
+  document.getElementById('legendGrid').innerHTML+=
+    `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div><span>${s.name}</span></div>`;
+});
+
+// ── TABLE 1: TRANSPOSED (sector × year, no 2026) ──────────────────────
+let h='<thead><tr><th>Sector</th>';
+years.forEach(y=>{h+=`<th>${y}</th>`;});
+h+='</tr></thead><tbody>';
+sectors.forEach(s=>{
+  h+=`<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.color};margin-right:7px;vertical-align:middle"></span>${s.name}</td>`;
+  s.data.forEach(v=>{
+    const cls=v>0?'pos':v<0?'neg':'na';
+    h+=`<td class="${cls}">${v>0?'+':''}${v.toFixed(1)}%</td>`;
+  });
+  h+='</tr>';
+});
+h+='</tbody>';
+document.getElementById('transpTable').innerHTML=h;
+
+// ── TABLE 2: PRESIDENTIAL — rows=sectors, cols=periods ───────────────
+// For Petro: show two sub-columns: [sin 2026] and [con 2026 proj.]
+// We'll encode this as extra columns
+
+let ph='<thead><tr>';
+ph+='<th rowspan="2">Sector</th>';
+periods.forEach(p=>{
+  const colspan = (p.name==='Petro') ? 2 : 1;
+  ph+=`<th colspan="${colspan}" class="pres-th" style="color:${p.color};border-bottom:2px solid ${p.color}60">${p.name}<br><span style="font-size:9px;color:var(--muted);font-weight:400">${p.years[0]}–${p.years[p.years.length-1]}${p.partial&&p.name!=='Petro'?' ★':p.name==='Petro'?' (3 años)':''}</span></th>`;
+});
+ph+='</tr><tr>';
+periods.forEach(p=>{
+  if(p.name==='Petro'){
+    ph+=`<th style="font-size:9px;color:#c86464;text-align:center;padding:6px 10px">2023–2025<br><span style="color:var(--muted)">sin proy.</span></th>`;
+    ph+=`<th style="font-size:9px;color:#a89a50;text-align:center;padding:6px 10px">2023–2026<br><span style="color:#a89a50">+ proy. ⚠</span></th>`;
+  } else {
+    ph+=`<th style="font-size:9px;color:var(--muted);text-align:center;padding:6px 10px">Acum. comp.</th>`;
+  }
+});
+ph+='</tr></thead><tbody>';
+
+// Helper
+function fmtCum(v, projected){
+  const cls = projected ? (v>0?'proj-pos':v<0?'proj-neg':'proj') : (v>0?'pos':v<0?'neg':'na');
+  const bold = 'font-weight:700';
+  return `<td class="${cls}" style="${bold}">${v>0?'+':''}${v.toFixed(1)}%</td>`;
+}
+
+// All sectors + PIB Total
+const allSectors = [...sectors, {
+  name:'PIB Total (Nacional)', short:'PIB Total', color:'#ffffff', key:'pibTotal',
+  data: years.map(y=>pibTotal[y])
+}];
+
+allSectors.forEach((s, si)=>{
+  if(si>0){ ph+=`<tr class="sep-row"><td colspan="7"></td></tr>`; }
+  ph+=`<tr class="cum-row"><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.color};margin-right:7px;vertical-align:middle"></span>${s.name}</td>`;
+
+  periods.forEach(p=>{
+    const realRates = p.years.map(yr=>getRate(s,yr));
+    const cumReal   = compound(realRates);
+
+    if(p.name==='Petro'){
+      // col 1: 3 years only
+      ph += fmtCum(cumReal, false);
+      // col 2: 4 years with projection
+      const projRate  = getRate(s, 2026);
+      const cumProj   = compound([...realRates, projRate]);
+      ph += fmtCum(cumProj, true);
+    } else {
+      ph += fmtCum(cumReal, false);
+    }
+  });
+  ph+='</tr>';
+});
+ph+='</tbody>';
+document.getElementById('presTable').innerHTML=ph;
+
+// ── FOOTNOTE ──────────────────────────────────────────────────────────
+document.getElementById('footnote').innerHTML=`
+  <strong>Fuentes verificadas (primarias):</strong> DANE, Boletines Técnicos PIB IV trimestre 2022, 2023, 2024 y 2025. Datos 2025 preliminares (DANE, feb 2026).<br>
+  <strong>[Fuente secundaria]</strong> 2012–2021: Banco de la República / DANE series históricas empalme base 2015.<br>
+  <strong>[Proyección 2026 ⚠]</strong> PIB total ~2.7% (media de: Bancolombia 2.9%, Banco Mundial 2.6%, Fedesarrollo 2.9%, BanRep ~2.0% revisado).
+  Cifras sectoriales 2026: estimación propia derivada de señales cualitativas publicadas por Bancolombia, BanRep y Banco Mundial — <em>no son proyecciones oficiales del DANE</em>.<br>
+  ★ Santos I cubre solo 2012–2014 (inicio de serie disponible). Acumulado no comparable con períodos de 4 años.
+`;
+</script>
+</body>
+</html>
