@@ -98,7 +98,8 @@
     <div class="chart-wrap"><canvas id="periodChart"></canvas></div>
     <div class="legend-grid" id="periodLegendGrid"></div>
     <p class="period-note">
-      Acumulado compuesto del período completo de cada mandato.
+      Cada punto = crecimiento acumulado compuesto del período completo, graficado en el último año del mandato.
+      Las líneas verticales marcan el inicio de cada período presidencial.
       ★ Santos I cubre solo 2012–2014 (inicio de serie disponible).
       &nbsp;·&nbsp; Petro: datos reales 2023–2025 (sin proyección 2026).
     </p>
@@ -248,29 +249,32 @@ sectors.forEach(s=>{
 let periodChartInstance = null;
 
 function initPeriodChart(){
-  const periodLabels = periods.map(p=>{
-    const endYear = p.name==='Petro' ? 2025 : p.years[p.years.length-1];
-    return `${p.name} (${p.years[0]}–${endYear})`;
-  });
+  // One data point per sector per period, plotted at the period's final year:
+  // Santos I → 2014, Santos II → 2018, Duque → 2022, Petro → 2025
+  const endYearToPeriod = {2014:0, 2018:1, 2022:2, 2025:3};
 
   const datasets = sectors.map(s=>({
     label: s.name,
-    data: periods.map(p=>{
+    data: years.map(yr=>{
+      const pIdx = endYearToPeriod[yr];
+      if(pIdx===undefined) return null;
+      const p = periods[pIdx];
       const realYears = p.name==='Petro' ? [2023,2024,2025] : p.years;
-      return compound(realYears.map(yr=>getRate(s,yr)));
+      return compound(realYears.map(y=>getRate(s,y)));
     }),
     borderColor: s.color,
     backgroundColor: s.color+'15',
     borderWidth: 2,
     pointRadius: 5,
     pointHoverRadius: 7,
-    tension: .35,
+    tension: 0,
     fill: false,
+    spanGaps: true,
   }));
 
   periodChartInstance = new Chart(document.getElementById('periodChart').getContext('2d'),{
     type:'line',
-    data:{ labels:periodLabels, datasets },
+    data:{ labels:years.map(String), datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
@@ -280,7 +284,17 @@ function initPeriodChart(){
           backgroundColor:'#1a1e28',borderColor:'#2a2e3c',borderWidth:1,
           titleColor:'#e8eaf0',bodyColor:'#adb5c8',
           titleFont:{family:'Space Mono',size:11},bodyFont:{family:'Sora',size:12},
+          filter: item=>item.raw!=null,
           callbacks:{
+            title: items=>{
+              if(!items.length) return '';
+              const yr = parseInt(items[0].label);
+              const pIdx = endYearToPeriod[yr];
+              if(pIdx===undefined) return items[0].label;
+              const p = periods[pIdx];
+              const endYr = p.name==='Petro' ? 2025 : p.years[p.years.length-1];
+              return `${p.name} (${p.years[0]}–${endYr}) — acumulado`;
+            },
             label:c=>` ${c.dataset.label.split(',')[0]}: ${c.parsed.y>0?'+':''}${c.parsed.y.toFixed(1)}%`
           }
         }
@@ -289,7 +303,7 @@ function initPeriodChart(){
         x:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},maxRotation:0}},
         y:{grid:{color:'#1e222c'},ticks:{color:'#7a7f91',font:{family:'Space Mono',size:10},callback:v=>(v>0?'+':'')+v.toFixed(0)+'%'}}
       },
-      layout:{padding:{top:10}}
+      layout:{padding:{top:28}}
     }
   });
 
